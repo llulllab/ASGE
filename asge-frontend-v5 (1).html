@@ -1,0 +1,2675 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASGE — Ambivalence-Centered Semantic Geometry Engine</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%);
+      min-height: 100vh;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      padding: 28px;
+      background: linear-gradient(135deg, rgba(129, 140, 248, 0.06), rgba(192, 132, 252, 0.04));
+      border-radius: 16px;
+      border: 1px solid rgba(129, 140, 248, 0.12);
+      margin-bottom: 24px;
+    }
+    
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 6px;
+      background: linear-gradient(135deg, #818cf8, #c084fc, #f0abfc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+    
+    .header-full-name {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #a78bfa;
+      font-weight: 500;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    
+    .subtitle {
+      color: #9ca3af;
+      font-size: 13px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    
+    select, button {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e0e0e0;
+    }
+    
+    .btn-start {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+    
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-pause {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+    
+    .btn-stop {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+    
+    .btn-manual {
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+    }
+    
+    .timer-section {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    
+    .timer-box {
+      text-align: center;
+      padding: 16px 32px;
+      border-radius: 12px;
+      min-width: 120px;
+    }
+    
+    .timer-box.time {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .timer-box.minute {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    
+    .timer-value {
+      font-size: 36px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .timer-box.time .timer-value { color: #10b981; }
+    .timer-box.minute .timer-value { color: #818cf8; }
+    
+    .timer-label {
+      font-size: 11px;
+      margin-top: 4px;
+      opacity: 0.7;
+    }
+    
+    .live-chart-container {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(0,0,0,0.2));
+      border: 2px solid rgba(16, 185, 129, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .chart-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #10b981;
+    }
+    
+    .pulse-dot {
+      width: 12px;
+      height: 12px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    }
+    
+    .live-stats {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .live-stat {
+      padding: 8px 16px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .live-stat.ratio {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .live-stat.current {
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    
+    .live-stat-label {
+      font-size: 10px;
+      opacity: 0.7;
+    }
+    
+    .live-stat-value {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .live-stat.ratio .live-stat-value { color: #10b981; }
+    .live-stat.current .live-stat-value { color: #fbbf24; }
+    
+    .formula-box {
+      display: inline-block;
+      padding: 8px 14px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .formula-box code {
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    .chart-wrapper {
+      height: 300px;
+      position: relative;
+    }
+    
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 16px;
+      font-size: 12px;
+    }
+    
+    .chart-type-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #9ca3af;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .chart-type-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #e0e0e0;
+    }
+    
+    .chart-type-btn.active {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #10b981;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .legend-bar {
+      width: 16px;
+      height: 12px;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      border-radius: 2px;
+    }
+    
+    .legend-line {
+      width: 16px;
+      height: 3px;
+      background: #10b981;
+      border-radius: 2px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      padding: 16px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .detection-popup {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, rgba(129, 140, 248, 0.95), rgba(99, 102, 241, 0.95));
+      border-radius: 10px;
+      animation: slideIn 0.3s ease-out;
+      z-index: 10;
+      display: none;
+    }
+    
+    .detection-popup.show {
+      display: block;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .detection-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .detection-word {
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+    
+    .pairs-section {
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .pairs-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 12px;
+    }
+    
+    .pairs-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .pair-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+    }
+    
+    .pair-text {
+      font-size: 13px;
+      color: #e0e0e0;
+    }
+    
+    .pair-count {
+      padding: 2px 10px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .transcript-section {
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .transcript-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    .transcript-content {
+      padding: 14px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #d1d5db;
+    }
+    
+    .highlight {
+      background: rgba(16, 185, 129, 0.3);
+      padding: 2px 4px;
+      border-radius: 4px;
+      color: #6ee7b7;
+      font-weight: 600;
+    }
+    
+    .manual-section {
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 16px;
+      margin-bottom: 24px;
+      display: none;
+    }
+    
+    .manual-section.show {
+      display: block;
+    }
+    
+    .manual-hint {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 14px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e0e0e0;
+      font-size: 13px;
+      font-family: inherit;
+      resize: vertical;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: rgba(99, 102, 241, 0.5);
+    }
+    
+    .btn-analyze {
+      margin-top: 12px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    @keyframes alertPop {
+      0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+      50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+      70% { transform: translateX(-50%) scale(0.95); }
+      100% { transform: translateX(-50%) scale(1); opacity: 0; }
+    }
+    
+    .sound-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #e0e0e0;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .sound-toggle:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .sound-toggle.muted {
+      opacity: 0.5;
+    }
+    
+    .sound-levels {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .sound-level-indicator {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      opacity: 0.4;
+      transition: all 0.3s;
+    }
+    
+    .sound-level-indicator.active {
+      opacity: 1;
+      transform: scale(1.1);
+      box-shadow: 0 2px 10px currentColor;
+    }
+    
+    .wordcloud-section {
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .wordcloud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .wordcloud-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #818cf8;
+    }
+    
+    .wordcloud-minute {
+      font-size: 11px;
+      color: #9ca3af;
+      background: rgba(129, 140, 248, 0.1);
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    
+    .wordcloud-container {
+      min-height: 150px;
+      max-height: 300px;
+      padding: 16px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      overflow-y: auto;
+    }
+    
+    .wordcloud-word {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(129, 140, 248, 0.15);
+      color: #a5b4fc;
+      transition: all 0.3s ease;
+      cursor: default;
+      white-space: nowrap;
+    }
+    
+    .wordcloud-word:hover {
+      transform: scale(1.1);
+      background: rgba(129, 140, 248, 0.25);
+    }
+    
+    .wordcloud-word.paired-word {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .wordcloud-word.size-1 { font-size: 11px; opacity: 0.6; }
+    .wordcloud-word.size-2 { font-size: 13px; opacity: 0.7; }
+    .wordcloud-word.size-3 { font-size: 15px; opacity: 0.8; }
+    .wordcloud-word.size-4 { font-size: 18px; opacity: 0.9; font-weight: 500; }
+    .wordcloud-word.size-5 { font-size: 22px; opacity: 1; font-weight: 600; }
+    .wordcloud-word.size-6 { font-size: 26px; opacity: 1; font-weight: 700; }
+    
+    .wordcloud-empty {
+      color: #6b7280;
+      font-size: 13px;
+      font-style: italic;
+    }
+    
+    .ai-results-panel {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(0,0,0,0.2));
+      border: 2px solid rgba(99, 102, 241, 0.3);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .ai-panel-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+    }
+    .ai-panel-title { font-size: 15px; font-weight: 700; color: #a5b4fc; }
+    .ai-panel-mode { font-size: 11px; padding: 4px 10px; border-radius: 12px; background: rgba(99,102,241,0.2); color: #818cf8; }
+    .ai-loading { color: #9ca3af; font-size: 13px; text-align: center; padding: 20px; }
+    .ai-stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .ai-stat-box { padding: 12px 16px; background: rgba(0,0,0,0.2); border-radius: 10px; text-align: center; flex: 1; min-width: 80px; }
+    .ai-stat-label { font-size: 10px; color: #9ca3af; display: block; }
+    .ai-stat-val { font-size: 20px; font-weight: 700; color: #a5b4fc; }
+    .ai-summary-box { margin-bottom: 16px; padding: 14px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+    .ai-summary-box h4 { color: #a5b4fc; font-size: 13px; margin-bottom: 8px; }
+    .ai-summary-box p { font-size: 13px; color: #d1d5db; line-height: 1.6; }
+    .ai-pair-ctx { display: flex; gap: 10px; align-items: center; padding: 8px 12px; background: rgba(99,102,241,0.1); border-radius: 8px; margin-bottom: 6px; font-size: 13px; border-left: 3px solid #818cf8; }
+    .ai-pair-ctx .pair-words { font-weight: 600; color: #a5b4fc; white-space: nowrap; }
+    .ai-pair-ctx .pair-min { font-size: 11px; color: #818cf8; white-space: nowrap; }
+    .ai-pair-ctx .pair-ctx { font-size: 11px; color: #9ca3af; font-style: italic; }
+    .ai-pair-ctx .pair-type { font-size: 9px; padding: 2px 6px; border-radius: 8px; white-space: nowrap; }
+    .ai-pair-ctx .pair-type.classic { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+    .ai-pair-ctx .pair-type.contextual { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    .ai-trend-row { display: flex; gap: 10px; align-items: center; padding: 6px 12px; border-radius: 6px; margin-bottom: 4px; font-size: 12px; }
+    .ai-trend-row.intensity-low { background: rgba(16,185,129,0.1); }
+    .ai-trend-row.intensity-medium { background: rgba(251,191,36,0.1); }
+    .ai-trend-row.intensity-high { background: rgba(239,68,68,0.1); }
+    .ai-trend-min { font-weight: 600; min-width: 50px; }
+    .ai-trend-count { color: #fbbf24; min-width: 70px; }
+    .ai-trend-note { color: #9ca3af; }
+
+    footer {
+      text-align: center;
+      color: #6b7280;
+      font-size: 11px;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>◈ ASGE</h1>
+      <p class="header-full-name">Ambivalence-Centered Semantic Geometry Engine</p>
+      <p class="subtitle">Canlı ambivalens analizi • Formül: Σ(çift sayısı) / dakika</p>
+    </header>
+    
+    <div class="controls">
+      <select id="language">
+        <option value="tr-TR">🇹🇷 Türkçe</option>
+        <option value="en-US">🇺🇸 English</option>
+        <option value="fr-FR">🇫🇷 Français</option>
+      </select>
+      <button class="btn-start" id="startBtn" onclick="startRecording()">🎙️ Kaydı Başlat</button>
+      <button class="btn-pause hidden" id="pauseBtn" onclick="pauseRecording()">⏸️ Duraklat</button>
+      <button class="btn-start hidden" id="resumeBtn" onclick="resumeRecording()">▶️ Devam Et</button>
+      <button class="btn-stop hidden" id="stopBtn" onclick="stopRecording()">⏹️ Durdur</button>
+      <button class="btn-manual" id="manualBtn" onclick="toggleManual()">📝 Manuel Giriş</button>
+      <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔔 Ses Açık</button>
+    </div>
+    
+    <div class="sound-levels hidden" id="soundLevels">
+      <div class="sound-level-indicator" id="level2" style="background: rgba(59, 130, 246, 0.3); color: #3b82f6;">2️⃣ İKİ</div>
+      <div class="sound-level-indicator" id="level3" style="background: rgba(139, 92, 246, 0.3); color: #8b5cf6;">3️⃣ ÜÇ</div>
+      <div class="sound-level-indicator" id="level4" style="background: rgba(245, 158, 11, 0.3); color: #f59e0b;">4️⃣ DÖRT</div>
+      <div class="sound-level-indicator" id="level5" style="background: rgba(239, 68, 68, 0.3); color: #ef4444;">5️⃣ BEŞ</div>
+    </div>
+    
+    <div class="manual-section" id="manualSection">
+      <p class="manual-hint">Her satır = 1 dakika. Analiz etmek istediğiniz metni yapıştırın:</p>
+      <textarea id="manualInput" placeholder="Dakika 1: Bu iyi bir gün ama hava kötü...&#10;Dakika 2: Büyük hayaller küçük adımlarla başlar..."></textarea>
+      <button class="btn-analyze" onclick="processManualInput()">Analiz Et</button>
+    </div>
+    
+    <div class="timer-section hidden" id="timerSection">
+      <div class="timer-box time">
+        <div class="timer-value" id="timeDisplay">00:00</div>
+        <div class="timer-label" id="statusLabel">🔴 KAYIT</div>
+      </div>
+      <div class="timer-box minute">
+        <div class="timer-value" id="minuteDisplay">1</div>
+        <div class="timer-label">DAKİKA</div>
+      </div>
+    </div>
+    
+    <div class="live-chart-container hidden" id="chartSection">
+      <div class="detection-popup" id="detectionPopup">
+        <div class="detection-label">YENİ ÇİFT TESPİT!</div>
+        <div class="detection-word" id="detectionWord"></div>
+      </div>
+      
+      <div class="chart-header">
+        <div class="chart-title">
+          <div class="pulse-dot" id="pulseDot"></div>
+          <span>📊 CANLI GRAFİK: Ambivalens Analizi</span>
+        </div>
+        <div class="live-stats">
+          <div class="live-stat ratio">
+            <div class="live-stat-label">Mevcut Oran</div>
+            <div class="live-stat-value" id="ratioDisplay">0.000</div>
+          </div>
+          <div class="live-stat current">
+            <div class="live-stat-label">Bu Dakika</div>
+            <div class="live-stat-value" id="currentMinuteDisplay">0</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="formula-box">
+        <span style="color: #9ca3af;">Formül: </span>
+        <code id="formulaDisplay">0 / 1 = 0.000</code>
+      </div>
+
+      <!-- Chart Type Selector -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+        <button class="chart-type-btn active" data-type="wave" onclick="switchChartType('wave')">
+          〰️ Sinüs Dalgası
+        </button>
+        <button class="chart-type-btn" data-type="bar" onclick="switchChartType('bar')">
+          📊 Bar Grafik
+        </button>
+        <button class="chart-type-btn" data-type="delta" onclick="switchChartType('delta')">
+          📈 Değişim (Δ)
+        </button>
+      </div>
+      
+      <div class="chart-wrapper">
+        <canvas id="liveChart"></canvas>
+      </div>
+      
+      <div class="chart-legend" id="chartLegend">
+        <div class="legend-item">
+          <div style="width: 20px; height: 4px; background: #10b981; border-radius: 2px;"></div>
+          <span style="color: #10b981;">Dalga 1 (Üst)</span>
+        </div>
+        <div class="legend-item">
+          <div style="width: 20px; height: 4px; background: #f59e0b; border-radius: 2px;"></div>
+          <span style="color: #f59e0b;">Dalga 2 (Alt)</span>
+        </div>
+        <div class="legend-item">
+          <span style="color: #6b7280; font-size: 11px;">0 = temas noktası</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Toplam Kelime</div>
+        <div class="stat-value" id="totalWords" style="color: #6366f1;">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ambivalens Çifti</div>
+        <div class="stat-value" id="totalPairs" style="color: #ec4899;">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Toplam Oran</div>
+        <div class="stat-value" id="totalRatio" style="color: #10b981;">0.000</div>
+      </div>
+    </div>
+    
+    <div class="wordcloud-section hidden" id="wordcloudSection">
+      <div class="wordcloud-header">
+        <div class="wordcloud-title">☁️ Kelime Frekans Haritası (Kümülatif)</div>
+        <div class="wordcloud-minute" id="wordcloudMinute">Toplam: 0 kelime</div>
+      </div>
+      <div class="wordcloud-container" id="wordcloudContainer">
+        <span class="wordcloud-empty">Konuşmaya başlayın...</span>
+      </div>
+    </div>
+    
+    <div class="pairs-section hidden" id="pairsSection">
+      <div class="pairs-title">En Çok Tespit Edilen Çiftler</div>
+      <div class="pairs-list" id="pairsList"></div>
+    </div>
+    
+    <div class="transcript-section hidden" id="transcriptSection">
+      <div class="transcript-title">📜 Transkript</div>
+      <div class="transcript-content" id="transcriptContent"></div>
+    </div>
+    
+    <!-- AI Analiz Paneli -->
+    <div class="ai-results-panel hidden" id="aiResultsPanel">
+      <div class="ai-panel-header">
+        <span class="ai-panel-title">🤖 AI Derin Analiz (ASGE)</span>
+        <span class="ai-panel-mode" id="aiPanelMode"></span>
+      </div>
+      <div id="aiPanelContent">
+        <div class="ai-loading" id="aiLoading">⏳ AI analizi bekleniyor...</div>
+      </div>
+    </div>
+
+    <footer>
+      <p>ASGE v5 • Web Speech API • Chrome önerilir • 🇹🇷 TR + 🇺🇸 EN + 🇫🇷 FR • n8n + AI Backend</p>
+    </footer>
+  </div>
+
+  <script>
+    // Türkçe sözcük çiftleri (100 çift = 200 giriş)
+    const TURKISH_PAIRS = {
+      // Temel sıfatlar
+      'iyi': 'kötü', 'kötü': 'iyi',
+      'güzel': 'çirkin', 'çirkin': 'güzel',
+      'büyük': 'küçük', 'küçük': 'büyük',
+      'uzun': 'kısa', 'kısa': 'uzun',
+      'hızlı': 'yavaş', 'yavaş': 'hızlı',
+      'sıcak': 'soğuk', 'soğuk': 'sıcak',
+      'yeni': 'eski', 'eski': 'yeni',
+      'genç': 'yaşlı', 'yaşlı': 'genç',
+      'zengin': 'fakir', 'fakir': 'zengin',
+      'kolay': 'zor', 'zor': 'kolay',
+      'doğru': 'yanlış', 'yanlış': 'doğru',
+      'açık': 'kapalı', 'kapalı': 'açık',
+      'dolu': 'boş', 'boş': 'dolu',
+      'mutlu': 'mutsuz', 'mutsuz': 'mutlu',
+      'güçlü': 'zayıf', 'zayıf': 'güçlü',
+      'parlak': 'karanlık', 'karanlık': 'parlak',
+      'temiz': 'kirli', 'kirli': 'temiz',
+      'yumuşak': 'sert', 'sert': 'yumuşak',
+      'ağır': 'hafif', 'hafif': 'ağır',
+      'dar': 'geniş', 'geniş': 'dar',
+      'yüksek': 'alçak', 'alçak': 'yüksek',
+      'kalın': 'ince', 'ince': 'kalın',
+      'yakın': 'uzak', 'uzak': 'yakın',
+      'derin': 'sığ', 'sığ': 'derin',
+      'tatlı': 'acı', 'acı': 'tatlı',
+      'kuru': 'ıslak', 'ıslak': 'kuru',
+      'sağlıklı': 'hasta', 'hasta': 'sağlıklı',
+      'dürüst': 'yalancı', 'yalancı': 'dürüst',
+      'cesur': 'korkak', 'korkak': 'cesur',
+      'akıllı': 'aptal', 'aptal': 'akıllı',
+      'tembel': 'çalışkan', 'çalışkan': 'tembel',
+      'sakin': 'hareketli', 'hareketli': 'sakin',
+      'sessiz': 'gürültülü', 'gürültülü': 'sessiz',
+      'düz': 'eğri', 'eğri': 'düz',
+      'sivri': 'küt', 'küt': 'sivri',
+      'sıkı': 'gevşek', 'gevşek': 'sıkı',
+      'canlı': 'ölü', 'ölü': 'canlı',
+      'özgür': 'tutsak', 'tutsak': 'özgür',
+      'haklı': 'haksız', 'haksız': 'haklı',
+      'zararlı': 'yararlı', 'yararlı': 'zararlı',
+      'olumlu': 'olumsuz', 'olumsuz': 'olumlu',
+      'kalıcı': 'geçici', 'geçici': 'kalıcı',
+      'özel': 'genel', 'genel': 'özel',
+      'somut': 'soyut', 'soyut': 'somut',
+      'basit': 'karmaşık', 'karmaşık': 'basit',
+      'normal': 'anormal', 'anormal': 'normal',
+      'modern': 'geleneksel', 'geleneksel': 'modern',
+      'doğal': 'yapay', 'yapay': 'doğal',
+      'gerçek': 'sahte', 'sahte': 'gerçek',
+      'resmi': 'gayriresmi', 'gayriresmi': 'resmi',
+      'şanslı': 'şanssız', 'şanssız': 'şanslı',
+      'nazik': 'kaba', 'kaba': 'nazik',
+      'kibar': 'terbiyesiz', 'terbiyesiz': 'kibar',
+      'cömert': 'cimri', 'cimri': 'cömert',
+      'sabırlı': 'sabırsız', 'sabırsız': 'sabırlı',
+      'dikkatli': 'dikkatsiz', 'dikkatsiz': 'dikkatli',
+      'düzenli': 'düzensiz', 'düzensiz': 'düzenli',
+      'mantıklı': 'mantıksız', 'mantıksız': 'mantıklı',
+      'mümkün': 'imkansız', 'imkansız': 'mümkün',
+      'görünür': 'görünmez', 'görünmez': 'görünür',
+      // Fiiller
+      'gelmek': 'gitmek', 'gitmek': 'gelmek',
+      'almak': 'vermek', 'vermek': 'almak',
+      'açmak': 'kapatmak', 'kapatmak': 'açmak',
+      'başlamak': 'bitmek', 'bitmek': 'başlamak',
+      'doğmak': 'ölmek', 'ölmek': 'doğmak',
+      'gülmek': 'ağlamak', 'ağlamak': 'gülmek',
+      'sevmek': 'nefret etmek', 'nefret etmek': 'sevmek',
+      'kazanmak': 'kaybetmek', 'kaybetmek': 'kazanmak',
+      'hatırlamak': 'unutmak', 'unutmak': 'hatırlamak',
+      'kabul etmek': 'reddetmek', 'reddetmek': 'kabul etmek',
+      'övmek': 'yermek', 'yermek': 'övmek',
+      'binmek': 'inmek', 'inmek': 'binmek',
+      'kalkmak': 'oturmak', 'oturmak': 'kalkmak',
+      'uyumak': 'uyanmak', 'uyanmak': 'uyumak',
+      'satmak': 'satın almak', 'satın almak': 'satmak',
+      'çıkmak': 'girmek', 'girmek': 'çıkmak',
+      'artmak': 'azalmak', 'azalmak': 'artmak',
+      'yükselmek': 'düşmek', 'düşmek': 'yükselmek',
+      'toplamak': 'dağıtmak', 'dağıtmak': 'toplamak',
+      'yapmak': 'bozmak', 'bozmak': 'yapmak',
+      'kurmak': 'yıkmak', 'yıkmak': 'kurmak',
+      'bulmak': 'kaybetmek',
+      'göstermek': 'gizlemek', 'gizlemek': 'göstermek',
+      'izin vermek': 'yasaklamak', 'yasaklamak': 'izin vermek',
+      'ithal etmek': 'ihraç etmek', 'ihraç etmek': 'ithal etmek',
+      'sormak': 'cevaplamak', 'cevaplamak': 'sormak',
+      'suçlamak': 'savunmak', 'savunmak': 'suçlamak',
+      'övmek': 'eleştirmek', 'eleştirmek': 'övmek',
+      'yakmak': 'söndürmek', 'söndürmek': 'yakmak',
+      'birleştirmek': 'ayırmak', 'ayırmak': 'birleştirmek',
+      'çoğalmak': 'azalmak',
+      'hızlanmak': 'yavaşlamak', 'yavaşlamak': 'hızlanmak',
+      // Zarflar ve diğer
+      'erken': 'geç', 'geç': 'erken',
+      'yukarı': 'aşağı', 'aşağı': 'yukarı',
+      'önce': 'sonra', 'sonra': 'önce',
+      'ileri': 'geri', 'geri': 'ileri',
+      'içeri': 'dışarı', 'dışarı': 'içeri',
+      'burada': 'orada', 'orada': 'burada',
+      'hep': 'hiç', 'hiç': 'hep',
+      'çok': 'az', 'az': 'çok',
+      'sık': 'nadir', 'nadir': 'sık',
+      'beraber': 'ayrı', 'ayrı': 'beraber',
+      // İsimler
+      'evet': 'hayır', 'hayır': 'evet',
+      'var': 'yok', 'yok': 'var',
+      'gündüz': 'gece', 'gece': 'gündüz',
+      'yaz': 'kış', 'kış': 'yaz',
+      'sabah': 'akşam', 'akşam': 'sabah',
+      'ilk': 'son', 'son': 'ilk',
+      'aç': 'tok', 'tok': 'aç',
+      'ucuz': 'pahalı', 'pahalı': 'ucuz',
+      'barış': 'savaş', 'savaş': 'barış',
+      'dost': 'düşman', 'düşman': 'dost',
+      'aşk': 'nefret', 'nefret': 'aşk',
+      'umut': 'umutsuzluk', 'umutsuzluk': 'umut',
+      'başarı': 'başarısızlık', 'başarısızlık': 'başarı',
+      'artı': 'eksi', 'eksi': 'artı',
+      'kadın': 'erkek', 'erkek': 'kadın',
+      'anne': 'baba', 'baba': 'anne',
+      'oğul': 'kız', 'kız': 'oğul',
+      'cennet': 'cehennem', 'cehennem': 'cennet',
+      'giriş': 'çıkış', 'çıkış': 'giriş',
+      'soru': 'cevap', 'cevap': 'soru',
+      'problem': 'çözüm', 'çözüm': 'problem',
+      'kuzey': 'güney', 'güney': 'kuzey',
+      'doğu': 'batı', 'batı': 'doğu',
+      'sol': 'sağ', 'sağ': 'sol',
+      'avantaj': 'dezavantaj', 'dezavantaj': 'avantaj',
+      'güç': 'zayıflık', 'zayıflık': 'güç',
+      'gerçek': 'yalan', 'yalan': 'gerçek',
+      'düzen': 'kaos', 'kaos': 'düzen',
+      'ses': 'sessizlik', 'sessizlik': 'ses',
+      'zafer': 'yenilgi', 'yenilgi': 'zafer',
+      'sevinç': 'üzüntü', 'üzüntü': 'sevinç',
+      'zevk': 'acı',
+      'hayat': 'ölüm', 'ölüm': 'hayat',
+      'baş': 'son',
+      'ön': 'arka', 'arka': 'ön',
+      'üst': 'alt', 'alt': 'üst',
+      'iç': 'dış', 'dış': 'iç',
+      'ağaç': 'orman',
+      'deniz': 'kara', 'kara': 'deniz',
+      'dağ': 'ova', 'ova': 'dağ',
+      'şehir': 'köy', 'köy': 'şehir',
+      'zenginlik': 'fakirlik', 'fakirlik': 'zenginlik',
+      'özgürlük': 'esaret', 'esaret': 'özgürlük',
+      'adalet': 'adaletsizlik', 'adaletsizlik': 'adalet',
+      'güven': 'güvensizlik', 'güvensizlik': 'güven',
+      'saygı': 'saygısızlık', 'saygısızlık': 'saygı',
+      'sevgi': 'kin', 'kin': 'sevgi',
+      'neşe': 'keder', 'keder': 'neşe',
+      'korku': 'cesaret', 'cesaret': 'korku',
+      'güven': 'şüphe', 'şüphe': 'güven',
+      'bilgi': 'cehalet', 'cehalet': 'bilgi',
+      'akıl': 'delilik', 'delilik': 'akıl',
+      'sağlık': 'hastalık', 'hastalık': 'sağlık',
+      'bolluk': 'kıtlık', 'kıtlık': 'bolluk',
+      'bereket': 'kuraklık', 'kuraklık': 'bereket',
+      'varlık': 'yokluk', 'yokluk': 'varlık',
+      'hareket': 'durgunluk', 'durgunluk': 'hareket',
+      'hız': 'yavaşlık', 'yavaşlık': 'hız',
+      'sertlik': 'yumuşaklık', 'yumuşaklık': 'sertlik',
+      'sorumluluk': 'sorumsuzluk', 'sorumsuzluk': 'sorumluluk',
+      'ciddiyet': 'şaka', 'şaka': 'ciddiyet',
+      'gerginlik': 'rahatlık', 'rahatlık': 'gerginlik',
+      'stres': 'huzur', 'huzur': 'stres',
+      'meşgul': 'boş',
+      'dik': 'yatık', 'yatık': 'dik',
+      'keskin': 'kör', 'kör': 'keskin',
+      'parlak': 'mat', 'mat': 'parlak',
+      'şeffaf': 'opak', 'opak': 'şeffaf',
+      'katı': 'sıvı', 'sıvı': 'katı',
+      'taze': 'bayat', 'bayat': 'taze',
+      'olgun': 'ham', 'ham': 'olgun',
+      'ham': 'pişmiş', 'pişmiş': 'ham',
+      'sade': 'süslü', 'süslü': 'sade',
+      'minimalist': 'maksimalist', 'maksimalist': 'minimalist',
+      'yoğun': 'seyrek', 'seyrek': 'yoğun',
+      'hoş': 'nahoş', 'nahoş': 'hoş',
+      'tatlı': 'ekşi', 'ekşi': 'tatlı',
+      'gönüllü': 'zorunlu', 'zorunlu': 'gönüllü',
+      'aktif': 'pasif', 'pasif': 'aktif',
+      'profesyonel': 'amatör', 'amatör': 'profesyonel',
+      'maksimum': 'minimum', 'minimum': 'maksimum',
+      'majör': 'minör', 'minör': 'majör',
+      'pozitif': 'negatif', 'negatif': 'pozitif',
+      'konkav': 'konveks', 'konveks': 'konkav',
+      'içbükey': 'dışbükey', 'dışbükey': 'içbükey',
+      'objektif': 'subjektif', 'subjektif': 'objektif',
+      'simetrik': 'asimetrik', 'asimetrik': 'simetrik',
+      'rasyonel': 'irrasyonel', 'irrasyonel': 'rasyonel',
+      'yerli': 'yabancı',
+      'ulusal': 'uluslararası', 'uluslararası': 'ulusal',
+      'bireysel': 'toplumsal', 'toplumsal': 'bireysel',
+      'teorik': 'pratik', 'pratik': 'teorik',
+      'soyut': 'somut',
+      'dikey': 'yatay', 'yatay': 'dikey',
+      'merkezi': 'yerel', 'yerel': 'merkezi',
+      'evrensel': 'yerel',
+      'itici': 'çekici', 'çekici': 'itici',
+      'karamsar': 'iyimser', 'iyimser': 'karamsar'
+    };
+
+    // İngilizce sözcük çiftleri (100 çift = 200 giriş)
+    const ENGLISH_PAIRS = {
+      // Basic adjectives
+      'good': 'bad', 'bad': 'good',
+      'big': 'small', 'small': 'big',
+      'large': 'tiny', 'tiny': 'large',
+      'hot': 'cold', 'cold': 'hot',
+      'warm': 'cool', 'cool': 'warm',
+      'fast': 'slow', 'slow': 'fast',
+      'quick': 'sluggish', 'sluggish': 'quick',
+      'happy': 'sad', 'sad': 'happy',
+      'joyful': 'miserable', 'miserable': 'joyful',
+      'old': 'new', 'new': 'old',
+      'young': 'elderly', 'elderly': 'young',
+      'ancient': 'modern', 'modern': 'ancient',
+      'rich': 'poor', 'poor': 'rich',
+      'wealthy': 'broke', 'broke': 'wealthy',
+      'easy': 'hard', 'hard': 'easy',
+      'simple': 'complex', 'complex': 'simple',
+      'true': 'false', 'false': 'true',
+      'right': 'wrong', 'wrong': 'right',
+      'correct': 'incorrect', 'incorrect': 'correct',
+      'strong': 'weak', 'weak': 'strong',
+      'powerful': 'powerless', 'powerless': 'powerful',
+      'light': 'dark', 'dark': 'light',
+      'bright': 'dim', 'dim': 'bright',
+      'heavy': 'lightweight', 'lightweight': 'heavy',
+      'thick': 'thin', 'thin': 'thick',
+      'wide': 'narrow', 'narrow': 'wide',
+      'deep': 'shallow', 'shallow': 'deep',
+      'high': 'low', 'low': 'high',
+      'tall': 'short', 'short': 'tall',
+      'long': 'brief', 'brief': 'long',
+      'near': 'far', 'far': 'near',
+      'close': 'distant', 'distant': 'close',
+      'clean': 'dirty', 'dirty': 'clean',
+      'pure': 'impure', 'impure': 'pure',
+      'safe': 'dangerous', 'dangerous': 'safe',
+      'secure': 'insecure', 'insecure': 'secure',
+      'beautiful': 'ugly', 'ugly': 'beautiful',
+      'pretty': 'hideous', 'hideous': 'pretty',
+      'smart': 'stupid', 'stupid': 'smart',
+      'clever': 'foolish', 'foolish': 'clever',
+      'brave': 'cowardly', 'cowardly': 'brave',
+      'loud': 'quiet', 'quiet': 'loud',
+      'noisy': 'silent', 'silent': 'noisy',
+      'soft': 'rough', 'rough': 'soft',
+      'smooth': 'bumpy', 'bumpy': 'smooth',
+      'wet': 'dry', 'dry': 'wet',
+      'full': 'empty', 'empty': 'full',
+      'alive': 'dead', 'dead': 'alive',
+      'awake': 'asleep', 'asleep': 'awake',
+      'healthy': 'sick', 'sick': 'healthy',
+      'honest': 'dishonest', 'dishonest': 'honest',
+      'kind': 'cruel', 'cruel': 'kind',
+      'generous': 'selfish', 'selfish': 'generous',
+      'polite': 'rude', 'rude': 'polite',
+      'patient': 'impatient', 'impatient': 'patient',
+      'lucky': 'unlucky', 'unlucky': 'lucky',
+      'possible': 'impossible', 'impossible': 'possible',
+      'visible': 'invisible', 'invisible': 'visible',
+      'legal': 'illegal', 'illegal': 'legal',
+      'normal': 'abnormal', 'abnormal': 'normal',
+      'regular': 'irregular', 'irregular': 'regular',
+      'positive': 'negative', 'negative': 'positive',
+      'optimistic': 'pessimistic', 'pessimistic': 'optimistic',
+      'permanent': 'temporary', 'temporary': 'permanent',
+      'public': 'private', 'private': 'public',
+      'natural': 'artificial', 'artificial': 'natural',
+      'real': 'fake', 'fake': 'real',
+      'guilty': 'innocent', 'innocent': 'guilty',
+      'famous': 'unknown', 'unknown': 'famous',
+      'cheap': 'expensive', 'expensive': 'cheap',
+      // Verbs
+      'love': 'hate', 'hate': 'love',
+      'like': 'dislike', 'dislike': 'like',
+      'open': 'close', 'close': 'open',
+      'start': 'stop', 'stop': 'start',
+      'begin': 'end', 'end': 'begin',
+      'win': 'lose', 'lose': 'win',
+      'succeed': 'fail', 'fail': 'succeed',
+      'buy': 'sell', 'sell': 'buy',
+      'give': 'take', 'take': 'give',
+      'send': 'receive', 'receive': 'send',
+      'push': 'pull', 'pull': 'push',
+      'rise': 'fall', 'fall': 'rise',
+      'raise': 'lower', 'lower': 'raise',
+      'come': 'go', 'go': 'come',
+      'arrive': 'leave', 'leave': 'arrive',
+      'enter': 'exit', 'exit': 'enter',
+      'appear': 'disappear', 'disappear': 'appear',
+      'show': 'hide', 'hide': 'show',
+      'reveal': 'conceal', 'conceal': 'reveal',
+      'remember': 'forget', 'forget': 'remember',
+      'accept': 'reject', 'reject': 'accept',
+      'agree': 'disagree', 'disagree': 'agree',
+      'allow': 'forbid', 'forbid': 'allow',
+      'permit': 'prohibit', 'prohibit': 'permit',
+      'create': 'destroy', 'destroy': 'create',
+      'build': 'demolish', 'demolish': 'build',
+      'increase': 'decrease', 'decrease': 'increase',
+      'expand': 'shrink', 'shrink': 'expand',
+      'attack': 'defend', 'defend': 'attack',
+      'laugh': 'cry', 'cry': 'laugh',
+      'smile': 'frown', 'frown': 'smile',
+      // Adverbs and others
+      'up': 'down', 'down': 'up',
+      'yes': 'no', 'no': 'yes',
+      'always': 'never', 'never': 'always',
+      'often': 'rarely', 'rarely': 'often',
+      'before': 'after', 'after': 'before',
+      'early': 'late', 'late': 'early',
+      'now': 'later', 'later': 'now',
+      'here': 'there', 'there': 'here',
+      'inside': 'outside', 'outside': 'inside',
+      'forward': 'backward', 'backward': 'forward',
+      'more': 'less', 'less': 'more',
+      'many': 'few', 'few': 'many',
+      'much': 'little', 'little': 'much',
+      'together': 'apart', 'apart': 'together',
+      // Nouns
+      'first': 'last', 'last': 'first',
+      'best': 'worst', 'worst': 'best',
+      'success': 'failure', 'failure': 'success',
+      'victory': 'defeat', 'defeat': 'victory',
+      'peace': 'war', 'war': 'peace',
+      'friend': 'enemy', 'enemy': 'friend',
+      'ally': 'opponent', 'opponent': 'ally',
+      'hope': 'despair', 'despair': 'hope',
+      'joy': 'sorrow', 'sorrow': 'joy',
+      'pleasure': 'pain', 'pain': 'pleasure',
+      'life': 'death', 'death': 'life',
+      'birth': 'demise', 'demise': 'birth',
+      'day': 'night', 'night': 'day',
+      'morning': 'evening', 'evening': 'morning',
+      'summer': 'winter', 'winter': 'summer',
+      'sunrise': 'sunset', 'sunset': 'sunrise',
+      'heaven': 'hell', 'hell': 'heaven',
+      'man': 'woman', 'woman': 'man',
+      'boy': 'girl', 'girl': 'boy',
+      'father': 'mother', 'mother': 'father',
+      'son': 'daughter', 'daughter': 'son',
+      'husband': 'wife', 'wife': 'husband',
+      'question': 'answer', 'answer': 'question',
+      'problem': 'solution', 'solution': 'problem',
+      'entrance': 'exit',
+      'north': 'south', 'south': 'north',
+      'east': 'west', 'west': 'east',
+      'left': 'right',
+      'strength': 'weakness', 'weakness': 'strength',
+      'truth': 'lie', 'lie': 'truth',
+      'order': 'chaos', 'chaos': 'order',
+      'noise': 'silence', 'silence': 'noise',
+      'advantage': 'disadvantage', 'disadvantage': 'advantage',
+      'top': 'bottom', 'bottom': 'top',
+      'front': 'back', 'back': 'front',
+      'above': 'below', 'below': 'above',
+      'over': 'under', 'under': 'over',
+      'land': 'sea', 'sea': 'land',
+      'city': 'village', 'village': 'city',
+      'urban': 'rural', 'rural': 'urban',
+      'freedom': 'slavery', 'slavery': 'freedom',
+      'justice': 'injustice', 'injustice': 'justice',
+      'trust': 'distrust', 'distrust': 'trust',
+      'respect': 'disrespect', 'disrespect': 'respect',
+      'knowledge': 'ignorance', 'ignorance': 'knowledge',
+      'wisdom': 'folly', 'folly': 'wisdom',
+      'courage': 'fear', 'fear': 'courage',
+      'confidence': 'doubt', 'doubt': 'confidence',
+      'health': 'illness', 'illness': 'health',
+      'wealth': 'poverty', 'poverty': 'wealth',
+      'abundance': 'scarcity', 'scarcity': 'abundance',
+      'presence': 'absence', 'absence': 'presence',
+      'movement': 'stillness', 'stillness': 'movement',
+      'speed': 'slowness', 'slowness': 'speed',
+      'tension': 'relaxation', 'relaxation': 'tension',
+      'stress': 'calm', 'calm': 'stress',
+      'clarity': 'confusion', 'confusion': 'clarity',
+      'certainty': 'uncertainty', 'uncertainty': 'certainty',
+      'busy': 'idle', 'idle': 'busy',
+      'sharp': 'blunt', 'blunt': 'sharp',
+      'shiny': 'dull', 'dull': 'shiny',
+      'transparent': 'opaque', 'opaque': 'transparent',
+      'solid': 'liquid', 'liquid': 'solid',
+      'fresh': 'stale', 'stale': 'fresh',
+      'ripe': 'unripe', 'unripe': 'ripe',
+      'raw': 'cooked', 'cooked': 'raw',
+      'plain': 'fancy', 'fancy': 'plain',
+      'dense': 'sparse', 'sparse': 'dense',
+      'pleasant': 'unpleasant', 'unpleasant': 'pleasant',
+      'sweet': 'sour', 'sour': 'sweet',
+      'voluntary': 'mandatory', 'mandatory': 'voluntary',
+      'active': 'passive', 'passive': 'active',
+      'professional': 'amateur', 'amateur': 'professional',
+      'maximum': 'minimum', 'minimum': 'maximum',
+      'major': 'minor', 'minor': 'major',
+      'concave': 'convex', 'convex': 'concave',
+      'objective': 'subjective', 'subjective': 'objective',
+      'symmetric': 'asymmetric', 'asymmetric': 'symmetric',
+      'rational': 'irrational', 'irrational': 'rational',
+      'domestic': 'foreign', 'foreign': 'domestic',
+      'individual': 'collective', 'collective': 'individual',
+      'theoretical': 'practical', 'practical': 'theoretical',
+      'vertical': 'horizontal', 'horizontal': 'vertical',
+      'central': 'local', 'local': 'central',
+      'attractive': 'repulsive', 'repulsive': 'attractive'
+    };
+
+    // Fransızca sözcük çiftleri (100 çift = 200 giriş)
+    const FRENCH_PAIRS = {
+      // Sıfatlar - Temel
+      'bon': 'mauvais', 'mauvais': 'bon',
+      'bonne': 'mauvaise', 'mauvaise': 'bonne',
+      'bien': 'mal', 'mal': 'bien',
+      'grand': 'petit', 'petit': 'grand',
+      'grande': 'petite', 'petite': 'grande',
+      'gros': 'mince', 'mince': 'gros',
+      'chaud': 'froid', 'froid': 'chaud',
+      'chaude': 'froide', 'froide': 'chaude',
+      'rapide': 'lent', 'lent': 'rapide',
+      'vite': 'lentement', 'lentement': 'vite',
+      'heureux': 'malheureux', 'malheureux': 'heureux',
+      'heureuse': 'malheureuse', 'malheureuse': 'heureuse',
+      'content': 'mécontent', 'mécontent': 'content',
+      'joyeux': 'triste', 'triste': 'joyeux',
+      'vieux': 'jeune', 'jeune': 'vieux',
+      'ancien': 'nouveau', 'nouveau': 'ancien',
+      'ancienne': 'nouvelle', 'nouvelle': 'ancienne',
+      'riche': 'pauvre', 'pauvre': 'riche',
+      'facile': 'difficile', 'difficile': 'facile',
+      'simple': 'compliqué', 'compliqué': 'simple',
+      'vrai': 'faux', 'faux': 'vrai',
+      'correct': 'incorrect', 'incorrect': 'correct',
+      'fort': 'faible', 'faible': 'fort',
+      'puissant': 'impuissant', 'impuissant': 'puissant',
+      'clair': 'sombre', 'sombre': 'clair',
+      'lumineux': 'obscur', 'obscur': 'lumineux',
+      'lourd': 'léger', 'léger': 'lourd',
+      'épais': 'mince',
+      'large': 'étroit', 'étroit': 'large',
+      'profond': 'superficiel', 'superficiel': 'profond',
+      'haut': 'bas', 'bas': 'haut',
+      'long': 'court', 'court': 'long',
+      'proche': 'loin', 'loin': 'proche',
+      'propre': 'sale', 'sale': 'propre',
+      'pur': 'impur', 'impur': 'pur',
+      'sûr': 'dangereux', 'dangereux': 'sûr',
+      'beau': 'laid', 'laid': 'beau',
+      'belle': 'laide', 'laide': 'belle',
+      'joli': 'moche', 'moche': 'joli',
+      'intelligent': 'stupide', 'stupide': 'intelligent',
+      'sage': 'fou', 'fou': 'sage',
+      'courageux': 'lâche', 'lâche': 'courageux',
+      'brave': 'peureux', 'peureux': 'brave',
+      'bruyant': 'silencieux', 'silencieux': 'bruyant',
+      'doux': 'dur', 'dur': 'doux',
+      'mouillé': 'sec', 'sec': 'mouillé',
+      'plein': 'vide', 'vide': 'plein',
+      'vivant': 'mort', 'mort': 'vivant',
+      'éveillé': 'endormi', 'endormi': 'éveillé',
+      'sain': 'malade', 'malade': 'sain',
+      'honnête': 'malhonnête', 'malhonnête': 'honnête',
+      'gentil': 'méchant', 'méchant': 'gentil',
+      'généreux': 'avare', 'avare': 'généreux',
+      'poli': 'impoli', 'impoli': 'poli',
+      'patient': 'impatient', 'impatient': 'patient',
+      'possible': 'impossible', 'impossible': 'possible',
+      'visible': 'invisible', 'invisible': 'visible',
+      'légal': 'illégal', 'illégal': 'légal',
+      'normal': 'anormal', 'anormal': 'normal',
+      'positif': 'négatif', 'négatif': 'positif',
+      'optimiste': 'pessimiste', 'pessimiste': 'optimiste',
+      'permanent': 'temporaire', 'temporaire': 'permanent',
+      'public': 'privé', 'privé': 'public',
+      'naturel': 'artificiel', 'artificiel': 'naturel',
+      'réel': 'imaginaire', 'imaginaire': 'réel',
+      'utile': 'inutile', 'inutile': 'utile',
+      'présent': 'absent', 'absent': 'présent',
+      'coupable': 'innocent', 'innocent': 'coupable',
+      'célèbre': 'inconnu', 'inconnu': 'célèbre',
+      'cher': 'bon marché', 'bon marché': 'cher',
+      // Fiiller
+      'aimer': 'détester', 'détester': 'aimer',
+      'adorer': 'haïr', 'haïr': 'adorer',
+      'ouvrir': 'fermer', 'fermer': 'ouvrir',
+      'commencer': 'finir', 'finir': 'commencer',
+      'débuter': 'terminer', 'terminer': 'débuter',
+      'gagner': 'perdre', 'perdre': 'gagner',
+      'réussir': 'échouer', 'échouer': 'réussir',
+      'acheter': 'vendre', 'vendre': 'acheter',
+      'donner': 'prendre', 'prendre': 'donner',
+      'recevoir': 'envoyer', 'envoyer': 'recevoir',
+      'pousser': 'tirer', 'tirer': 'pousser',
+      'monter': 'descendre', 'descendre': 'monter',
+      'lever': 'baisser', 'baisser': 'lever',
+      'venir': 'partir', 'partir': 'venir',
+      'arriver': 'quitter', 'quitter': 'arriver',
+      'entrer': 'sortir', 'sortir': 'entrer',
+      'apparaître': 'disparaître', 'disparaître': 'apparaître',
+      'montrer': 'cacher', 'cacher': 'montrer',
+      'révéler': 'dissimuler', 'dissimuler': 'révéler',
+      'oublier': 'rappeler', 'rappeler': 'oublier',
+      'accepter': 'refuser', 'refuser': 'accepter',
+      'permettre': 'interdire', 'interdire': 'permettre',
+      'créer': 'détruire', 'détruire': 'créer',
+      'construire': 'démolir', 'démolir': 'construire',
+      'augmenter': 'diminuer', 'diminuer': 'augmenter',
+      'agrandir': 'réduire', 'réduire': 'agrandir',
+      'attaquer': 'défendre', 'défendre': 'attaquer',
+      'rire': 'pleurer', 'pleurer': 'rire',
+      'sourire': 'grimacer', 'grimacer': 'sourire',
+      'naître': 'mourir', 'mourir': 'naître',
+      'allumer': 'éteindre', 'éteindre': 'allumer',
+      'ajouter': 'enlever', 'enlever': 'ajouter',
+      'avancer': 'reculer', 'reculer': 'avancer',
+      'accélérer': 'ralentir', 'ralentir': 'accélérer',
+      // Zarflar ve diğer
+      'oui': 'non', 'non': 'oui',
+      'toujours': 'jamais', 'jamais': 'toujours',
+      'souvent': 'rarement', 'rarement': 'souvent',
+      'avant': 'après', 'après': 'avant',
+      'tôt': 'tard', 'tard': 'tôt',
+      'maintenant': 'plus tard',
+      'ici': 'là-bas', 'là-bas': 'ici',
+      'dedans': 'dehors', 'dehors': 'dedans',
+      'intérieur': 'extérieur', 'extérieur': 'intérieur',
+      'devant': 'derrière', 'derrière': 'devant',
+      'plus': 'moins', 'moins': 'plus',
+      'beaucoup': 'peu', 'peu': 'beaucoup',
+      'tout': 'rien', 'rien': 'tout',
+      'ensemble': 'séparément', 'séparément': 'ensemble',
+      // İsimler
+      'début': 'fin', 'fin': 'début',
+      'premier': 'dernier', 'dernier': 'premier',
+      'meilleur': 'pire', 'pire': 'meilleur',
+      'succès': 'échec', 'échec': 'succès',
+      'victoire': 'défaite', 'défaite': 'victoire',
+      'paix': 'guerre', 'guerre': 'paix',
+      'ami': 'ennemi', 'ennemi': 'ami',
+      'amour': 'haine', 'haine': 'amour',
+      'espoir': 'désespoir', 'désespoir': 'espoir',
+      'joie': 'tristesse', 'tristesse': 'joie',
+      'bonheur': 'malheur', 'malheur': 'bonheur',
+      'plaisir': 'douleur', 'douleur': 'plaisir',
+      'vie': 'mort',
+      'jour': 'nuit', 'nuit': 'jour',
+      'matin': 'soir', 'soir': 'matin',
+      'été': 'hiver', 'hiver': 'été',
+      'printemps': 'automne', 'automne': 'printemps',
+      'lumière': 'obscurité', 'obscurité': 'lumière',
+      'ciel': 'terre', 'terre': 'ciel',
+      'paradis': 'enfer', 'enfer': 'paradis',
+      'homme': 'femme', 'femme': 'homme',
+      'garçon': 'fille', 'fille': 'garçon',
+      'père': 'mère', 'mère': 'père',
+      'fils': 'fille',
+      'frère': 'soeur', 'soeur': 'frère',
+      'mari': 'épouse', 'épouse': 'mari',
+      'question': 'réponse', 'réponse': 'question',
+      'problème': 'solution', 'solution': 'problème',
+      'nord': 'sud', 'sud': 'nord',
+      'est': 'ouest', 'ouest': 'est',
+      'gauche': 'droite', 'droite': 'gauche',
+      'entrée': 'sortie', 'sortie': 'entrée',
+      'avantage': 'inconvénient', 'inconvénient': 'avantage',
+      'force': 'faiblesse', 'faiblesse': 'force',
+      'vérité': 'mensonge', 'mensonge': 'vérité',
+      'ordre': 'désordre', 'désordre': 'ordre',
+      'bruit': 'silence', 'silence': 'bruit',
+      'dessus': 'dessous', 'dessous': 'dessus',
+      'haut': 'bas',
+      'terre': 'mer', 'mer': 'terre',
+      'ville': 'campagne', 'campagne': 'ville',
+      'urbain': 'rural', 'rural': 'urbain',
+      'liberté': 'esclavage', 'esclavage': 'liberté',
+      'justice': 'injustice', 'injustice': 'justice',
+      'confiance': 'méfiance', 'méfiance': 'confiance',
+      'respect': 'irrespect', 'irrespect': 'respect',
+      'savoir': 'ignorance', 'ignorance': 'savoir',
+      'sagesse': 'folie', 'folie': 'sagesse',
+      'courage': 'peur', 'peur': 'courage',
+      'santé': 'maladie', 'maladie': 'santé',
+      'richesse': 'pauvreté', 'pauvreté': 'richesse',
+      'abondance': 'pénurie', 'pénurie': 'abondance',
+      'présence': 'absence',
+      'mouvement': 'immobilité', 'immobilité': 'mouvement',
+      'vitesse': 'lenteur', 'lenteur': 'vitesse',
+      'tension': 'détente', 'détente': 'tension',
+      'stress': 'calme', 'calme': 'stress',
+      'clarté': 'confusion', 'confusion': 'clarté',
+      'certitude': 'incertitude', 'incertitude': 'certitude',
+      'jeunesse': 'vieillesse', 'vieillesse': 'jeunesse',
+      'beauté': 'laideur', 'laideur': 'beauté',
+      'occupé': 'libre', 'libre': 'occupé',
+      'pointu': 'émoussé', 'émoussé': 'pointu',
+      'brillant': 'terne', 'terne': 'brillant',
+      'transparent': 'opaque', 'opaque': 'transparent',
+      'solide': 'liquide', 'liquide': 'solide',
+      'frais': 'périmé', 'périmé': 'frais',
+      'mûr': 'immature', 'immature': 'mûr',
+      'cru': 'cuit', 'cuit': 'cru',
+      'sobre': 'extravagant', 'extravagant': 'sobre',
+      'dense': 'clairsemé', 'clairsemé': 'dense',
+      'agréable': 'désagréable', 'désagréable': 'agréable',
+      'sucré': 'amer', 'amer': 'sucré',
+      'volontaire': 'obligatoire', 'obligatoire': 'volontaire',
+      'actif': 'passif', 'passif': 'actif',
+      'professionnel': 'amateur', 'amateur': 'professionnel',
+      'maximum': 'minimum', 'minimum': 'maximum',
+      'majeur': 'mineur', 'mineur': 'majeur',
+      'concave': 'convexe', 'convexe': 'concave',
+      'objectif': 'subjectif', 'subjectif': 'objectif',
+      'symétrique': 'asymétrique', 'asymétrique': 'symétrique',
+      'rationnel': 'irrationnel', 'irrationnel': 'rationnel'
+    };
+
+    // State
+    let isRecording = false;
+    let isPaused = false;
+    let recognition = null;
+    let micStream = null; // Mikrofon stream'ini açık tutarak izin tekrarını engelle
+    let timerInterval = null;
+    let elapsedTime = 0;
+    let currentMinute = 0;
+    let transcript = '';
+    let totalWords = 0;
+    let detectedPairs = [];
+    let minuteData = [];
+    let currentMinutePairs = 0;
+    let currentMinuteWords = [];
+    let liveChart = null;
+    let chartType = 'wave'; // 'wave', 'bar', 'delta'
+    let pairCountsPerMinute = [0]; // Her dakikadaki çift sayısı
+    
+    // Speech recognition yeniden başlatma kontrolleri
+    let restartAttempts = 0;
+    const MAX_RESTART_ATTEMPTS = 50;
+    let lastRestartTime = 0;
+    const MIN_RESTART_INTERVAL = 300; // ms
+    
+    // Ses sistemi
+    let audioContext = null;
+    let playedAlerts = new Set(); // Bu dakikada çalan uyarıları takip et
+    let soundEnabled = true;
+    
+    // Ses seviye ayarları (2, 3, 4, 5 çift için)
+    const ALERT_LEVELS = {
+      2: { freq: [440, 554], duration: 0.15, name: 'İKİ', color: '#3b82f6' },      // A4-C#5 (mavi)
+      3: { freq: [523, 659, 523], duration: 0.12, name: 'ÜÇ', color: '#8b5cf6' },  // C5-E5-C5 (mor)
+      4: { freq: [659, 784, 880], duration: 0.1, name: 'DÖRT', color: '#f59e0b' }, // E5-G5-A5 (turuncu)
+      5: { freq: [784, 988, 1175, 1319], duration: 0.08, name: 'BEŞ', color: '#ef4444' } // G5-B5-D6-E6 (kırmızı)
+    };
+    
+    function initAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioContext;
+    }
+    
+    function playAlertSound(level) {
+      if (!soundEnabled) return;
+      
+      const config = ALERT_LEVELS[level];
+      if (!config) return;
+      
+      const ctx = initAudioContext();
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      
+      const now = ctx.currentTime;
+      
+      config.freq.forEach((freq, index) => {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        
+        // Farklı seviyeler için farklı dalga formları
+        if (level === 2) oscillator.type = 'sine';
+        else if (level === 3) oscillator.type = 'triangle';
+        else if (level === 4) oscillator.type = 'square';
+        else oscillator.type = 'sawtooth';
+        
+        oscillator.frequency.setValueAtTime(freq, now + index * config.duration);
+        
+        // Yumuşak başlangıç ve bitiş
+        gainNode.gain.setValueAtTime(0, now + index * config.duration);
+        gainNode.gain.linearRampToValueAtTime(0.3, now + index * config.duration + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0, now + index * config.duration + config.duration);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        oscillator.start(now + index * config.duration);
+        oscillator.stop(now + index * config.duration + config.duration + 0.05);
+      });
+    }
+    
+    function checkAndPlayAlert(count) {
+      // 2, 3, 4, 5 seviyelerini kontrol et
+      [2, 3, 4, 5].forEach(level => {
+        if (count >= level && !playedAlerts.has(level)) {
+          playedAlerts.add(level);
+          playAlertSound(level);
+          showSoundAlert(level);
+        }
+      });
+    }
+    
+    function showSoundAlert(level) {
+      const config = ALERT_LEVELS[level];
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'sound-alert';
+      alertDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 24px;
+        background: ${config.color};
+        color: white;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 14px;
+        z-index: 1000;
+        animation: alertPop 0.5s ease-out forwards;
+        box-shadow: 0 4px 20px ${config.color}66;
+      `;
+      alertDiv.innerHTML = `🔔 ${config.name} ÇİFT!`;
+      document.body.appendChild(alertDiv);
+      
+      setTimeout(() => alertDiv.remove(), 2000);
+    }
+    
+    function resetMinuteAlerts() {
+      playedAlerts.clear();
+      // Göstergeleri sıfırla
+      [2, 3, 4, 5].forEach(level => {
+        const el = document.getElementById(`level${level}`);
+        if (el) el.classList.remove('active');
+      });
+    }
+    
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('soundToggle');
+      if (soundEnabled) {
+        btn.textContent = '🔔 Ses Açık';
+        btn.classList.remove('muted');
+        // Test sesi çal
+        initAudioContext();
+      } else {
+        btn.textContent = '🔕 Ses Kapalı';
+        btn.classList.add('muted');
+      }
+    }
+    
+    function updateLevelIndicators(count) {
+      [2, 3, 4, 5].forEach(level => {
+        const el = document.getElementById(`level${level}`);
+        if (el) {
+          if (count >= level) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    function getPairsDB() {
+      const lang = document.getElementById('language').value;
+      if (lang === 'tr-TR') return TURKISH_PAIRS;
+      if (lang === 'fr-FR') return FRENCH_PAIRS;
+      return ENGLISH_PAIRS;
+    }
+
+    function processText(text) {
+      const words = text.split(/\s+/).filter(w => w.length > 0);
+      const pairsDB = getPairsDB();
+      const foundPairs = [];
+      const usedWords = new Set();
+
+      words.forEach(word => {
+        const cleanWord = word.toLowerCase().replace(/[.,!?;:'"]/g, '');
+        if (pairsDB[cleanWord] && !usedWords.has(cleanWord)) {
+          foundPairs.push({
+            word: cleanWord,
+            pair: pairsDB[cleanWord]
+          });
+          usedWords.add(cleanWord);
+        }
+      });
+
+      return { wordCount: words.length, pairs: foundPairs };
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateDisplay() {
+      document.getElementById('timeDisplay').textContent = formatTime(elapsedTime);
+      document.getElementById('minuteDisplay').textContent = currentMinute + 1;
+      document.getElementById('totalWords').textContent = totalWords;
+      document.getElementById('totalPairs').textContent = detectedPairs.length;
+      
+      const ratio = currentMinute >= 0 ? (detectedPairs.length / (currentMinute + 1)).toFixed(3) : '0.000';
+      document.getElementById('totalRatio').textContent = ratio;
+      document.getElementById('ratioDisplay').textContent = ratio;
+      document.getElementById('currentMinuteDisplay').textContent = currentMinutePairs;
+      document.getElementById('formulaDisplay').textContent = `${detectedPairs.length} / ${currentMinute + 1} = ${ratio}`;
+    }
+
+    function showDetection(word, pair) {
+      const popup = document.getElementById('detectionPopup');
+      document.getElementById('detectionWord').textContent = `${word} ↔ ${pair}`;
+      popup.classList.add('show');
+      setTimeout(() => popup.classList.remove('show'), 2000);
+    }
+
+    function updateChart() {
+      if (!liveChart) return;
+      
+      // Mevcut dakikayı güncelle
+      pairCountsPerMinute[currentMinute] = currentMinutePairs;
+      
+      // Ses uyarısı kontrolü
+      checkAndPlayAlert(currentMinutePairs);
+      updateLevelIndicators(currentMinutePairs);
+      
+      if (chartType === 'wave') {
+        // Dalgalar: çift sayısına göre açılıp kapanır
+        // 0 çift = temas, N çift = ±N mesafe
+        const wave1 = pairCountsPerMinute.map(v => v);       // Üstte (pozitif)
+        const wave2 = pairCountsPerMinute.map(v => -v);      // Altta (negatif)
+        
+        if (liveChart.data.labels.length <= currentMinute) {
+          liveChart.data.labels.push(`${currentMinute + 1}dk`);
+        }
+        liveChart.data.datasets[0].data = wave1;
+        liveChart.data.datasets[1].data = wave2;
+        
+      } else if (chartType === 'delta') {
+        // Değişim grafiği
+        const deltas = pairCountsPerMinute.map((v, i) => {
+          if (i === 0) return v;
+          return v - pairCountsPerMinute[i - 1];
+        });
+        
+        if (liveChart.data.labels.length <= currentMinute) {
+          liveChart.data.labels.push(`${currentMinute + 1}dk`);
+        }
+        liveChart.data.datasets[0].data = deltas;
+        
+      } else {
+        // Orijinal bar chart
+        const ratio = currentMinute >= 0 ? (detectedPairs.length / (currentMinute + 1)) : 0;
+        
+        if (liveChart.data.labels.length <= currentMinute) {
+          liveChart.data.labels.push(`${currentMinute + 1}dk`);
+          liveChart.data.datasets[0].data.push(currentMinutePairs);
+          liveChart.data.datasets[1].data.push(ratio);
+        } else {
+          liveChart.data.datasets[0].data[currentMinute] = currentMinutePairs;
+          liveChart.data.datasets[1].data[currentMinute] = ratio;
+        }
+      }
+      
+      liveChart.update('none');
+    }
+
+    function updatePairsList() {
+      const pairCount = {};
+      detectedPairs.forEach(p => {
+        const key = `${p.word} ↔ ${p.pair}`;
+        pairCount[key] = (pairCount[key] || 0) + 1;
+      });
+
+      const sorted = Object.entries(pairCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      const container = document.getElementById('pairsList');
+      container.innerHTML = sorted.map(([pair, count]) => `
+        <div class="pair-item">
+          <span class="pair-text">${pair}</span>
+          <span class="pair-count">${count}×</span>
+        </div>
+      `).join('');
+
+      if (sorted.length > 0) {
+        document.getElementById('pairsSection').classList.remove('hidden');
+      }
+    }
+
+    function updateTranscript() {
+      if (!transcript) return;
+      
+      const pairsDB = getPairsDB();
+      const words = transcript.split(' ');
+      const html = words.map(word => {
+        const cleanWord = word.toLowerCase().replace(/[.,!?;:'"]/g, '');
+        if (pairsDB[cleanWord]) {
+          return `<span class="highlight">${word}</span>`;
+        }
+        return word;
+      }).join(' ');
+
+      document.getElementById('transcriptContent').innerHTML = html;
+      document.getElementById('transcriptSection').classList.remove('hidden');
+    }
+
+    function updateWordCloud() {
+      const container = document.getElementById('wordcloudContainer');
+      const minuteLabel = document.getElementById('wordcloudMinute');
+      
+      if (!container) return;
+      
+      // Tüm transcript'i kullan (kümülatif)
+      const allText = transcript;
+      if (!allText.trim()) {
+        container.innerHTML = '<span class="wordcloud-empty">Konuşmaya başlayın...</span>';
+        minuteLabel.textContent = 'Toplam: 0 kelime';
+        return;
+      }
+      
+      // Kelime frekanslarını hesapla
+      const frequencies = calculateWordFrequencies(allText);
+      const totalUniqueWords = Object.keys(frequencies).length;
+      
+      // Toplam kelime sayısını güncelle
+      minuteLabel.textContent = `Toplam: ${totalUniqueWords} benzersiz kelime`;
+      
+      if (totalUniqueWords === 0) {
+        container.innerHTML = '<span class="wordcloud-empty">Konuşmaya başlayın...</span>';
+        return;
+      }
+      
+      // Word cloud HTML'i oluştur
+      const html = generateWordCloudHTML(frequencies);
+      container.innerHTML = html;
+    }
+    
+    function calculateWordFrequencies(text) {
+      const words = text.toLowerCase()
+        .replace(/[.,!?;:'"()\[\]{}]/g, '')
+        .split(/\s+/)
+        .filter(w => w.length > 1); // 1 harfli kelimeleri atla
+      
+      const frequencies = {};
+      const stopWords = getStopWords();
+      
+      words.forEach(word => {
+        // Stop words'leri atla
+        if (stopWords.has(word)) return;
+        frequencies[word] = (frequencies[word] || 0) + 1;
+      });
+      
+      return frequencies;
+    }
+    
+    function getStopWords() {
+      const lang = document.getElementById('language').value;
+      
+      // Türkçe stop words
+      const turkish = new Set(['bir', 've', 'bu', 'da', 'de', 'için', 'ile', 'mi', 'mu', 'mı', 'ne', 'o', 'ya', 'ama', 'çok', 'daha', 'ben', 'sen', 'biz', 'siz', 'onlar', 'gibi', 'kadar', 'var', 'yok', 'olan', 'olarak', 'ki', 'şu', 'her', 'en', 'çünkü', 'eğer', 'ise', 'hem', 'öyle', 'böyle']);
+      
+      // İngilizce stop words
+      const english = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'it', 'its', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'we', 'they', 'what', 'which', 'who', 'whom', 'so', 'as', 'if', 'then', 'than', 'too', 'very', 'just', 'also']);
+      
+      // Fransızca stop words
+      const french = new Set(['le', 'la', 'les', 'un', 'une', 'des', 'et', 'ou', 'mais', 'donc', 'car', 'ni', 'de', 'du', 'au', 'aux', 'ce', 'cet', 'cette', 'ces', 'mon', 'ton', 'son', 'ma', 'ta', 'sa', 'mes', 'tes', 'ses', 'notre', 'votre', 'leur', 'je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'on', 'qui', 'que', 'quoi', 'dont', 'où', 'est', 'sont', 'être', 'avoir', 'fait', 'faire', 'dit', 'dire', 'plus', 'moins', 'très', 'bien', 'aussi', 'comme', 'pour', 'par', 'sur', 'sous', 'avec', 'sans', 'dans', 'en', 'si', 'ne', 'pas']);
+      
+      if (lang === 'tr-TR') return turkish;
+      if (lang === 'fr-FR') return french;
+      return english;
+    }
+    
+    function generateWordCloudHTML(frequencies) {
+      const pairsDB = getPairsDB();
+      
+      // Frekansa göre sırala
+      const sorted = Object.entries(frequencies)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 50); // En fazla 50 kelime göster (kümülatif için artırıldı)
+      
+      if (sorted.length === 0) return '<span class="wordcloud-empty">Kelime bulunamadı</span>';
+      
+      const maxFreq = sorted[0][1];
+      const minFreq = sorted[sorted.length - 1][1];
+      
+      // Karıştır (shuffle) görsel çeşitlilik için
+      const shuffled = sorted.sort(() => Math.random() - 0.5);
+      
+      return shuffled.map(([word, freq]) => {
+        // Boyut sınıfını hesapla (1-6 arası)
+        let sizeClass;
+        if (maxFreq === minFreq) {
+          sizeClass = 3;
+        } else {
+          const normalized = (freq - minFreq) / (maxFreq - minFreq);
+          sizeClass = Math.ceil(normalized * 5) + 1;
+          sizeClass = Math.min(6, Math.max(1, sizeClass));
+        }
+        
+        // Çift sözcük mü kontrol et
+        const isPaired = pairsDB[word] !== undefined;
+        const pairedClass = isPaired ? ' paired-word' : '';
+        const title = isPaired ? `title="${word} ↔ ${pairsDB[word]} (${freq}×)"` : `title="${freq}×"`;
+        
+        return `<span class="wordcloud-word size-${sizeClass}${pairedClass}" ${title}>${word}</span>`;
+      }).join('');
+    }
+
+    function initChart() {
+      const ctx = document.getElementById('liveChart').getContext('2d');
+      
+      if (chartType === 'wave') {
+        initWaveChart(ctx);
+      } else if (chartType === 'delta') {
+        initDeltaChart(ctx);
+      } else {
+        initBarChart(ctx);
+      }
+    }
+
+    function initWaveChart(ctx) {
+      // Sinüs dalgası grafiği - 0 etrafında salınım (çift dalga)
+      liveChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['1dk'],
+          datasets: [
+            // Birinci dalga (orijinal)
+            {
+              label: 'Dalga 1',
+              data: [0],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 3,
+              pointBackgroundColor: function(context) {
+                const value = context.raw;
+                return value >= 0 ? '#10b981' : '#ef4444';
+              },
+              pointBorderColor: function(context) {
+                const value = context.raw;
+                return value >= 0 ? '#10b981' : '#ef4444';
+              },
+              pointRadius: 6,
+              pointHoverRadius: 8,
+              tension: 0.4,
+              fill: {
+                target: 'origin',
+                above: 'rgba(16, 185, 129, 0.15)',
+                below: 'rgba(239, 68, 68, 0.15)'
+              }
+            },
+            // İkinci dalga (yarım periyot geri = negatif)
+            {
+              label: 'Dalga 2',
+              data: [0],
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              borderWidth: 3,
+              pointBackgroundColor: function(context) {
+                const value = context.raw;
+                return value >= 0 ? '#f59e0b' : '#ef4444';
+              },
+              pointBorderColor: function(context) {
+                const value = context.raw;
+                return value >= 0 ? '#f59e0b' : '#ef4444';
+              },
+              pointRadius: 6,
+              pointHoverRadius: 8,
+              tension: 0.4,
+              fill: {
+                target: 'origin',
+                above: 'rgba(245, 158, 11, 0.15)',
+                below: 'rgba(239, 68, 68, 0.15)'
+              }
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.9)',
+              padding: 12,
+              cornerRadius: 8,
+              callbacks: {
+                label: function(context) {
+                  const value = Math.abs(context.raw);
+                  return `Çift sayısı: ${value}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#9ca3af' }
+            },
+            y: {
+              grid: { 
+                color: function(context) {
+                  if (context.tick.value === 0) {
+                    return 'rgba(255,255,255,0.3)'; // 0 çizgisi belirgin
+                  }
+                  return 'rgba(255,255,255,0.05)';
+                },
+                lineWidth: function(context) {
+                  return context.tick.value === 0 ? 2 : 1;
+                }
+              },
+              ticks: { 
+                color: '#9ca3af',
+                callback: function(value) {
+                  if (value === 0) return '• temas •';
+                  return Math.abs(value);
+                }
+              },
+              title: {
+                display: true,
+                text: '0 = temas noktası | Mesafe = çift sayısı',
+                color: '#6b7280',
+                font: { size: 10 }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function initDeltaChart(ctx) {
+      // Değişim (türev) grafiği
+      liveChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['1dk'],
+          datasets: [{
+            label: 'Değişim (Δ)',
+            data: [0],
+            backgroundColor: function(context) {
+              const value = context.raw;
+              return value >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)';
+            },
+            borderColor: function(context) {
+              const value = context.raw;
+              return value >= 0 ? '#10b981' : '#ef4444';
+            },
+            borderWidth: 2,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.9)',
+              padding: 12,
+              cornerRadius: 8,
+              callbacks: {
+                label: function(context) {
+                  const value = context.raw;
+                  const direction = value > 0 ? '📈 Artış' : value < 0 ? '📉 Azalış' : '➡️ Sabit';
+                  return `Δ = ${value} (${direction})`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#9ca3af' }
+            },
+            y: {
+              grid: { 
+                color: function(context) {
+                  if (context.tick.value === 0) return 'rgba(255,255,255,0.3)';
+                  return 'rgba(255,255,255,0.05)';
+                },
+                lineWidth: function(context) {
+                  return context.tick.value === 0 ? 2 : 1;
+                }
+              },
+              ticks: { 
+                color: '#9ca3af',
+                callback: function(value) {
+                  if (value === 0) return '— 0 —';
+                  return value > 0 ? '+' + value : value;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function initBarChart(ctx) {
+      // Orijinal bar grafik
+      liveChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['1dk'],
+          datasets: [
+            {
+              label: 'Çift Sayısı',
+              data: [0],
+              backgroundColor: 'rgba(251, 191, 36, 0.8)',
+              borderColor: 'rgba(251, 191, 36, 1)',
+              borderWidth: 1,
+              borderRadius: 4,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Oran (Σ/dk)',
+              data: [0],
+              type: 'line',
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 3,
+              pointBackgroundColor: '#10b981',
+              pointRadius: 5,
+              tension: 0.3,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.9)',
+              padding: 12,
+              cornerRadius: 8
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#9ca3af' }
+            },
+            y: {
+              type: 'linear',
+              position: 'left',
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#fbbf24', stepSize: 1 },
+              title: { display: true, text: 'Çift Sayısı', color: '#fbbf24' }
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#10b981' },
+              title: { display: true, text: 'Oran', color: '#10b981' }
+            }
+          }
+        }
+      });
+    }
+
+    // Gradient fonksiyonları
+    function getGradient(ctx, chartArea) {
+      const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+      gradient.addColorStop(0, '#ef4444');
+      gradient.addColorStop(0.5, '#fbbf24');
+      gradient.addColorStop(1, '#10b981');
+      return gradient;
+    }
+
+    function getBackgroundGradient(ctx, chartArea) {
+      const centerY = (chartArea.top + chartArea.bottom) / 2;
+      const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+      gradient.addColorStop(0, 'rgba(239, 68, 68, 0.2)');
+      gradient.addColorStop(0.5, 'rgba(251, 191, 36, 0.1)');
+      gradient.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
+      return gradient;
+    }
+
+    function switchChartType(type) {
+      chartType = type;
+      
+      // Buton stillerini güncelle
+      document.querySelectorAll('.chart-type-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.type === type) btn.classList.add('active');
+      });
+
+      // Legend güncelle
+      const legend = document.getElementById('chartLegend');
+      if (type === 'wave') {
+        legend.innerHTML = `
+          <div class="legend-item">
+            <div style="width: 20px; height: 4px; background: #10b981; border-radius: 2px;"></div>
+            <span style="color: #10b981;">Dalga 1 (Üst)</span>
+          </div>
+          <div class="legend-item">
+            <div style="width: 20px; height: 4px; background: #f59e0b; border-radius: 2px;"></div>
+            <span style="color: #f59e0b;">Dalga 2 (Alt)</span>
+          </div>
+          <div class="legend-item">
+            <span style="color: #6b7280; font-size: 11px;">0 = temas noktası</span>
+          </div>
+        `;
+      } else if (type === 'delta') {
+        legend.innerHTML = `
+          <div class="legend-item">
+            <div style="width: 16px; height: 12px; background: #10b981; border-radius: 2px;"></div>
+            <span style="color: #10b981;">Artış (+)</span>
+          </div>
+          <div class="legend-item">
+            <div style="width: 16px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
+            <span style="color: #ef4444;">Azalış (-)</span>
+          </div>
+        `;
+      } else {
+        legend.innerHTML = `
+          <div class="legend-item">
+            <div class="legend-bar"></div>
+            <span style="color: #fbbf24;">Dakikadaki Çift</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-line"></div>
+            <span style="color: #10b981;">Kümülatif Oran</span>
+          </div>
+        `;
+      }
+
+      // Grafiği yeniden oluştur
+      if (liveChart) {
+        liveChart.destroy();
+      }
+      initChart();
+      
+      // Mevcut verileri yükle
+      rebuildChartData();
+    }
+
+    function rebuildChartData() {
+      if (!liveChart || pairCountsPerMinute.length === 0) return;
+
+      const labels = pairCountsPerMinute.map((_, i) => `${i + 1}dk`);
+      
+      if (chartType === 'wave') {
+        // Dalgalar: çift sayısına göre açılıp kapanır
+        const wave1 = pairCountsPerMinute.map(v => v);       // Üstte
+        const wave2 = pairCountsPerMinute.map(v => -v);      // Altta
+        
+        liveChart.data.labels = labels;
+        liveChart.data.datasets[0].data = wave1;
+        liveChart.data.datasets[1].data = wave2;
+      } else if (chartType === 'delta') {
+        // Değişim hesapla
+        const deltas = pairCountsPerMinute.map((v, i) => {
+          if (i === 0) return 0;
+          return v - pairCountsPerMinute[i - 1];
+        });
+        
+        liveChart.data.labels = labels;
+        liveChart.data.datasets[0].data = deltas;
+      } else {
+        // Bar chart
+        const ratios = pairCountsPerMinute.map((_, i) => {
+          const cumulative = pairCountsPerMinute.slice(0, i + 1).reduce((a, b) => a + b, 0);
+          return cumulative / (i + 1);
+        });
+        
+        liveChart.data.labels = labels;
+        liveChart.data.datasets[0].data = pairCountsPerMinute;
+        liveChart.data.datasets[1].data = ratios;
+      }
+      
+      liveChart.update();
+    }
+
+    async function startRecording() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Tarayıcınız konuşma tanıma desteklemiyor. Lütfen Chrome kullanın.');
+        return;
+      }
+
+      // Mikrofon iznini bir kez al ve stream'i açık tut
+      // Bu sayede SpeechRecognition restart'larında tarayıcı tekrar izin sormaz
+      try {
+        if (!micStream) {
+          micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        }
+      } catch (err) {
+        alert('Mikrofon erişimi reddedildi. Lütfen izin verin.');
+        console.error('getUserMedia error:', err);
+        return;
+      }
+
+      // Reset
+      isRecording = true;
+      isPaused = false;
+      elapsedTime = 0;
+      currentMinute = 0;
+      transcript = '';
+      totalWords = 0;
+      detectedPairs = [];
+      currentMinutePairs = 0;
+      currentMinuteWords = [];
+      restartAttempts = 0;
+      lastRestartTime = 0;
+
+      // UI güncelle
+      document.getElementById('startBtn').classList.add('hidden');
+      document.getElementById('manualBtn').classList.add('hidden');
+      document.getElementById('pauseBtn').classList.remove('hidden');
+      document.getElementById('stopBtn').classList.remove('hidden');
+      document.getElementById('timerSection').classList.remove('hidden');
+      document.getElementById('chartSection').classList.remove('hidden');
+      document.getElementById('wordcloudSection').classList.remove('hidden');
+      document.getElementById('manualSection').classList.remove('show');
+      document.getElementById('soundLevels').classList.remove('hidden');
+      document.getElementById('language').disabled = true;
+      document.getElementById('statusLabel').textContent = '🔴 KAYIT';
+      document.getElementById('pulseDot').style.display = 'block';
+      
+      // Ses uyarılarını sıfırla
+      resetMinuteAlerts();
+      
+      // n8n session başlat
+      currentSessionId = generateSessionId();
+      startInterimUpdates();
+
+      // Chart'ı başlat
+      if (liveChart) {
+        liveChart.destroy();
+      }
+      pairCountsPerMinute = [0];
+      initChart();
+
+      // Speech Recognition
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = document.getElementById('language').value;
+
+      recognition.onresult = (event) => {
+        let finalTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + ' ';
+          }
+        }
+
+        if (finalTranscript) {
+          transcript += finalTranscript;
+          currentMinuteWords.push(finalTranscript);
+          
+          const analysis = processText(finalTranscript);
+          totalWords += analysis.wordCount;
+          
+          if (analysis.pairs.length > 0) {
+            analysis.pairs.forEach(p => {
+              detectedPairs.push(p);
+              showDetection(p.word, p.pair);
+            });
+            currentMinutePairs += analysis.pairs.length;
+            updateChart();
+            updatePairsList();
+          }
+          
+          updateDisplay();
+          updateTranscript();
+          updateWordCloud();
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.warn('Speech error:', event.error);
+        
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          // Kullanıcı mikrofon iznini reddetti — döngüye girme
+          console.error('Mikrofon izni reddedildi, yeniden denenmeyecek.');
+          document.getElementById('statusLabel').textContent = '🚫 MİKROFON İZNİ GEREK';
+          return;
+        }
+        
+        if (event.error === 'aborted') {
+          // Tarayıcı tarafından durduruldu — sessizce yeniden başlat
+          return; // onend zaten tetiklenecek
+        }
+        
+        if (event.error === 'no-speech') {
+          // Ses algılanmadı — normal, onend'de yeniden başlayacak
+          return;
+        }
+      };
+
+      recognition.onend = () => {
+        if (!isRecording || isPaused) return;
+        
+        const now = Date.now();
+        const timeSinceLastRestart = now - lastRestartTime;
+        
+        // Çok hızlı restart döngüsünü engelle
+        if (timeSinceLastRestart < MIN_RESTART_INTERVAL) {
+          setTimeout(() => {
+            if (isRecording && !isPaused) {
+              try { 
+                recognition.start(); 
+                lastRestartTime = Date.now();
+              } catch(e) {
+                console.warn('Recognition restart failed:', e);
+              }
+            }
+          }, MIN_RESTART_INTERVAL - timeSinceLastRestart);
+          return;
+        }
+        
+        // Maksimum deneme kontrolü
+        restartAttempts++;
+        if (restartAttempts > MAX_RESTART_ATTEMPTS) {
+          console.warn('Çok fazla yeniden başlatma denemesi, duraklatılıyor.');
+          restartAttempts = 0;
+          // 2 saniye bekle, sonra tekrar dene
+          setTimeout(() => {
+            if (isRecording && !isPaused) {
+              try { 
+                recognition.start(); 
+                lastRestartTime = Date.now();
+              } catch(e) {}
+            }
+          }, 2000);
+          return;
+        }
+        
+        try { 
+          recognition.start(); 
+          lastRestartTime = now;
+        } catch(e) {
+          console.warn('Recognition restart failed:', e);
+          // Kısa gecikme ile tekrar dene
+          setTimeout(() => {
+            if (isRecording && !isPaused) {
+              try { recognition.start(); } catch(e2) {}
+            }
+          }, 500);
+        }
+      };
+
+      recognition.start();
+
+      // Timer
+      timerInterval = setInterval(() => {
+        elapsedTime++;
+        const newMinute = Math.floor(elapsedTime / 60);
+        
+        if (newMinute > currentMinute) {
+          // Yeni dakika başladı
+          minuteData.push({
+            minute: currentMinute + 1,
+            pairs: currentMinutePairs,
+            words: currentMinuteWords.join(' ').split(/\s+/).filter(w => w).length,
+            text: currentMinuteWords.join(' ')
+          });
+          
+          // pairCountsPerMinute'a yeni dakika ekle
+          pairCountsPerMinute.push(0);
+          
+          currentMinute = newMinute;
+          currentMinutePairs = 0;
+          currentMinuteWords = [];
+          
+          // Yeni dakika için ses uyarılarını sıfırla
+          resetMinuteAlerts();
+          
+          // Chart'ı güncelle
+          updateChart();
+        }
+        
+        updateDisplay();
+        
+        if (elapsedTime >= 3600) {
+          stopRecording();
+        }
+      }, 1000);
+    }
+
+    function pauseRecording() {
+      isPaused = true;
+      if (recognition) recognition.stop();
+      clearInterval(timerInterval);
+      
+      document.getElementById('pauseBtn').classList.add('hidden');
+      document.getElementById('resumeBtn').classList.remove('hidden');
+      document.getElementById('statusLabel').textContent = '⏸️ DURAKLATILDI';
+      document.getElementById('pulseDot').style.display = 'none';
+    }
+
+    function resumeRecording() {
+      isPaused = false;
+      if (recognition) {
+        try { 
+          recognition.start(); 
+          lastRestartTime = Date.now();
+          restartAttempts = 0;
+        } catch(e) {}
+      }
+      
+      timerInterval = setInterval(() => {
+        elapsedTime++;
+        updateDisplay();
+      }, 1000);
+      
+      document.getElementById('resumeBtn').classList.add('hidden');
+      document.getElementById('pauseBtn').classList.remove('hidden');
+      document.getElementById('statusLabel').textContent = '🔴 KAYIT';
+      document.getElementById('pulseDot').style.display = 'block';
+    }
+
+    function stopRecording() {
+      isRecording = false;
+      isPaused = false;
+      
+      if (recognition) {
+        recognition.stop();
+        recognition = null;
+      }
+      
+      // Mikrofon stream'ini serbest bırak
+      if (micStream) {
+        micStream.getTracks().forEach(track => track.stop());
+        micStream = null;
+      }
+      
+      clearInterval(timerInterval);
+      
+      // Son dakikayı kaydet
+      if (currentMinuteWords.length > 0 || currentMinutePairs > 0) {
+        minuteData.push({
+          minute: currentMinute + 1,
+          pairs: currentMinutePairs,
+          words: currentMinuteWords.join(' ').split(/\s+/).filter(w => w).length,
+          text: currentMinuteWords.join(' ')
+        });
+      }
+      
+      document.getElementById('pauseBtn').classList.add('hidden');
+      document.getElementById('resumeBtn').classList.add('hidden');
+      document.getElementById('stopBtn').classList.add('hidden');
+      document.getElementById('startBtn').classList.remove('hidden');
+      document.getElementById('manualBtn').classList.remove('hidden');
+      document.getElementById('soundLevels').classList.add('hidden');
+      document.getElementById('language').disabled = false;
+      document.getElementById('statusLabel').textContent = '✅ TAMAMLANDI';
+      document.getElementById('pulseDot').style.display = 'none';
+      
+      // n8n'e final sonucu gönder
+      stopInterimUpdates();
+      sendToN8n('final');
+    }
+
+    function toggleManual() {
+      document.getElementById('manualSection').classList.toggle('show');
+    }
+
+    function processManualInput() {
+      const input = document.getElementById('manualInput').value.trim();
+      if (!input) return;
+
+      // Reset
+      transcript = input;
+      totalWords = 0;
+      detectedPairs = [];
+      currentMinute = 0;
+      minuteData = [];
+      pairCountsPerMinute = [];
+
+      const lines = input.split('\n').filter(l => l.trim());
+      
+      // Her satırı işle
+      lines.forEach((line, idx) => {
+        const analysis = processText(line);
+        totalWords += analysis.wordCount;
+        
+        analysis.pairs.forEach(p => detectedPairs.push(p));
+        
+        minuteData.push({
+          minute: idx + 1,
+          pairs: analysis.pairs.length,
+          words: analysis.wordCount,
+          text: line
+        });
+        
+        pairCountsPerMinute.push(analysis.pairs.length);
+      });
+
+      currentMinute = lines.length - 1;
+
+      // Chart'ı başlat ve verileri yükle
+      document.getElementById('chartSection').classList.remove('hidden');
+      if (liveChart) liveChart.destroy();
+      initChart();
+      rebuildChartData();
+      
+      updateDisplay();
+      updatePairsList();
+      updateTranscript();
+      
+      document.getElementById('manualSection').classList.remove('show');
+      
+      // n8n'e gönder
+      currentSessionId = generateSessionId();
+      sendToN8n('final');
+    }
+
+    // ============================================
+    // n8n BACKEND ENTEGRASYONU
+    // ============================================
+    const N8N_WEBHOOK_URL = 'https://n8n.tropus.io/webhook/asge-analyze';
+    let currentSessionId = null;
+    let interimTimer = null;
+    const INTERIM_INTERVAL_MS = 120000; // 2 dakikada bir
+
+    function generateSessionId() {
+      return `session_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    }
+
+    async function sendToN8n(mode = 'final') {
+      const segments = [];
+      
+      minuteData.forEach(md => {
+        segments.push({
+          minute: md.minute,
+          text: md.text || '',
+          words: md.words
+        });
+      });
+      
+      if (currentMinuteWords.length > 0) {
+        segments.push({
+          minute: (currentMinute || 0) + 1,
+          text: currentMinuteWords.join(' '),
+          words: currentMinuteWords.join(' ').split(/\s+/).filter(w => w).length
+        });
+      }
+
+      if (segments.length === 0 || transcript.trim().length < 10) return;
+
+      const payload = {
+        transcript: transcript,
+        language: document.getElementById('language').value,
+        duration: elapsedTime,
+        minuteSegments: segments,
+        mode: mode,
+        sessionId: currentSessionId
+      };
+
+      // UI güncelle
+      const panel = document.getElementById('aiResultsPanel');
+      panel.classList.remove('hidden');
+      document.getElementById('aiLoading').style.display = 'block';
+      document.getElementById('aiPanelMode').textContent = mode === 'interim' ? '⏳ Ara Sonuç' : '✅ Final';
+
+      try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          displayAIResults(result, mode);
+        }
+      } catch (error) {
+        console.error('n8n bağlantı hatası:', error);
+        document.getElementById('aiLoading').innerHTML = '❌ AI bağlantı hatası: ' + error.message;
+      }
+    }
+
+    function startInterimUpdates() {
+      interimTimer = setInterval(() => {
+        if (isRecording && !isPaused && transcript.length > 50) {
+          sendToN8n('interim');
+        }
+      }, INTERIM_INTERVAL_MS);
+    }
+
+    function stopInterimUpdates() {
+      if (interimTimer) { clearInterval(interimTimer); interimTimer = null; }
+    }
+
+    function displayAIResults(result, mode) {
+      document.getElementById('aiLoading').style.display = 'none';
+      const container = document.getElementById('aiPanelContent');
+      
+      // İstatistikler
+      let html = `<div class="ai-stats-row">
+        <div class="ai-stat-box"><span class="ai-stat-label">AI Toplam</span><span class="ai-stat-val">${result.stats.totalPairs}</span></div>
+        <div class="ai-stat-box"><span class="ai-stat-label">Klasik</span><span class="ai-stat-val">${result.stats.classicPairs}</span></div>
+        <div class="ai-stat-box"><span class="ai-stat-label">Bağlamsal</span><span class="ai-stat-val">${result.stats.contextualPairs}</span></div>
+        <div class="ai-stat-box"><span class="ai-stat-label">Oran/dk</span><span class="ai-stat-val">${result.stats.pairsPerMinute}</span></div>
+      </div>`;
+
+      // Özet
+      if (result.analysis.summary) {
+        html += `<div class="ai-summary-box">
+          <h4>📊 ${mode === 'interim' ? 'Ara Analiz' : 'Final Analiz'}</h4>
+          <p>${result.analysis.summary}</p>
+          ${result.analysis.peakMinute ? `<p style="margin-top:8px;font-size:12px;color:#818cf8;"><strong>Zirve:</strong> Dakika ${result.analysis.peakMinute} | <strong>Tema:</strong> ${result.analysis.dominantTheme || '-'}</p>` : ''}
+        </div>`;
+      }
+
+      // Çiftler
+      if (result.pairs && result.pairs.length > 0) {
+        html += '<h4 style="color:#a5b4fc;font-size:13px;margin-bottom:8px;">🔍 AI Tespit Edilen Çiftler</h4>';
+        result.pairs.forEach(p => {
+          html += `<div class="ai-pair-ctx">
+            <span class="pair-words">${p.word1} ↔ ${p.word2}</span>
+            <span class="pair-type ${p.type}">${p.type === 'classic' ? 'klasik' : 'bağlamsal'}</span>
+            <span class="pair-min">dk ${p.minute}</span>
+            <span class="pair-ctx">"${p.context}"</span>
+          </div>`;
+        });
+      }
+
+      // Trendler
+      if (result.minuteTrends && result.minuteTrends.length > 0) {
+        html += '<h4 style="color:#a5b4fc;font-size:13px;margin:12px 0 8px;">📈 Dakika Trendleri</h4>';
+        result.minuteTrends.forEach(t => {
+          html += `<div class="ai-trend-row intensity-${t.intensity}">
+            <span class="ai-trend-min">Dk ${t.minute}</span>
+            <span class="ai-trend-count">${t.count} çift</span>
+            <span class="ai-trend-note">${t.note}</span>
+          </div>`;
+        });
+      }
+
+      container.innerHTML = html;
+    }
+
+    // Sayfa yüklendiğinde
+    updateDisplay();
+  </script>
+</body>
+</html>
