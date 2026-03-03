@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -996,85 +996,85 @@
     <header>
       <h1>◈ ASGE</h1>
       <p class="header-full-name">Ambivalence-Centered Semantic Geometry Engine</p>
-      <p class="subtitle">Canlı ambivalens analizi • Formül: Σ(çift sayısı) / dakika</p>
+      <p class="subtitle">Live ambivalence analysis • Formula: Σ(pair count) / minute</p>
     </header>
     
     <div class="controls">
       <select id="language">
-        <option value="tr-TR">🇹🇷 Türkçe</option>
         <option value="en-US">🇺🇸 English</option>
+        <option value="tr-TR">🇹🇷 Türkçe</option>
         <option value="fr-FR">🇫🇷 Français</option>
       </select>
-      <button class="btn-start" id="startBtn" onclick="startRecording()">🎙️ Kaydı Başlat</button>
-      <button class="btn-pause hidden" id="pauseBtn" onclick="pauseRecording()">⏸️ Duraklat</button>
-      <button class="btn-start hidden" id="resumeBtn" onclick="resumeRecording()">▶️ Devam Et</button>
-      <button class="btn-stop hidden" id="stopBtn" onclick="stopRecording()">⏹️ Durdur</button>
-      <button class="btn-manual" id="manualBtn" onclick="toggleManual()">📝 Manuel Giriş</button>
-      <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔔 Ses Açık</button>
+      <button class="btn-start" id="startBtn" onclick="startRecording()">🎙️ Start Recording</button>
+      <button class="btn-pause hidden" id="pauseBtn" onclick="pauseRecording()">⏸️ Pause</button>
+      <button class="btn-start hidden" id="resumeBtn" onclick="resumeRecording()">▶️ Resume</button>
+      <button class="btn-stop hidden" id="stopBtn" onclick="stopRecording()">⏹️ Stop</button>
+      <button class="btn-manual" id="manualBtn" onclick="toggleManual()">📝 Manual Input</button>
+      <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔔 Sound On</button>
     </div>
     
     <div class="sound-levels hidden" id="soundLevels">
-      <div class="sound-level-indicator" id="level2" style="background: rgba(59, 130, 246, 0.3); color: #3b82f6;">2️⃣ İKİ</div>
-      <div class="sound-level-indicator" id="level3" style="background: rgba(139, 92, 246, 0.3); color: #8b5cf6;">3️⃣ ÜÇ</div>
-      <div class="sound-level-indicator" id="level4" style="background: rgba(245, 158, 11, 0.3); color: #f59e0b;">4️⃣ DÖRT</div>
-      <div class="sound-level-indicator" id="level5" style="background: rgba(239, 68, 68, 0.3); color: #ef4444;">5️⃣ BEŞ</div>
+      <div class="sound-level-indicator" id="level2" style="background: rgba(59, 130, 246, 0.3); color: #3b82f6;">2️⃣ TWO</div>
+      <div class="sound-level-indicator" id="level3" style="background: rgba(139, 92, 246, 0.3); color: #8b5cf6;">3️⃣ THREE</div>
+      <div class="sound-level-indicator" id="level4" style="background: rgba(245, 158, 11, 0.3); color: #f59e0b;">4️⃣ FOUR</div>
+      <div class="sound-level-indicator" id="level5" style="background: rgba(239, 68, 68, 0.3); color: #ef4444;">5️⃣ FIVE</div>
     </div>
     
     <div class="manual-section" id="manualSection">
-      <p class="manual-hint">Her satır = 1 dakika. Analiz etmek istediğiniz metni yapıştırın:</p>
-      <textarea id="manualInput" placeholder="Dakika 1: Bu iyi bir gün ama hava kötü...&#10;Dakika 2: Büyük hayaller küçük adımlarla başlar..."></textarea>
-      <button class="btn-analyze" onclick="processManualInput()">Analiz Et</button>
+      <p class="manual-hint">Each line = 1 minute. Paste the text you want to analyze:</p>
+      <textarea id="manualInput" placeholder="Minute 1: It was a good day but the weather was bad...&#10;Minute 2: Big dreams start with small steps..."></textarea>
+      <button class="btn-analyze" onclick="processManualInput()">Analyze</button>
     </div>
     
     <div class="timer-section hidden" id="timerSection">
       <div class="timer-box time">
         <div class="timer-value" id="timeDisplay">00:00</div>
-        <div class="timer-label" id="statusLabel">🔴 KAYIT</div>
+        <div class="timer-label" id="statusLabel">🔴 RECORDING</div>
       </div>
       <div class="timer-box minute">
         <div class="timer-value" id="minuteDisplay">1</div>
-        <div class="timer-label">DAKİKA</div>
+        <div class="timer-label">MINUTE</div>
       </div>
     </div>
     
     <div class="live-chart-container hidden" id="chartSection">
       <div class="detection-popup" id="detectionPopup">
-        <div class="detection-label">YENİ ÇİFT TESPİT!</div>
+        <div class="detection-label">NEW PAIR DETECTED!</div>
         <div class="detection-word" id="detectionWord"></div>
       </div>
       
       <div class="chart-header">
         <div class="chart-title">
           <div class="pulse-dot" id="pulseDot"></div>
-          <span>📊 CANLI GRAFİK: Ambivalens Analizi</span>
+          <span>📊 LIVE CHART: Ambivalence Analysis</span>
         </div>
         <div class="live-stats">
           <div class="live-stat ratio">
-            <div class="live-stat-label">Mevcut Oran</div>
+            <div class="live-stat-label">Current Ratio</div>
             <div class="live-stat-value" id="ratioDisplay">0.000</div>
           </div>
           <div class="live-stat current">
-            <div class="live-stat-label">Bu Dakika</div>
+            <div class="live-stat-label">This Minute</div>
             <div class="live-stat-value" id="currentMinuteDisplay">0</div>
           </div>
         </div>
       </div>
       
       <div class="formula-box">
-        <span style="color: #9ca3af;">Formül: </span>
+        <span style="color: #9ca3af;">Formula: </span>
         <code id="formulaDisplay">0 / 1 = 0.000</code>
       </div>
 
       <!-- Chart Type Selector -->
       <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
         <button class="chart-type-btn active" data-type="wave" onclick="switchChartType('wave')">
-          〰️ Sinüs Dalgası
+          〰️ Sine Wave
         </button>
         <button class="chart-type-btn" data-type="bar" onclick="switchChartType('bar')">
-          📊 Bar Grafik
+          📊 Bar Chart
         </button>
         <button class="chart-type-btn" data-type="delta" onclick="switchChartType('delta')">
-          📈 Değişim (Δ)
+          📈 Change (Δ)
         </button>
       </div>
       
@@ -1085,73 +1085,74 @@
       <div class="chart-legend" id="chartLegend">
         <div class="legend-item">
           <div style="width: 20px; height: 4px; background: #10b981; border-radius: 2px;"></div>
-          <span style="color: #10b981;">Dalga 1 (Üst)</span>
+          <span style="color: #10b981;">Wave 1 (Upper)</span>
         </div>
         <div class="legend-item">
           <div style="width: 20px; height: 4px; background: #f59e0b; border-radius: 2px;"></div>
-          <span style="color: #f59e0b;">Dalga 2 (Alt)</span>
+          <span style="color: #f59e0b;">Wave 2 (Lower)</span>
         </div>
         <div class="legend-item">
-          <span style="color: #6b7280; font-size: 11px;">0 = temas noktası</span>
+          <span style="color: #6b7280; font-size: 11px;">0 = contact point</span>
         </div>
       </div>
     </div>
     
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Toplam Kelime</div>
+        <div class="stat-label">Total Words</div>
         <div class="stat-value" id="totalWords" style="color: #6366f1;">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Ambivalens Çifti</div>
+        <div class="stat-label">Ambivalence Pairs</div>
         <div class="stat-value" id="totalPairs" style="color: #ec4899;">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Toplam Oran</div>
+        <div class="stat-label">Total Ratio</div>
         <div class="stat-value" id="totalRatio" style="color: #10b981;">0.000</div>
       </div>
     </div>
     
     <div class="wordcloud-section hidden" id="wordcloudSection">
       <div class="wordcloud-header">
-        <div class="wordcloud-title">☁️ Kelime Frekans Haritası (Kümülatif)</div>
-        <div class="wordcloud-minute" id="wordcloudMinute">Toplam: 0 kelime</div>
+        <div class="wordcloud-title">☁️ Word Frequency Map (Cumulative)</div>
+        <div class="wordcloud-minute" id="wordcloudMinute">Total: 0 words</div>
       </div>
       <div class="wordcloud-container" id="wordcloudContainer">
-        <span class="wordcloud-empty">Konuşmaya başlayın...</span>
+        <span class="wordcloud-empty">Start speaking...</span>
       </div>
     </div>
     
     <div class="pairs-section hidden" id="pairsSection">
-      <div class="pairs-title">En Çok Tespit Edilen Çiftler</div>
+      <div class="pairs-title">Most Detected Pairs</div>
       <div class="pairs-list" id="pairsList"></div>
     </div>
     
     <div class="transcript-section hidden" id="transcriptSection">
-      <div class="transcript-title">📜 Transkript</div>
+      <div class="transcript-title">📜 Transcript</div>
       <div class="transcript-content" id="transcriptContent"></div>
     </div>
     
-    <!-- AI Analiz Paneli -->
+    <!-- AI Analysis Panel -->
     <div class="ai-results-panel hidden" id="aiResultsPanel">
       <div class="ai-panel-header">
-        <span class="ai-panel-title">🤖 AI Derin Analiz (ASGE)</span>
+        <span class="ai-panel-title">🤖 AI Deep Analysis (ASGE)</span>
         <span class="ai-panel-mode" id="aiPanelMode"></span>
       </div>
       <div id="aiPanelContent">
-        <div class="ai-loading" id="aiLoading">⏳ AI analizi bekleniyor...</div>
+        <div class="ai-loading" id="aiLoading">⏳ Waiting for AI analysis...</div>
       </div>
     </div>
 
     <footer>
-      <p>ASGE v5 • Web Speech API • Chrome önerilir • 🇹🇷 TR + 🇺🇸 EN + 🇫🇷 FR • n8n + AI Backend</p>
+      <p><a href="https://llulllab.com" style="color:var(--gold);text-decoration:none;">llulllab.com</a></p>
+      <p style="margin-top:6px;">© 2026 Llull Lab · <a href="/privacy-policy" style="color:var(--text-muted);text-decoration:none;">Privacy Policy</a> · <a href="/terms-of-use" style="color:var(--text-muted);text-decoration:none;">Terms of Use</a></p>
     </footer>
   </div>
 
   <script>
-    // Türkçe sözcük çiftleri (100 çift = 200 giriş)
+    // Turkish word pairs (100 pairs = 200 entries)
     const TURKISH_PAIRS = {
-      // Temel sıfatlar
+      // Basic adjectives
       'iyi': 'kötü', 'kötü': 'iyi',
       'güzel': 'çirkin', 'çirkin': 'güzel',
       'büyük': 'küçük', 'küçük': 'büyük',
@@ -1212,7 +1213,7 @@
       'mantıklı': 'mantıksız', 'mantıksız': 'mantıklı',
       'mümkün': 'imkansız', 'imkansız': 'mümkün',
       'görünür': 'görünmez', 'görünmez': 'görünür',
-      // Fiiller
+      // Verbs
       'gelmek': 'gitmek', 'gitmek': 'gelmek',
       'almak': 'vermek', 'vermek': 'almak',
       'açmak': 'kapatmak', 'kapatmak': 'açmak',
@@ -1245,7 +1246,7 @@
       'birleştirmek': 'ayırmak', 'ayırmak': 'birleştirmek',
       'çoğalmak': 'azalmak',
       'hızlanmak': 'yavaşlamak', 'yavaşlamak': 'hızlanmak',
-      // Zarflar ve diğer
+      // Adverbs and others
       'erken': 'geç', 'geç': 'erken',
       'yukarı': 'aşağı', 'aşağı': 'yukarı',
       'önce': 'sonra', 'sonra': 'önce',
@@ -1256,7 +1257,7 @@
       'çok': 'az', 'az': 'çok',
       'sık': 'nadir', 'nadir': 'sık',
       'beraber': 'ayrı', 'ayrı': 'beraber',
-      // İsimler
+      // Nouns
       'evet': 'hayır', 'hayır': 'evet',
       'var': 'yok', 'yok': 'var',
       'gündüz': 'gece', 'gece': 'gündüz',
@@ -1357,7 +1358,7 @@
       'karamsar': 'iyimser', 'iyimser': 'karamsar'
     };
 
-    // İngilizce sözcük çiftleri (100 çift = 200 giriş)
+    // English word pairs (100 pairs = 200 entries)
     const ENGLISH_PAIRS = {
       // Basic adjectives
       'good': 'bad', 'bad': 'good',
@@ -1565,9 +1566,9 @@
       'attractive': 'repulsive', 'repulsive': 'attractive'
     };
 
-    // Fransızca sözcük çiftleri (100 çift = 200 giriş)
+    // French word pairs (100 pairs = 200 entries)
     const FRENCH_PAIRS = {
-      // Sıfatlar - Temel
+      // Basic adjectives
       'bon': 'mauvais', 'mauvais': 'bon',
       'bonne': 'mauvaise', 'mauvaise': 'bonne',
       'bien': 'mal', 'mal': 'bien',
@@ -1638,7 +1639,7 @@
       'coupable': 'innocent', 'innocent': 'coupable',
       'célèbre': 'inconnu', 'inconnu': 'célèbre',
       'cher': 'bon marché', 'bon marché': 'cher',
-      // Fiiller
+      // Verbs
       'aimer': 'détester', 'détester': 'aimer',
       'adorer': 'haïr', 'haïr': 'adorer',
       'ouvrir': 'fermer', 'fermer': 'ouvrir',
@@ -1673,7 +1674,7 @@
       'ajouter': 'enlever', 'enlever': 'ajouter',
       'avancer': 'reculer', 'reculer': 'avancer',
       'accélérer': 'ralentir', 'ralentir': 'accélérer',
-      // Zarflar ve diğer
+      // Adverbs and others
       'oui': 'non', 'non': 'oui',
       'toujours': 'jamais', 'jamais': 'toujours',
       'souvent': 'rarement', 'rarement': 'souvent',
@@ -1688,7 +1689,7 @@
       'beaucoup': 'peu', 'peu': 'beaucoup',
       'tout': 'rien', 'rien': 'tout',
       'ensemble': 'séparément', 'séparément': 'ensemble',
-      // İsimler
+      // Nouns
       'début': 'fin', 'fin': 'début',
       'premier': 'dernier', 'dernier': 'premier',
       'meilleur': 'pire', 'pire': 'meilleur',
@@ -1777,7 +1778,7 @@
     let isRecording = false;
     let isPaused = false;
     let recognition = null;
-    let micStream = null; // Mikrofon stream'ini açık tutarak izin tekrarını engelle
+    let micStream = null; // Keep mic stream open to avoid repeated permission prompts
     let timerInterval = null;
     let elapsedTime = 0;
     let currentMinute = 0;
@@ -1789,25 +1790,25 @@
     let currentMinuteWords = [];
     let liveChart = null;
     let chartType = 'wave'; // 'wave', 'bar', 'delta'
-    let pairCountsPerMinute = [0]; // Her dakikadaki çift sayısı
+    let pairCountsPerMinute = [0]; // Pair count per minute
     
-    // Speech recognition yeniden başlatma kontrolleri
+    // Speech recognition restart controls
     let restartAttempts = 0;
     const MAX_RESTART_ATTEMPTS = 50;
     let lastRestartTime = 0;
     const MIN_RESTART_INTERVAL = 300; // ms
     
-    // Ses sistemi
+    // Sound system
     let audioContext = null;
-    let playedAlerts = new Set(); // Bu dakikada çalan uyarıları takip et
+    let playedAlerts = new Set(); // Track alerts played this minute
     let soundEnabled = true;
     
-    // Ses seviye ayarları (2, 3, 4, 5 çift için)
+    // Sound level settings (for 2, 3, 4, 5 pairs)
     const ALERT_LEVELS = {
-      2: { freq: [440, 554], duration: 0.15, name: 'İKİ', color: '#3b82f6' },      // A4-C#5 (mavi)
-      3: { freq: [523, 659, 523], duration: 0.12, name: 'ÜÇ', color: '#8b5cf6' },  // C5-E5-C5 (mor)
-      4: { freq: [659, 784, 880], duration: 0.1, name: 'DÖRT', color: '#f59e0b' }, // E5-G5-A5 (turuncu)
-      5: { freq: [784, 988, 1175, 1319], duration: 0.08, name: 'BEŞ', color: '#ef4444' } // G5-B5-D6-E6 (kırmızı)
+      2: { freq: [440, 554], duration: 0.15, name: 'TWO', color: '#3b82f6' },
+      3: { freq: [523, 659, 523], duration: 0.12, name: 'THREE', color: '#8b5cf6' },
+      4: { freq: [659, 784, 880], duration: 0.1, name: 'FOUR', color: '#f59e0b' },
+      5: { freq: [784, 988, 1175, 1319], duration: 0.08, name: 'FIVE', color: '#ef4444' }
     };
     
     function initAudioContext() {
@@ -1834,7 +1835,7 @@
         const oscillator = ctx.createOscillator();
         const gainNode = ctx.createGain();
         
-        // Farklı seviyeler için farklı dalga formları
+        // Different waveforms for different levels
         if (level === 2) oscillator.type = 'sine';
         else if (level === 3) oscillator.type = 'triangle';
         else if (level === 4) oscillator.type = 'square';
@@ -1842,7 +1843,7 @@
         
         oscillator.frequency.setValueAtTime(freq, now + index * config.duration);
         
-        // Yumuşak başlangıç ve bitiş
+        // Soft attack and release
         gainNode.gain.setValueAtTime(0, now + index * config.duration);
         gainNode.gain.linearRampToValueAtTime(0.3, now + index * config.duration + 0.02);
         gainNode.gain.linearRampToValueAtTime(0, now + index * config.duration + config.duration);
@@ -1856,7 +1857,7 @@
     }
     
     function checkAndPlayAlert(count) {
-      // 2, 3, 4, 5 seviyelerini kontrol et
+      // Check levels 2, 3, 4, 5
       [2, 3, 4, 5].forEach(level => {
         if (count >= level && !playedAlerts.has(level)) {
           playedAlerts.add(level);
@@ -1885,7 +1886,7 @@
         animation: alertPop 0.5s ease-out forwards;
         box-shadow: 0 4px 20px ${config.color}66;
       `;
-      alertDiv.innerHTML = `🔔 ${config.name} ÇİFT!`;
+      alertDiv.innerHTML = `🔔 ${config.name} PAIRS!`;
       document.body.appendChild(alertDiv);
       
       setTimeout(() => alertDiv.remove(), 2000);
@@ -1893,7 +1894,7 @@
     
     function resetMinuteAlerts() {
       playedAlerts.clear();
-      // Göstergeleri sıfırla
+      // Reset indicators
       [2, 3, 4, 5].forEach(level => {
         const el = document.getElementById(`level${level}`);
         if (el) el.classList.remove('active');
@@ -1904,12 +1905,12 @@
       soundEnabled = !soundEnabled;
       const btn = document.getElementById('soundToggle');
       if (soundEnabled) {
-        btn.textContent = '🔔 Ses Açık';
+        btn.textContent = '🔔 Sound On';
         btn.classList.remove('muted');
-        // Test sesi çal
+        // Play test sound
         initAudioContext();
       } else {
-        btn.textContent = '🔕 Ses Kapalı';
+        btn.textContent = '🔕 Sound Off';
         btn.classList.add('muted');
       }
     }
@@ -1983,18 +1984,18 @@
     function updateChart() {
       if (!liveChart) return;
       
-      // Mevcut dakikayı güncelle
+      // Update current minute
       pairCountsPerMinute[currentMinute] = currentMinutePairs;
       
-      // Ses uyarısı kontrolü
+      // Sound alert check
       checkAndPlayAlert(currentMinutePairs);
       updateLevelIndicators(currentMinutePairs);
       
       if (chartType === 'wave') {
-        // Dalgalar: çift sayısına göre açılıp kapanır
-        // 0 çift = temas, N çift = ±N mesafe
-        const wave1 = pairCountsPerMinute.map(v => v);       // Üstte (pozitif)
-        const wave2 = pairCountsPerMinute.map(v => -v);      // Altta (negatif)
+        // Waves: open and close based on pair count
+        // 0 pairs = contact, N pairs = ±N distance
+        const wave1 = pairCountsPerMinute.map(v => v);       // Upper (positive)
+        const wave2 = pairCountsPerMinute.map(v => -v);      // Lower (negative)
         
         if (liveChart.data.labels.length <= currentMinute) {
           liveChart.data.labels.push(`${currentMinute + 1}dk`);
@@ -2003,7 +2004,7 @@
         liveChart.data.datasets[1].data = wave2;
         
       } else if (chartType === 'delta') {
-        // Değişim grafiği
+        // Change chart
         const deltas = pairCountsPerMinute.map((v, i) => {
           if (i === 0) return v;
           return v - pairCountsPerMinute[i - 1];
@@ -2015,7 +2016,7 @@
         liveChart.data.datasets[0].data = deltas;
         
       } else {
-        // Orijinal bar chart
+        // Original bar chart
         const ratio = currentMinute >= 0 ? (detectedPairs.length / (currentMinute + 1)) : 0;
         
         if (liveChart.data.labels.length <= currentMinute) {
@@ -2078,27 +2079,27 @@
       
       if (!container) return;
       
-      // Tüm transcript'i kullan (kümülatif)
+      // Use full transcript (cumulative)
       const allText = transcript;
       if (!allText.trim()) {
-        container.innerHTML = '<span class="wordcloud-empty">Konuşmaya başlayın...</span>';
-        minuteLabel.textContent = 'Toplam: 0 kelime';
+        container.innerHTML = '<span class="wordcloud-empty">Start speaking...</span>';
+        minuteLabel.textContent = 'Total: 0 words';
         return;
       }
       
-      // Kelime frekanslarını hesapla
+      // Calculate word frequencies
       const frequencies = calculateWordFrequencies(allText);
       const totalUniqueWords = Object.keys(frequencies).length;
       
-      // Toplam kelime sayısını güncelle
-      minuteLabel.textContent = `Toplam: ${totalUniqueWords} benzersiz kelime`;
+      // Update total word count
+      minuteLabel.textContent = `Total: ${totalUniqueWords} unique words`;
       
       if (totalUniqueWords === 0) {
-        container.innerHTML = '<span class="wordcloud-empty">Konuşmaya başlayın...</span>';
+        container.innerHTML = '<span class="wordcloud-empty">Start speaking...</span>';
         return;
       }
       
-      // Word cloud HTML'i oluştur
+      // Generate word cloud HTML
       const html = generateWordCloudHTML(frequencies);
       container.innerHTML = html;
     }
@@ -2107,7 +2108,7 @@
       const words = text.toLowerCase()
         .replace(/[.,!?;:'"()\[\]{}]/g, '')
         .split(/\s+/)
-        .filter(w => w.length > 1); // 1 harfli kelimeleri atla
+        .filter(w => w.length > 1); // Skip single-character words
       
       const frequencies = {};
       const stopWords = getStopWords();
@@ -2124,7 +2125,7 @@
     function getStopWords() {
       const lang = document.getElementById('language').value;
       
-      // Türkçe stop words
+      // Turkish stop words
       const turkish = new Set(['bir', 've', 'bu', 'da', 'de', 'için', 'ile', 'mi', 'mu', 'mı', 'ne', 'o', 'ya', 'ama', 'çok', 'daha', 'ben', 'sen', 'biz', 'siz', 'onlar', 'gibi', 'kadar', 'var', 'yok', 'olan', 'olarak', 'ki', 'şu', 'her', 'en', 'çünkü', 'eğer', 'ise', 'hem', 'öyle', 'böyle']);
       
       // İngilizce stop words
@@ -2141,21 +2142,21 @@
     function generateWordCloudHTML(frequencies) {
       const pairsDB = getPairsDB();
       
-      // Frekansa göre sırala
+      // Sort by frequency
       const sorted = Object.entries(frequencies)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 50); // En fazla 50 kelime göster (kümülatif için artırıldı)
+        .slice(0, 50); // Show max 50 words (increased for cumulative)
       
-      if (sorted.length === 0) return '<span class="wordcloud-empty">Kelime bulunamadı</span>';
+      if (sorted.length === 0) return '<span class="wordcloud-empty">No words found</span>';
       
       const maxFreq = sorted[0][1];
       const minFreq = sorted[sorted.length - 1][1];
       
-      // Karıştır (shuffle) görsel çeşitlilik için
+      // Shuffle for visual variety
       const shuffled = sorted.sort(() => Math.random() - 0.5);
       
       return shuffled.map(([word, freq]) => {
-        // Boyut sınıfını hesapla (1-6 arası)
+        // Calculate size class (1-6)
         let sizeClass;
         if (maxFreq === minFreq) {
           sizeClass = 3;
@@ -2165,7 +2166,7 @@
           sizeClass = Math.min(6, Math.max(1, sizeClass));
         }
         
-        // Çift sözcük mü kontrol et
+        // Check if word is a pair member
         const isPaired = pairsDB[word] !== undefined;
         const pairedClass = isPaired ? ' paired-word' : '';
         const title = isPaired ? `title="${word} ↔ ${pairsDB[word]} (${freq}×)"` : `title="${freq}×"`;
@@ -2187,15 +2188,15 @@
     }
 
     function initWaveChart(ctx) {
-      // Sinüs dalgası grafiği - 0 etrafında salınım (çift dalga)
+      // Sine wave chart - oscillation around 0 (dual wave)
       liveChart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: ['1dk'],
           datasets: [
-            // Birinci dalga (orijinal)
+            // First wave (original)
             {
-              label: 'Dalga 1',
+              label: 'Wave 1',
               data: [0],
               borderColor: '#10b981',
               backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -2217,9 +2218,9 @@
                 below: 'rgba(239, 68, 68, 0.15)'
               }
             },
-            // İkinci dalga (yarım periyot geri = negatif)
+            // Second wave (half period offset = negative)
             {
-              label: 'Dalga 2',
+              label: 'Wave 2',
               data: [0],
               borderColor: '#f59e0b',
               backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -2259,7 +2260,7 @@
               callbacks: {
                 label: function(context) {
                   const value = Math.abs(context.raw);
-                  return `Çift sayısı: ${value}`;
+                  return `Pair count: ${value}`;
                 }
               }
             }
@@ -2273,7 +2274,7 @@
               grid: { 
                 color: function(context) {
                   if (context.tick.value === 0) {
-                    return 'rgba(255,255,255,0.3)'; // 0 çizgisi belirgin
+                    return 'rgba(255,255,255,0.3)'; // Zero line prominent
                   }
                   return 'rgba(255,255,255,0.05)';
                 },
@@ -2284,13 +2285,13 @@
               ticks: { 
                 color: '#9ca3af',
                 callback: function(value) {
-                  if (value === 0) return '• temas •';
+                  if (value === 0) return '• contact •';
                   return Math.abs(value);
                 }
               },
               title: {
                 display: true,
-                text: '0 = temas noktası | Mesafe = çift sayısı',
+                text: '0 = contact point | Distance = pair count',
                 color: '#6b7280',
                 font: { size: 10 }
               }
@@ -2301,13 +2302,13 @@
     }
 
     function initDeltaChart(ctx) {
-      // Değişim (türev) grafiği
+      // Change (derivative) chart
       liveChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: ['1dk'],
           datasets: [{
-            label: 'Değişim (Δ)',
+            label: 'Change (Δ)',
             data: [0],
             backgroundColor: function(context) {
               const value = context.raw;
@@ -2333,7 +2334,7 @@
               callbacks: {
                 label: function(context) {
                   const value = context.raw;
-                  const direction = value > 0 ? '📈 Artış' : value < 0 ? '📉 Azalış' : '➡️ Sabit';
+                  const direction = value > 0 ? '📈 Increase' : value < 0 ? '📉 Decrease' : '➡️ Stable';
                   return `Δ = ${value} (${direction})`;
                 }
               }
@@ -2368,14 +2369,14 @@
     }
 
     function initBarChart(ctx) {
-      // Orijinal bar grafik
+      // Original bar chart
       liveChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: ['1dk'],
           datasets: [
             {
-              label: 'Çift Sayısı',
+              label: 'Pair Count',
               data: [0],
               backgroundColor: 'rgba(251, 191, 36, 0.8)',
               borderColor: 'rgba(251, 191, 36, 1)',
@@ -2384,7 +2385,7 @@
               yAxisID: 'y'
             },
             {
-              label: 'Oran (Σ/dk)',
+              label: 'Ratio (Σ/min)',
               data: [0],
               type: 'line',
               borderColor: '#10b981',
@@ -2419,21 +2420,21 @@
               position: 'left',
               grid: { color: 'rgba(255,255,255,0.05)' },
               ticks: { color: '#fbbf24', stepSize: 1 },
-              title: { display: true, text: 'Çift Sayısı', color: '#fbbf24' }
+              title: { display: true, text: 'Pair Count', color: '#fbbf24' }
             },
             y1: {
               type: 'linear',
               position: 'right',
               grid: { drawOnChartArea: false },
               ticks: { color: '#10b981' },
-              title: { display: true, text: 'Oran', color: '#10b981' }
+              title: { display: true, text: 'Ratio', color: '#10b981' }
             }
           }
         }
       });
     }
 
-    // Gradient fonksiyonları
+    // Gradient functions
     function getGradient(ctx, chartArea) {
       const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
       gradient.addColorStop(0, '#ef4444');
@@ -2454,59 +2455,59 @@
     function switchChartType(type) {
       chartType = type;
       
-      // Buton stillerini güncelle
+      // Update button styles
       document.querySelectorAll('.chart-type-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.type === type) btn.classList.add('active');
       });
 
-      // Legend güncelle
+      // Update legend
       const legend = document.getElementById('chartLegend');
       if (type === 'wave') {
         legend.innerHTML = `
           <div class="legend-item">
             <div style="width: 20px; height: 4px; background: #10b981; border-radius: 2px;"></div>
-            <span style="color: #10b981;">Dalga 1 (Üst)</span>
+            <span style="color: #10b981;">Wave 1 (Upper)</span>
           </div>
           <div class="legend-item">
             <div style="width: 20px; height: 4px; background: #f59e0b; border-radius: 2px;"></div>
-            <span style="color: #f59e0b;">Dalga 2 (Alt)</span>
+            <span style="color: #f59e0b;">Wave 2 (Lower)</span>
           </div>
           <div class="legend-item">
-            <span style="color: #6b7280; font-size: 11px;">0 = temas noktası</span>
+            <span style="color: #6b7280; font-size: 11px;">0 = contact point</span>
           </div>
         `;
       } else if (type === 'delta') {
         legend.innerHTML = `
           <div class="legend-item">
             <div style="width: 16px; height: 12px; background: #10b981; border-radius: 2px;"></div>
-            <span style="color: #10b981;">Artış (+)</span>
+            <span style="color: #10b981;">Increase (+)</span>
           </div>
           <div class="legend-item">
             <div style="width: 16px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
-            <span style="color: #ef4444;">Azalış (-)</span>
+            <span style="color: #ef4444;">Decrease (-)</span>
           </div>
         `;
       } else {
         legend.innerHTML = `
           <div class="legend-item">
             <div class="legend-bar"></div>
-            <span style="color: #fbbf24;">Dakikadaki Çift</span>
+            <span style="color: #fbbf24;">Pairs per Minute</span>
           </div>
           <div class="legend-item">
             <div class="legend-line"></div>
-            <span style="color: #10b981;">Kümülatif Oran</span>
+            <span style="color: #10b981;">Cumulative Ratio</span>
           </div>
         `;
       }
 
-      // Grafiği yeniden oluştur
+      // Recreate chart
       if (liveChart) {
         liveChart.destroy();
       }
       initChart();
       
-      // Mevcut verileri yükle
+      // Load existing data
       rebuildChartData();
     }
 
@@ -2516,15 +2517,15 @@
       const labels = pairCountsPerMinute.map((_, i) => `${i + 1}dk`);
       
       if (chartType === 'wave') {
-        // Dalgalar: çift sayısına göre açılıp kapanır
-        const wave1 = pairCountsPerMinute.map(v => v);       // Üstte
-        const wave2 = pairCountsPerMinute.map(v => -v);      // Altta
+        // Waves: open and close based on pair count
+        const wave1 = pairCountsPerMinute.map(v => v);       // Upper
+        const wave2 = pairCountsPerMinute.map(v => -v);      // Lower
         
         liveChart.data.labels = labels;
         liveChart.data.datasets[0].data = wave1;
         liveChart.data.datasets[1].data = wave2;
       } else if (chartType === 'delta') {
-        // Değişim hesapla
+        // Calculate change
         const deltas = pairCountsPerMinute.map((v, i) => {
           if (i === 0) return 0;
           return v - pairCountsPerMinute[i - 1];
@@ -2549,18 +2550,18 @@
 
     async function startRecording() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert('Tarayıcınız konuşma tanıma desteklemiyor. Lütfen Chrome kullanın.');
+        alert('Your browser does not support speech recognition. Please use Chrome.');
         return;
       }
 
-      // Mikrofon iznini bir kez al ve stream'i açık tut
-      // Bu sayede SpeechRecognition restart'larında tarayıcı tekrar izin sormaz
+      // Get microphone permission once and keep stream open
+      // This prevents the browser from asking for permission again on SpeechRecognition restarts
       try {
         if (!micStream) {
           micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         }
       } catch (err) {
-        alert('Mikrofon erişimi reddedildi. Lütfen izin verin.');
+        alert('Microphone access denied. Please grant permission.');
         console.error('getUserMedia error:', err);
         return;
       }
@@ -2578,7 +2579,7 @@
       restartAttempts = 0;
       lastRestartTime = 0;
 
-      // UI güncelle
+      // Update UI
       document.getElementById('startBtn').classList.add('hidden');
       document.getElementById('manualBtn').classList.add('hidden');
       document.getElementById('pauseBtn').classList.remove('hidden');
@@ -2589,17 +2590,17 @@
       document.getElementById('manualSection').classList.remove('show');
       document.getElementById('soundLevels').classList.remove('hidden');
       document.getElementById('language').disabled = true;
-      document.getElementById('statusLabel').textContent = '🔴 KAYIT';
+      document.getElementById('statusLabel').textContent = '🔴 RECORDING';
       document.getElementById('pulseDot').style.display = 'block';
       
-      // Ses uyarılarını sıfırla
+      // Reset sound alerts
       resetMinuteAlerts();
       
-      // n8n session başlat
+      // Start n8n session
       currentSessionId = generateSessionId();
       startInterimUpdates();
 
-      // Chart'ı başlat
+      // Initialize chart
       if (liveChart) {
         liveChart.destroy();
       }
@@ -2649,19 +2650,19 @@
         console.warn('Speech error:', event.error);
         
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-          // Kullanıcı mikrofon iznini reddetti — döngüye girme
-          console.error('Mikrofon izni reddedildi, yeniden denenmeyecek.');
-          document.getElementById('statusLabel').textContent = '🚫 MİKROFON İZNİ GEREK';
+          // User denied mic permission — don't loop
+          console.error('Microphone permission denied, will not retry.');
+          document.getElementById('statusLabel').textContent = '🚫 MICROPHONE PERMISSION REQUIRED';
           return;
         }
         
         if (event.error === 'aborted') {
-          // Tarayıcı tarafından durduruldu — sessizce yeniden başlat
+          // Stopped by browser — silently restart
           return; // onend zaten tetiklenecek
         }
         
         if (event.error === 'no-speech') {
-          // Ses algılanmadı — normal, onend'de yeniden başlayacak
+          // No speech detected — normal, will restart on onend
           return;
         }
       };
@@ -2672,7 +2673,7 @@
         const now = Date.now();
         const timeSinceLastRestart = now - lastRestartTime;
         
-        // Çok hızlı restart döngüsünü engelle
+        // Prevent rapid restart loop
         if (timeSinceLastRestart < MIN_RESTART_INTERVAL) {
           setTimeout(() => {
             if (isRecording && !isPaused) {
@@ -2687,12 +2688,12 @@
           return;
         }
         
-        // Maksimum deneme kontrolü
+        // Maximum retry check
         restartAttempts++;
         if (restartAttempts > MAX_RESTART_ATTEMPTS) {
-          console.warn('Çok fazla yeniden başlatma denemesi, duraklatılıyor.');
+          console.warn('Too many restart attempts, pausing.');
           restartAttempts = 0;
-          // 2 saniye bekle, sonra tekrar dene
+          // Wait 2 seconds, then retry
           setTimeout(() => {
             if (isRecording && !isPaused) {
               try { 
@@ -2709,7 +2710,7 @@
           lastRestartTime = now;
         } catch(e) {
           console.warn('Recognition restart failed:', e);
-          // Kısa gecikme ile tekrar dene
+          // Retry with short delay
           setTimeout(() => {
             if (isRecording && !isPaused) {
               try { recognition.start(); } catch(e2) {}
@@ -2726,7 +2727,7 @@
         const newMinute = Math.floor(elapsedTime / 60);
         
         if (newMinute > currentMinute) {
-          // Yeni dakika başladı
+          // New minute started
           minuteData.push({
             minute: currentMinute + 1,
             pairs: currentMinutePairs,
@@ -2734,17 +2735,17 @@
             text: currentMinuteWords.join(' ')
           });
           
-          // pairCountsPerMinute'a yeni dakika ekle
+          // Add new minute to pairCountsPerMinute
           pairCountsPerMinute.push(0);
           
           currentMinute = newMinute;
           currentMinutePairs = 0;
           currentMinuteWords = [];
           
-          // Yeni dakika için ses uyarılarını sıfırla
+          // Reset sound alerts for new minute
           resetMinuteAlerts();
           
-          // Chart'ı güncelle
+          // Update chart
           updateChart();
         }
         
@@ -2763,7 +2764,7 @@
       
       document.getElementById('pauseBtn').classList.add('hidden');
       document.getElementById('resumeBtn').classList.remove('hidden');
-      document.getElementById('statusLabel').textContent = '⏸️ DURAKLATILDI';
+      document.getElementById('statusLabel').textContent = '⏸️ PAUSED';
       document.getElementById('pulseDot').style.display = 'none';
     }
 
@@ -2784,7 +2785,7 @@
       
       document.getElementById('resumeBtn').classList.add('hidden');
       document.getElementById('pauseBtn').classList.remove('hidden');
-      document.getElementById('statusLabel').textContent = '🔴 KAYIT';
+      document.getElementById('statusLabel').textContent = '🔴 RECORDING';
       document.getElementById('pulseDot').style.display = 'block';
     }
 
@@ -2797,7 +2798,7 @@
         recognition = null;
       }
       
-      // Mikrofon stream'ini serbest bırak
+      // Release microphone stream
       if (micStream) {
         micStream.getTracks().forEach(track => track.stop());
         micStream = null;
@@ -2805,7 +2806,7 @@
       
       clearInterval(timerInterval);
       
-      // Son dakikayı kaydet
+      // Save last minute
       if (currentMinuteWords.length > 0 || currentMinutePairs > 0) {
         minuteData.push({
           minute: currentMinute + 1,
@@ -2822,10 +2823,10 @@
       document.getElementById('manualBtn').classList.remove('hidden');
       document.getElementById('soundLevels').classList.add('hidden');
       document.getElementById('language').disabled = false;
-      document.getElementById('statusLabel').textContent = '✅ TAMAMLANDI';
+      document.getElementById('statusLabel').textContent = '✅ COMPLETED';
       document.getElementById('pulseDot').style.display = 'none';
       
-      // n8n'e final sonucu gönder
+      // Send final result to n8n
       stopInterimUpdates();
       sendToN8n('final');
     }
@@ -2848,7 +2849,7 @@
 
       const lines = input.split('\n').filter(l => l.trim());
       
-      // Her satırı işle
+      // Process each line
       lines.forEach((line, idx) => {
         const analysis = processText(line);
         totalWords += analysis.wordCount;
@@ -2867,7 +2868,7 @@
 
       currentMinute = lines.length - 1;
 
-      // Chart'ı başlat ve verileri yükle
+      // Initialize chart and load data
       document.getElementById('chartSection').classList.remove('hidden');
       if (liveChart) liveChart.destroy();
       initChart();
@@ -2879,18 +2880,18 @@
       
       document.getElementById('manualSection').classList.remove('show');
       
-      // n8n'e gönder
+      // Send to n8n
       currentSessionId = generateSessionId();
       sendToN8n('final');
     }
 
     // ============================================
-    // n8n BACKEND ENTEGRASYONU
+    // n8n BACKEND INTEGRATION
     // ============================================
     const N8N_WEBHOOK_URL = 'https://n8n.tropus.io/webhook/asge-analyze';
     let currentSessionId = null;
     let interimTimer = null;
-    const INTERIM_INTERVAL_MS = 120000; // 2 dakikada bir
+    const INTERIM_INTERVAL_MS = 120000; // Every 2 minutes
 
     function generateSessionId() {
       return `session_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -2926,11 +2927,11 @@
         sessionId: currentSessionId
       };
 
-      // UI güncelle
+      // Update UI
       const panel = document.getElementById('aiResultsPanel');
       panel.classList.remove('hidden');
       document.getElementById('aiLoading').style.display = 'block';
-      document.getElementById('aiPanelMode').textContent = mode === 'interim' ? '⏳ Ara Sonuç' : '✅ Final';
+      document.getElementById('aiPanelMode').textContent = mode === 'interim' ? '⏳ Interim' : '✅ Final';
 
       try {
         const response = await fetch(N8N_WEBHOOK_URL, {
@@ -2946,8 +2947,8 @@
           displayAIResults(result, mode);
         }
       } catch (error) {
-        console.error('n8n bağlantı hatası:', error);
-        document.getElementById('aiLoading').innerHTML = '❌ AI bağlantı hatası: ' + error.message;
+        console.error('n8n connection error:', error);
+        document.getElementById('aiLoading').innerHTML = '❌ AI connection error: ' + error.message;
       }
     }
 
@@ -2967,43 +2968,43 @@
       document.getElementById('aiLoading').style.display = 'none';
       const container = document.getElementById('aiPanelContent');
       
-      // İstatistikler
+      // Statistics
       let html = `<div class="ai-stats-row">
-        <div class="ai-stat-box"><span class="ai-stat-label">AI Toplam</span><span class="ai-stat-val">${result.stats.totalPairs}</span></div>
-        <div class="ai-stat-box"><span class="ai-stat-label">Klasik</span><span class="ai-stat-val">${result.stats.classicPairs}</span></div>
-        <div class="ai-stat-box"><span class="ai-stat-label">Bağlamsal</span><span class="ai-stat-val">${result.stats.contextualPairs}</span></div>
-        <div class="ai-stat-box"><span class="ai-stat-label">Oran/dk</span><span class="ai-stat-val">${result.stats.pairsPerMinute}</span></div>
+        <div class="ai-stat-box"><span class="ai-stat-label">AI Total</span><span class="ai-stat-val">${result.stats.totalPairs}</span></div>
+        <div class="ai-stat-box"><span class="ai-stat-label">Classic</span><span class="ai-stat-val">${result.stats.classicPairs}</span></div>
+        <div class="ai-stat-box"><span class="ai-stat-label">Contextual</span><span class="ai-stat-val">${result.stats.contextualPairs}</span></div>
+        <div class="ai-stat-box"><span class="ai-stat-label">Rate/min</span><span class="ai-stat-val">${result.stats.pairsPerMinute}</span></div>
       </div>`;
 
-      // Özet
+      // Summary
       if (result.analysis.summary) {
         html += `<div class="ai-summary-box">
-          <h4>📊 ${mode === 'interim' ? 'Ara Analiz' : 'Final Analiz'}</h4>
+          <h4>📊 ${mode === 'interim' ? 'Interim Analysis' : 'Final Analysis'}</h4>
           <p>${result.analysis.summary}</p>
-          ${result.analysis.peakMinute ? `<p style="margin-top:8px;font-size:12px;color:#818cf8;"><strong>Zirve:</strong> Dakika ${result.analysis.peakMinute} | <strong>Tema:</strong> ${result.analysis.dominantTheme || '-'}</p>` : ''}
+          ${result.analysis.peakMinute ? `<p style="margin-top:8px;font-size:12px;color:#818cf8;"><strong>Peak:</strong> Minute ${result.analysis.peakMinute} | <strong>Theme:</strong> ${result.analysis.dominantTheme || '-'}</p>` : ''}
         </div>`;
       }
 
-      // Çiftler
+      // Pairs
       if (result.pairs && result.pairs.length > 0) {
-        html += '<h4 style="color:#a5b4fc;font-size:13px;margin-bottom:8px;">🔍 AI Tespit Edilen Çiftler</h4>';
+        html += '<h4 style="color:#a5b4fc;font-size:13px;margin-bottom:8px;">🔍 AI Detected Pairs</h4>';
         result.pairs.forEach(p => {
           html += `<div class="ai-pair-ctx">
             <span class="pair-words">${p.word1} ↔ ${p.word2}</span>
-            <span class="pair-type ${p.type}">${p.type === 'classic' ? 'klasik' : 'bağlamsal'}</span>
-            <span class="pair-min">dk ${p.minute}</span>
+            <span class="pair-type ${p.type}">${p.type === 'classic' ? 'classic' : 'contextual'}</span>
+            <span class="pair-min">min ${p.minute}</span>
             <span class="pair-ctx">"${p.context}"</span>
           </div>`;
         });
       }
 
-      // Trendler
+      // Trends
       if (result.minuteTrends && result.minuteTrends.length > 0) {
-        html += '<h4 style="color:#a5b4fc;font-size:13px;margin:12px 0 8px;">📈 Dakika Trendleri</h4>';
+        html += '<h4 style="color:#a5b4fc;font-size:13px;margin:12px 0 8px;">📈 Minute Trends</h4>';
         result.minuteTrends.forEach(t => {
           html += `<div class="ai-trend-row intensity-${t.intensity}">
-            <span class="ai-trend-min">Dk ${t.minute}</span>
-            <span class="ai-trend-count">${t.count} çift</span>
+            <span class="ai-trend-min">Min ${t.minute}</span>
+            <span class="ai-trend-count">${t.count} pairs</span>
             <span class="ai-trend-note">${t.note}</span>
           </div>`;
         });
@@ -3012,7 +3013,7 @@
       container.innerHTML = html;
     }
 
-    // Sayfa yüklendiğinde
+    // On page load
     updateDisplay();
   </script>
 </body>
