@@ -1,3020 +1,945 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASGE — Ambivalence-Centered Semantic Geometry Engine</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --gold: #c9a84c;
-      --gold-light: #e2c97e;
-      --gold-dim: rgba(201,168,76,0.15);
-      --emerald: #34d399;
-      --emerald-dim: rgba(52,211,153,0.12);
-      --rose: #f472b6;
-      --rose-dim: rgba(244,114,182,0.12);
-      --amber: #fbbf24;
-      --amber-dim: rgba(251,191,36,0.12);
-      --red: #f87171;
-      --blue: #60a5fa;
-      --surface: rgba(255,255,255,0.025);
-      --surface-hover: rgba(255,255,255,0.05);
-      --glass: rgba(255,255,255,0.04);
-      --glass-border: rgba(255,255,255,0.06);
-      --glass-strong: rgba(255,255,255,0.07);
-      --text-primary: #f0ece4;
-      --text-secondary: #9a9590;
-      --text-muted: #6b6560;
-      --radius: 20px;
-      --radius-sm: 12px;
-      --radius-xs: 8px;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'DM Sans', -apple-system, sans-serif;
-      background: #09090b;
-      min-height: 100vh;
-      color: var(--text-primary);
-      padding: 20px;
-      overflow-x: hidden;
-    }
-
-    /* Ambient background glow */
-    body::before {
-      content: '';
-      position: fixed;
-      top: -40%;
-      left: -20%;
-      width: 80%;
-      height: 80%;
-      background: radial-gradient(ellipse, rgba(201,168,76,0.04) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: -30%;
-      right: -20%;
-      width: 70%;
-      height: 70%;
-      background: radial-gradient(ellipse, rgba(52,211,153,0.03) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Noise texture overlay */
-    .container::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ===== HEADER ===== */
-    header {
-      text-align: center;
-      padding: 44px 32px 36px;
-      background: var(--glass);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
-      margin-bottom: 28px;
-      position: relative;
-      overflow: hidden;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-    header::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
-    }
-    header::after {
-      content: '';
-      position: absolute;
-      top: -80px; left: 50%;
-      transform: translateX(-50%);
-      width: 400px; height: 200px;
-      background: radial-gradient(ellipse, rgba(201,168,76,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 42px;
-      font-weight: 900;
-      letter-spacing: 10px;
-      background: linear-gradient(135deg, var(--gold-light), var(--gold), #a88a3d);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 6px;
-      position: relative;
-      text-shadow: none;
-    }
-
-    .header-full-name {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 11px;
-      letter-spacing: 4px;
-      color: var(--text-secondary);
-      font-weight: 500;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 400;
-      letter-spacing: 0.5px;
-    }
-
-    /* ===== CONTROLS ===== */
-    .controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-    }
-
-    select, button {
-      padding: 12px 26px;
-      border-radius: 50px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      border: none;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      letter-spacing: 0.3px;
-    }
-
-    select {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      color: var(--text-primary);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      appearance: none;
-      -webkit-appearance: none;
-      padding-right: 36px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9590' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-    }
-    select:hover {
-      border-color: rgba(201,168,76,0.3);
-    }
-
-    select option {
-      background: #1a1a1d;
-      color: var(--text-primary);
-    }
-
-    .btn-start {
-      background: linear-gradient(135deg, #059669, #10b981, #34d399);
-      color: #022c22;
-      font-weight: 700;
-      box-shadow: 0 0 0 0 rgba(16,185,129,0), 0 2px 8px rgba(16,185,129,0.2);
-    }
-    .btn-start:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 30px rgba(16,185,129,0.15), 0 8px 30px rgba(16,185,129,0.25);
-    }
-
-    .btn-pause {
-      background: linear-gradient(135deg, #d97706, #f59e0b);
-      color: #451a03;
-      font-weight: 700;
-    }
-    .btn-pause:hover {
-      box-shadow: 0 0 30px rgba(245,158,11,0.15);
-    }
-
-    .btn-stop {
-      background: linear-gradient(135deg, #dc2626, #ef4444);
-      color: #450a0a;
-      font-weight: 700;
-    }
-    .btn-stop:hover {
-      box-shadow: 0 0 30px rgba(239,68,68,0.15);
-    }
-
-    .btn-manual {
-      background: var(--glass);
-      border: 1px solid rgba(201,168,76,0.15);
-      color: var(--gold-light);
-      backdrop-filter: blur(10px);
-    }
-    .btn-manual:hover {
-      background: var(--gold-dim);
-      border-color: rgba(201,168,76,0.3);
-    }
-
-    /* ===== TIMER ===== */
-    .timer-section {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-
-    .timer-box {
-      text-align: center;
-      padding: 20px 40px;
-      border-radius: var(--radius);
-      min-width: 140px;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      position: relative;
-      overflow: hidden;
-    }
-    .timer-box::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-    }
-
-    .timer-box.time {
-      background: var(--emerald-dim);
-      border: 1px solid rgba(52,211,153,0.12);
-    }
-    .timer-box.time::before {
-      background: linear-gradient(90deg, transparent, rgba(52,211,153,0.4), transparent);
-    }
-
-    .timer-box.minute {
-      background: var(--gold-dim);
-      border: 1px solid rgba(201,168,76,0.12);
-    }
-    .timer-box.minute::before {
-      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
-    }
-
-    .timer-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 38px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 2px;
-    }
-
-    .timer-box.time .timer-value { color: var(--emerald); }
-    .timer-box.minute .timer-value { color: var(--gold); }
-
-    .timer-label {
-      font-size: 10px;
-      margin-top: 6px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* ===== GLASS CARD MIXIN ===== */
-    .live-chart-container,
-    .stats-grid .stat-card,
-    .pairs-section,
-    .transcript-section,
-    .wordcloud-section,
-    .manual-section,
-    .ai-results-panel {
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* ===== LIVE CHART ===== */
-    .live-chart-container {
-      background: var(--glass);
-      border: 1px solid rgba(52,211,153,0.1);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 28px;
-      position: relative;
-    }
-    .live-chart-container::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(52,211,153,0.3), transparent);
-    }
-
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .chart-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--emerald);
-      letter-spacing: 0.5px;
-    }
-
-    .pulse-dot {
-      width: 10px;
-      height: 10px;
-      background: var(--emerald);
-      border-radius: 50%;
-      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52,211,153,0.4); }
-      50% { transform: scale(1.15); box-shadow: 0 0 0 12px rgba(52,211,153,0); }
-    }
-
-    .live-stats {
-      display: flex;
-      gap: 10px;
-    }
-
-    .live-stat {
-      padding: 8px 18px;
-      border-radius: var(--radius-sm);
-      text-align: center;
-      backdrop-filter: blur(10px);
-    }
-
-    .live-stat.ratio {
-      background: var(--emerald-dim);
-      border: 1px solid rgba(52,211,153,0.15);
-    }
-
-    .live-stat.current {
-      background: var(--amber-dim);
-      border: 1px solid rgba(251,191,36,0.15);
-    }
-
-    .live-stat-label {
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 500;
-    }
-
-    .live-stat-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .live-stat.ratio .live-stat-value { color: var(--emerald); }
-    .live-stat.current .live-stat-value { color: var(--amber); }
-
-    .formula-box {
-      display: inline-block;
-      padding: 8px 16px;
-      background: rgba(0,0,0,0.4);
-      border-radius: 50px;
-      font-size: 12px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255,255,255,0.04);
-    }
-
-    .formula-box code {
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--gold);
-      background: var(--gold-dim);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-    }
-
-    .chart-wrapper {
-      height: 300px;
-      position: relative;
-    }
-
-    .chart-legend {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      margin-top: 16px;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .chart-type-btn {
-      padding: 8px 18px;
-      border-radius: 50px;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      color: var(--text-muted);
-      font-size: 11px;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s;
-      letter-spacing: 0.3px;
-    }
-
-    .chart-type-btn:hover {
-      background: var(--surface-hover);
-      color: var(--text-primary);
-      border-color: rgba(255,255,255,0.1);
-    }
-
-    .chart-type-btn.active {
-      background: var(--emerald-dim);
-      border-color: rgba(52,211,153,0.25);
-      color: var(--emerald);
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend-bar {
-      width: 16px;
-      height: 10px;
-      background: linear-gradient(135deg, var(--amber), #f59e0b);
-      border-radius: 3px;
-    }
-
-    .legend-line {
-      width: 16px;
-      height: 2px;
-      background: var(--emerald);
-      border-radius: 2px;
-    }
-
-    /* ===== STATS GRID ===== */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-
-    .stat-card {
-      padding: 20px;
-      background: var(--glass);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-    }
-
-    .stat-label {
-      font-size: 10px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: 500;
-    }
-
-    .stat-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 28px;
-      font-weight: 700;
-    }
-
-    /* ===== DETECTION POPUP ===== */
-    .detection-popup {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      padding: 14px 22px;
-      background: linear-gradient(135deg, rgba(201,168,76,0.95), rgba(161,128,36,0.95));
-      border-radius: 50px;
-      animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 10;
-      display: none;
-      box-shadow: 0 8px 40px rgba(201,168,76,0.2);
-    }
-
-    .detection-popup.show {
-      display: block;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(50px) scale(0.8); opacity: 0; }
-      to { transform: translateX(0) scale(1); opacity: 1; }
-    }
-
-    .detection-label {
-      font-size: 9px;
-      color: rgba(0,0,0,0.5);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .detection-word {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1a1a1d;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* ===== PAIRS SECTION ===== */
-    .pairs-section {
-      background: var(--glass);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
-      padding: 20px;
-      margin-bottom: 28px;
-    }
-
-    .pairs-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gold);
-      margin-bottom: 14px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .pairs-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pair-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 50px;
-      border: 1px solid var(--glass-border);
-      transition: all 0.3s;
-    }
-    .pair-item:hover {
-      border-color: rgba(201,168,76,0.2);
-      background: rgba(201,168,76,0.05);
-    }
-
-    .pair-text {
-      font-size: 12px;
-      color: var(--text-primary);
-      font-weight: 500;
-    }
-
-    .pair-count {
-      padding: 2px 10px;
-      border-radius: 50px;
-      background: var(--gold-dim);
-      color: var(--gold);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      font-weight: 600;
-    }
-
-    /* ===== TRANSCRIPT ===== */
-    .transcript-section {
-      background: var(--glass);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
-      padding: 20px;
-      margin-bottom: 28px;
-    }
-
-    .transcript-title {
-      font-size: 11px;
-      font-weight: 600;
-      margin-bottom: 14px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-    }
-
-    .transcript-content {
-      padding: 16px;
-      background: rgba(0,0,0,0.35);
-      border-radius: var(--radius-sm);
-      max-height: 150px;
-      overflow-y: auto;
-      font-size: 13px;
-      line-height: 2;
-      color: var(--text-secondary);
-      border: 1px solid rgba(255,255,255,0.03);
-    }
-
-    .transcript-content::-webkit-scrollbar {
-      width: 4px;
-    }
-    .transcript-content::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .transcript-content::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.1);
-      border-radius: 2px;
-    }
-
-    .highlight {
-      background: rgba(52,211,153,0.15);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: var(--emerald);
-      font-weight: 600;
-      border: 1px solid rgba(52,211,153,0.15);
-    }
-
-    /* ===== MANUAL INPUT ===== */
-    .manual-section {
-      background: var(--glass);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
-      padding: 24px;
-      margin-bottom: 28px;
-      display: none;
-    }
-
-    .manual-section.show {
-      display: block;
-    }
-
-    .manual-hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      letter-spacing: 0.3px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 120px;
-      padding: 16px;
-      border-radius: var(--radius-sm);
-      background: rgba(0,0,0,0.35);
-      border: 1px solid var(--glass-border);
-      color: var(--text-primary);
-      font-size: 13px;
-      font-family: 'DM Sans', sans-serif;
-      resize: vertical;
-      transition: border-color 0.3s;
-      line-height: 1.7;
-    }
-
-    textarea:focus {
-      outline: none;
-      border-color: rgba(201,168,76,0.3);
-      box-shadow: 0 0 0 3px rgba(201,168,76,0.05);
-    }
-
-    .btn-analyze {
-      margin-top: 14px;
-      background: linear-gradient(135deg, var(--gold), #a88a3d);
-      color: #1a1a1d;
-      font-weight: 700;
-    }
-    .btn-analyze:hover {
-      box-shadow: 0 0 30px rgba(201,168,76,0.15);
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @keyframes alertPop {
-      0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
-      50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
-      70% { transform: translateX(-50%) scale(0.95); }
-      100% { transform: translateX(-50%) scale(1); opacity: 0; }
-    }
-
-    /* ===== SOUND TOGGLE ===== */
-    .sound-toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 50px;
-      color: var(--text-primary);
-      font-size: 12px;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .sound-toggle:hover {
-      background: var(--surface-hover);
-      border-color: rgba(255,255,255,0.1);
-    }
-
-    .sound-toggle.muted {
-      opacity: 0.4;
-    }
-
-    .sound-levels {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .sound-level-indicator {
-      padding: 5px 14px;
-      border-radius: 50px;
-      font-size: 10px;
-      font-weight: 600;
-      opacity: 0.3;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      letter-spacing: 0.5px;
-    }
-
-    .sound-level-indicator.active {
-      opacity: 1;
-      transform: scale(1.12);
-      box-shadow: 0 2px 16px currentColor;
-    }
-
-    /* ===== WORD CLOUD ===== */
-    .wordcloud-section {
-      background: var(--glass);
-      border-radius: var(--radius);
-      border: 1px solid var(--glass-border);
-      padding: 20px;
-      margin-bottom: 28px;
-    }
-
-    .wordcloud-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .wordcloud-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--gold);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .wordcloud-minute {
-      font-size: 10px;
-      color: var(--text-muted);
-      background: var(--gold-dim);
-      padding: 4px 14px;
-      border-radius: 50px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-    }
-
-    .wordcloud-container {
-      min-height: 150px;
-      max-height: 300px;
-      padding: 20px;
-      background: rgba(0,0,0,0.3);
-      border-radius: var(--radius-sm);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      overflow-y: auto;
-      border: 1px solid rgba(255,255,255,0.03);
-    }
-    .wordcloud-container::-webkit-scrollbar {
-      width: 4px;
-    }
-    .wordcloud-container::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.08);
-      border-radius: 2px;
-    }
-
-    .wordcloud-word {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 6px;
-      background: rgba(201,168,76,0.08);
-      color: var(--gold-light);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: default;
-      white-space: nowrap;
-      border: 1px solid transparent;
-    }
-
-    .wordcloud-word:hover {
-      transform: scale(1.12);
-      background: rgba(201,168,76,0.15);
-      border-color: rgba(201,168,76,0.2);
-    }
-
-    .wordcloud-word.paired-word {
-      background: var(--emerald-dim);
-      color: var(--emerald);
-      border: 1px solid rgba(52,211,153,0.15);
-    }
-    .wordcloud-word.paired-word:hover {
-      background: rgba(52,211,153,0.2);
-      border-color: rgba(52,211,153,0.3);
-    }
-
-    .wordcloud-word.size-1 { font-size: 11px; opacity: 0.5; }
-    .wordcloud-word.size-2 { font-size: 13px; opacity: 0.6; }
-    .wordcloud-word.size-3 { font-size: 15px; opacity: 0.75; }
-    .wordcloud-word.size-4 { font-size: 18px; opacity: 0.85; font-weight: 500; }
-    .wordcloud-word.size-5 { font-size: 22px; opacity: 0.95; font-weight: 600; }
-    .wordcloud-word.size-6 { font-size: 26px; opacity: 1; font-weight: 700; }
-
-    .wordcloud-empty {
-      color: var(--text-muted);
-      font-size: 12px;
-      font-style: italic;
-    }
-
-    /* ===== AI RESULTS PANEL ===== */
-    .ai-results-panel {
-      background: var(--glass);
-      border: 1px solid rgba(201,168,76,0.12);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 28px;
-      position: relative;
-    }
-    .ai-results-panel::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
-    }
-
-    .ai-panel-header {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;
-    }
-    .ai-panel-title {
-      font-size: 13px; font-weight: 700; color: var(--gold);
-      letter-spacing: 1.5px; text-transform: uppercase;
-    }
-    .ai-panel-mode {
-      font-size: 10px; padding: 4px 14px; border-radius: 50px;
-      background: var(--gold-dim); color: var(--gold); font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    .ai-loading { color: var(--text-muted); font-size: 13px; text-align: center; padding: 24px; }
-    .ai-stats-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
-    .ai-stat-box {
-      padding: 14px 18px; background: rgba(0,0,0,0.3); border-radius: var(--radius-sm);
-      text-align: center; flex: 1; min-width: 80px;
-      border: 1px solid rgba(255,255,255,0.03);
-    }
-    .ai-stat-label {
-      font-size: 9px; color: var(--text-muted); display: block;
-      letter-spacing: 1px; text-transform: uppercase; font-weight: 500;
-    }
-    .ai-stat-val {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 22px; font-weight: 700; color: var(--gold);
-    }
-    .ai-summary-box {
-      margin-bottom: 18px; padding: 18px; background: rgba(0,0,0,0.25);
-      border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.03);
-    }
-    .ai-summary-box h4 { color: var(--gold); font-size: 12px; margin-bottom: 10px; letter-spacing: 1px; }
-    .ai-summary-box p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
-    .ai-pair-ctx {
-      display: flex; gap: 10px; align-items: center; padding: 10px 14px;
-      background: rgba(201,168,76,0.04); border-radius: var(--radius-xs);
-      margin-bottom: 6px; font-size: 13px;
-      border-left: 2px solid var(--gold);
-      transition: background 0.2s;
-    }
-    .ai-pair-ctx:hover { background: rgba(201,168,76,0.07); }
-    .ai-pair-ctx .pair-words {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600; color: var(--gold-light); white-space: nowrap; font-size: 12px;
-    }
-    .ai-pair-ctx .pair-min { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
-    .ai-pair-ctx .pair-ctx { font-size: 11px; color: var(--text-muted); font-style: italic; }
-    .ai-pair-ctx .pair-type {
-      font-size: 9px; padding: 2px 8px; border-radius: 50px; white-space: nowrap;
-      font-weight: 600; letter-spacing: 0.5px;
-    }
-    .ai-pair-ctx .pair-type.classic { background: var(--emerald-dim); color: var(--emerald); }
-    .ai-pair-ctx .pair-type.contextual { background: var(--amber-dim); color: var(--amber); }
-    .ai-trend-row {
-      display: flex; gap: 10px; align-items: center; padding: 8px 14px;
-      border-radius: var(--radius-xs); margin-bottom: 4px; font-size: 12px;
-      transition: background 0.2s;
-    }
-    .ai-trend-row.intensity-low { background: rgba(52,211,153,0.06); }
-    .ai-trend-row.intensity-medium { background: rgba(251,191,36,0.06); }
-    .ai-trend-row.intensity-high { background: rgba(248,113,113,0.06); }
-    .ai-trend-min { font-weight: 600; min-width: 50px; font-family: 'JetBrains Mono', monospace; }
-    .ai-trend-count { color: var(--amber); min-width: 70px; font-family: 'JetBrains Mono', monospace; }
-    .ai-trend-note { color: var(--text-muted); }
-
-    /* ===== FOOTER ===== */
-    footer {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 10px;
-      margin-top: 32px;
-      padding: 20px 0;
-      letter-spacing: 1px;
-      border-top: 1px solid rgba(255,255,255,0.03);
-    }
-
-    /* ===== SCROLLBAR GLOBAL ===== */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
-
-    /* ===== ANIMATIONS ===== */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    header, .controls, .timer-section, .live-chart-container,
-    .stats-grid, .pairs-section, .transcript-section,
-    .wordcloud-section, .ai-results-panel {
-      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    header { animation-delay: 0s; }
-    .controls { animation-delay: 0.05s; }
-    .stats-grid { animation-delay: 0.1s; }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 640px) {
-      h1 { font-size: 28px; letter-spacing: 6px; }
-      .timer-value { font-size: 28px; }
-      .stat-value { font-size: 22px; }
-      .controls { gap: 8px; }
-      select, button { padding: 10px 18px; font-size: 12px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASGE — Ambivalence-Centered Semantic Geometry Engine</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg-deep:#0e0f13;
+  --bg-surface:#16171d;
+  --bg-elevated:#1e2028;
+  --bg-card:#252730;
+  --text-primary:#e8e4df;
+  --text-secondary:#9b978f;
+  --text-muted:#5e5b54;
+  --accent:#d4943a;
+  --accent-glow:#d4943a44;
+  --accent-bright:#f0b255;
+  --accent-dim:#8b6225;
+  --negative:#c45c5c;
+  --positive:#5ca87c;
+  --pair-a:#6ba3d6;
+  --pair-b:#d67e6b;
+  --border:#2a2c35;
+  --radius:12px;
+  --radius-sm:8px;
+  --radius-lg:20px;
+  --space-xs:4px;
+  --space-sm:8px;
+  --space-md:16px;
+  --space-lg:24px;
+  --space-xl:40px;
+  --space-2xl:64px;
+  --space-3xl:100px;
+  --font-display:'Source Serif 4', Georgia, serif;
+  --font-mono:'JetBrains Mono', 'Courier New', monospace;
+  --transition-fast:150ms cubic-bezier(.4,0,.2,1);
+  --transition-med:250ms cubic-bezier(.4,0,.2,1);
+  --transition-slow:400ms cubic-bezier(.4,0,.2,1);
+}
+
+@media(prefers-color-scheme:light){
+  :root{
+    --bg-deep:#f4f1ec;--bg-surface:#eae7e1;--bg-elevated:#dfdcd5;
+    --bg-card:#e0ddd6;--text-primary:#1a1915;--text-secondary:#5e5b54;
+    --text-muted:#9b978f;--accent:#b07820;--accent-glow:#b0782033;
+    --accent-bright:#c88a2a;--accent-dim:#7a5418;--border:#c5c2bb;
+    --pair-a:#3a7bb8;--pair-b:#b85a47;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+}
+
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font-mono);background:var(--bg-deep);color:var(--text-primary);line-height:1.6;min-height:100vh;overflow-x:hidden}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg-deep)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--radius-sm)}
+
+/* ===== HEADER / NAV ===== */
+header{position:sticky;top:0;z-index:100;background:var(--bg-deep);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav-inner{max-width:1400px;margin:0 auto;padding:var(--space-md) var(--space-lg);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md)}
+.logo{font-family:var(--font-display);font-weight:700;font-size:1.5rem;letter-spacing:-0.03em;color:var(--accent);display:flex;align-items:center;gap:var(--space-sm)}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
+.logo-sub{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-left:var(--space-xs)}
+.nav-controls{display:flex;align-items:center;gap:var(--space-md)}
+.lang-select{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-primary);font-family:var(--font-mono);font-size:0.8rem;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);cursor:pointer;min-height:44px;min-width:44px;transition:border-color var(--transition-fast)}
+.lang-select:hover{border-color:var(--accent)}
+.lang-select option{background:var(--bg-surface);color:var(--text-primary)}
+.hamburger{display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;padding:var(--space-sm);min-height:44px;min-width:44px;align-items:center;justify-content:center}
+.hamburger svg{width:24px;height:24px}
+.nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-surface);border-bottom:1px solid var(--border);padding:var(--space-lg);flex-direction:column;gap:var(--space-md)}
+.nav-links.open{display:flex}
+.hamburger{display:flex}
+@media(min-width:768px){
+  .hamburger{display:none}
+  .nav-links{display:flex;position:static;background:transparent;border-bottom:none;padding:0;flex-direction:row;align-items:center;gap:var(--space-lg)}
+  .nav-links.open{display:flex}
+}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:0.8rem;letter-spacing:0.04em;text-transform:uppercase;transition:color var(--transition-fast);min-height:44px;display:flex;align-items:center}
+.nav-links a:hover{color:var(--accent)}
+
+main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
+
+/* ===== HERO ===== */
+.hero{padding:var(--space-3xl) 0 var(--space-2xl);display:grid;grid-template-columns:1fr;gap:var(--space-xl)}
+@media(min-width:768px){.hero{grid-template-columns:1.2fr 1fr;align-items:start}}
+.hero-text{max-width:60ch}
+.hero-text h1{font-family:var(--font-display);font-size:clamp(2.2rem,5vw,4rem);font-weight:700;letter-spacing:-0.03em;line-height:1.1;margin-bottom:var(--space-lg)}
+.hero-text h1 .highlight{color:var(--accent);position:relative}
+.hero-text h1 .highlight::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:3px;background:var(--accent);opacity:0.4;border-radius:2px}
+.hero-text p{color:var(--text-secondary);font-size:0.95rem;max-width:55ch;margin-bottom:var(--space-xl)}
+
+/* ===== INPUT SECTION ===== */
+.input-section{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl);position:relative;overflow:hidden}
+.input-section::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-dim),var(--accent),var(--accent-dim));opacity:0;transition:opacity var(--transition-med)}
+.input-section.recording::before{opacity:1;animation:pulse-bar 2s ease-in-out infinite}
+@keyframes pulse-bar{0%,100%{opacity:0.4}50%{opacity:1}}
+
+/* TABS */
+.input-tabs{display:flex;gap:var(--space-xs);margin-bottom:var(--space-lg)}
+.tab-btn{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-mono);font-size:0.8rem;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);cursor:pointer;min-height:44px;transition:background var(--transition-fast),color var(--transition-fast),border-color var(--transition-fast)}
+.tab-btn:hover{border-color:var(--accent);color:var(--text-primary)}
+.tab-btn.active{background:var(--accent);color:var(--bg-deep);border-color:var(--accent);font-weight:600}
+
+/* WAVEFORM */
+.waveform-container{height:120px;background:var(--bg-deep);border-radius:var(--radius);margin-bottom:var(--space-lg);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.waveform-canvas{width:100%;height:100%;display:block}
+.waveform-placeholder{color:var(--text-muted);font-size:0.8rem;position:absolute;pointer-events:none}
+
+/* RECORD CONTROLS */
+.record-controls{display:flex;align-items:center;gap:var(--space-md);flex-wrap:wrap}
+.btn-record{width:64px;height:64px;border-radius:50%;border:3px solid var(--accent);background:transparent;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;transition:background var(--transition-fast),box-shadow var(--transition-fast),transform var(--transition-fast)}
+.btn-record:hover{background:var(--accent-glow);transform:scale(1.05)}
+.btn-record::after{content:'';width:24px;height:24px;background:var(--accent);border-radius:50%;transition:border-radius var(--transition-fast),width var(--transition-fast),height var(--transition-fast),background var(--transition-fast)}
+.btn-record.recording{border-color:var(--negative);box-shadow:0 0 30px rgba(196,92,92,0.3);animation:rec-pulse 1.5s ease-in-out infinite}
+.btn-record.recording::after{background:var(--negative);border-radius:4px;width:20px;height:20px}
+.btn-record.paused{border-color:var(--accent-bright)}
+.btn-record.paused::after{background:var(--accent-bright);border-radius:3px;width:20px;height:20px}
+@keyframes rec-pulse{0%,100%{box-shadow:0 0 20px rgba(196,92,92,0.2)}50%{box-shadow:0 0 40px rgba(196,92,92,0.5)}}
+
+.btn-secondary{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-mono);font-size:0.75rem;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);cursor:pointer;min-height:44px;transition:border-color var(--transition-fast),color var(--transition-fast);text-transform:uppercase;letter-spacing:0.06em}
+.btn-secondary:hover{border-color:var(--accent);color:var(--text-primary)}
+.btn-secondary:disabled{opacity:0.3;cursor:not-allowed}
+.btn-secondary.sound-on{border-color:var(--accent-dim);color:var(--accent)}
+.btn-secondary.sound-off{opacity:0.4}
+
+/* TEXT INPUT */
+.text-input-area{display:none}
+.text-input-area.active{display:block}
+.mic-input-area.hidden{display:none}
+.text-area{width:100%;min-height:180px;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-family:var(--font-mono);font-size:0.9rem;padding:var(--space-md);resize:vertical;line-height:1.6;transition:border-color var(--transition-fast)}
+.text-area:focus{border-color:var(--accent);outline:none}
+.text-area::placeholder{color:var(--text-muted)}
+.btn-analyze{margin-top:var(--space-md);background:var(--accent);color:var(--bg-deep);border:none;font-family:var(--font-mono);font-size:0.85rem;font-weight:700;padding:var(--space-md) var(--space-xl);border-radius:var(--radius-sm);cursor:pointer;min-height:48px;letter-spacing:0.04em;text-transform:uppercase;transition:background var(--transition-fast),transform var(--transition-fast),box-shadow var(--transition-fast)}
+.btn-analyze:hover{background:var(--accent-bright);transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
+.btn-analyze:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* COUNTERS */
+.counters{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-md);margin-top:var(--space-lg)}
+.counter-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-md);text-align:left;transition:border-color var(--transition-fast)}
+.counter-card:hover{border-color:var(--accent-dim)}
+.counter-label{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--space-xs)}
+.counter-value{font-size:1.6rem;font-weight:700;color:var(--accent);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+.counter-value.pairs{color:var(--pair-a)}
+
+/* SOUND LEVELS */
+.sound-levels{display:flex;gap:var(--space-sm);margin-top:var(--space-md);flex-wrap:wrap}
+.sound-level-indicator{padding:4px 12px;border-radius:var(--radius-sm);font-size:0.65rem;font-weight:600;opacity:0.3;transition:all 0.4s cubic-bezier(.34,1.56,.64,1);letter-spacing:0.5px;border:1px solid transparent}
+.sound-level-indicator.active{opacity:1;transform:scale(1.1);box-shadow:0 2px 12px currentColor}
+
+/* DETECTION POPUP */
+.detection-popup{position:fixed;top:20px;left:50%;transform:translateX(-50%) scale(0.8);padding:12px 24px;background:var(--accent);color:var(--bg-deep);border-radius:30px;z-index:200;opacity:0;pointer-events:none;transition:all 0.4s cubic-bezier(.34,1.56,.64,1);font-weight:700;font-size:0.85rem;box-shadow:0 8px 30px var(--accent-glow)}
+.detection-popup.show{opacity:1;transform:translateX(-50%) scale(1)}
+@keyframes alertPop{0%{transform:translateX(-50%) scale(0.5);opacity:0}50%{transform:translateX(-50%) scale(1.1);opacity:1}70%{transform:translateX(-50%) scale(0.95)}100%{transform:translateX(-50%) scale(1);opacity:0}}
+
+/* FORMULA BOX */
+.formula-box{display:inline-block;padding:6px 14px;background:var(--bg-deep);border-radius:30px;font-size:0.75rem;border:1px solid var(--border);margin-top:var(--space-sm);color:var(--text-muted)}
+.formula-box code{font-family:var(--font-mono);color:var(--accent);background:var(--accent-glow);padding:2px 8px;border-radius:4px;font-size:0.7rem}
+
+/* TRANSCRIPT PANEL */
+.transcript-panel{background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-md);margin-top:var(--space-lg);max-height:200px;overflow-y:auto;font-size:0.8rem;color:var(--text-secondary);line-height:1.7;display:none}
+.transcript-panel.visible{display:block}
+.transcript-panel .hw{background:rgba(107,163,214,0.15);padding:2px 6px;border-radius:4px;color:var(--pair-a);font-weight:600;border:1px solid rgba(107,163,214,0.15)}
+
+/* LOCAL PAIRS */
+.local-pairs-panel{margin-top:var(--space-md);display:none}
+.local-pairs-panel.visible{display:block}
+.local-pairs-header{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--space-sm)}
+.local-pair-tag{display:inline-flex;align-items:center;gap:4px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 10px;font-size:0.75rem;margin:3px;transition:border-color var(--transition-fast)}
+.local-pair-tag:hover{border-color:var(--accent-dim)}
+.local-pair-tag .w-a{color:var(--pair-a);font-weight:600}
+.local-pair-tag .w-b{color:var(--pair-b);font-weight:600}
+.local-pair-tag .sep{color:var(--text-muted)}
+.local-pair-tag .cnt{font-size:0.6rem;background:var(--accent-glow);color:var(--accent);padding:1px 6px;border-radius:10px;margin-left:2px}
+
+/* WORD CLOUD */
+.wordcloud-panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl);margin-top:var(--space-lg);display:none}
+.wordcloud-panel.visible{display:block}
+.wordcloud-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md)}
+.wordcloud-title{font-size:0.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+.wordcloud-minute{font-size:0.65rem;color:var(--text-muted);background:var(--accent-glow);padding:4px 12px;border-radius:20px}
+.wordcloud-container{min-height:120px;max-height:260px;padding:var(--space-md);background:var(--bg-deep);border-radius:var(--radius);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;overflow-y:auto;border:1px solid var(--border)}
+.wordcloud-word{display:inline-block;padding:3px 10px;border-radius:6px;background:var(--accent-glow);color:var(--accent-bright);transition:all 0.3s;cursor:default;white-space:nowrap;border:1px solid transparent}
+.wordcloud-word:hover{transform:scale(1.12);background:rgba(212,148,58,0.2);border-color:var(--accent-dim)}
+.wordcloud-word.paired-word{background:rgba(107,163,214,0.12);color:var(--pair-a);border:1px solid rgba(107,163,214,0.15)}
+.wordcloud-word.paired-word:hover{background:rgba(107,163,214,0.2);border-color:rgba(107,163,214,0.3)}
+.wordcloud-word.size-1{font-size:0.65rem;opacity:0.5}
+.wordcloud-word.size-2{font-size:0.75rem;opacity:0.6}
+.wordcloud-word.size-3{font-size:0.85rem;opacity:0.75}
+.wordcloud-word.size-4{font-size:1rem;opacity:0.85;font-weight:500}
+.wordcloud-word.size-5{font-size:1.15rem;opacity:0.95;font-weight:600}
+.wordcloud-word.size-6{font-size:1.3rem;opacity:1;font-weight:700}
+.wordcloud-empty{color:var(--text-muted);font-size:0.8rem;font-style:italic}
+
+/* DIAGONAL DIVIDER */
+.diagonal-divider{height:80px;background:linear-gradient(175deg,var(--bg-deep) 49%,var(--bg-surface) 51%);margin:0 calc(-1 * var(--space-lg))}
+
+/* ===== CHART SECTION ===== */
+.chart-section{padding:var(--space-2xl) 0 var(--space-xl);display:none}
+.chart-section.visible{display:block}
+.section-title{font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:var(--space-xl);position:relative;padding-left:var(--space-lg)}
+.section-title::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:4px;background:var(--accent);border-radius:2px}
+.chart-container{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl);margin-bottom:var(--space-xl);position:relative}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-lg);flex-wrap:wrap;gap:var(--space-sm)}
+.chart-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em}
+.chart-type-btns{display:flex;gap:var(--space-xs);flex-wrap:wrap}
+.chart-type-btn{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted);font-family:var(--font-mono);font-size:0.7rem;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:all var(--transition-fast)}
+.chart-type-btn:hover{border-color:var(--accent);color:var(--text-primary)}
+.chart-type-btn.active{background:var(--accent-glow);border-color:var(--accent-dim);color:var(--accent)}
+.chart-canvas-wrap{width:100%;height:300px;position:relative}
+
+/* ===== AI RESULTS ===== */
+.results-section{padding:var(--space-xl) 0 var(--space-2xl);display:none}
+.results-section.visible{display:block}
+.ai-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-md);margin-bottom:var(--space-xl)}
+.ai-stat-box{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-lg);display:flex;flex-direction:column;gap:var(--space-xs);transition:border-color var(--transition-fast)}
+.ai-stat-box:hover{border-color:var(--accent-dim)}
+.ai-stat-label{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em}
+.ai-stat-val{font-size:2rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
+.pairs-grid{display:grid;grid-template-columns:1fr;gap:var(--space-md);margin-bottom:var(--space-xl)}
+@media(min-width:768px){.pairs-grid{grid-template-columns:repeat(2,1fr)}}
+.pair-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-lg);display:flex;align-items:center;gap:var(--space-md);transition:transform var(--transition-med),box-shadow var(--transition-med),border-color var(--transition-fast);cursor:default;animation:pair-enter 0.4s ease-out both}
+.pair-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.3);border-color:var(--accent-dim)}
+@keyframes pair-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.pair-word{font-family:var(--font-display);font-size:1.1rem;font-weight:700;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);letter-spacing:-0.01em}
+.pair-word.word-a{background:rgba(107,163,214,0.15);color:var(--pair-a);border:1px solid rgba(107,163,214,0.25)}
+.pair-word.word-b{background:rgba(214,126,107,0.15);color:var(--pair-b);border:1px solid rgba(214,126,107,0.25)}
+.pair-connector{color:var(--text-muted);font-size:1.2rem;flex-shrink:0}
+.pair-meta{margin-left:auto;text-align:right;display:flex;flex-direction:column;gap:2px}
+.pair-type{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;padding:2px 6px;border-radius:4px;font-weight:600}
+.pair-type.classic{background:rgba(107,163,214,0.15);color:var(--pair-a)}
+.pair-type.contextual{background:rgba(214,126,107,0.15);color:var(--pair-b)}
+.pair-context{font-size:0.7rem;color:var(--text-muted);max-width:22ch}
+.pair-minute{font-size:0.65rem;color:var(--text-muted)}
+
+/* AI SUMMARY */
+.ai-panel{background:linear-gradient(135deg,var(--bg-surface),var(--bg-elevated));border:1px solid var(--accent-dim);border-radius:var(--radius-lg);padding:var(--space-xl);position:relative;overflow:hidden;margin-bottom:var(--space-xl)}
+.ai-panel::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,var(--accent-glow),transparent 70%);pointer-events:none}
+.ai-panel-header{display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-lg)}
+.ai-badge{background:var(--accent);color:var(--bg-deep);font-size:0.6rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:0.1em;text-transform:uppercase}
+.ai-panel-title{font-family:var(--font-display);font-size:1.2rem;font-weight:600}
+.ai-summary-text{color:var(--text-secondary);font-size:0.9rem;line-height:1.7;max-width:70ch}
+.ai-summary-text p{margin-bottom:var(--space-md)}
+.ai-summary-text strong{color:var(--text-primary)}
+
+/* TRENDS */
+.trends-grid{display:grid;grid-template-columns:1fr;gap:var(--space-sm);margin-bottom:var(--space-xl)}
+.trend-row{display:flex;align-items:center;gap:var(--space-md);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-sm) var(--space-md);font-size:0.8rem;transition:border-color var(--transition-fast)}
+.trend-row:hover{border-color:var(--accent-dim)}
+.trend-row.intensity-high{border-left:3px solid var(--negative)}
+.trend-row.intensity-medium{border-left:3px solid var(--accent)}
+.trend-row.intensity-low{border-left:3px solid var(--positive)}
+.trend-min{color:var(--text-muted);font-size:0.7rem;min-width:48px}
+.trend-count{color:var(--accent);font-weight:700;min-width:56px}
+.trend-note{color:var(--text-secondary);font-size:0.75rem}
+
+/* LOADING / STATUS / TOAST / FOOTER */
+.loading-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(14,15,19,0.85);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-lg)}
+.loading-overlay.active{display:flex}
+.loading-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:var(--text-secondary);font-size:0.85rem;animation:loading-pulse 1.5s ease-in-out infinite}
+@keyframes loading-pulse{0%,100%{opacity:0.5}50%{opacity:1}}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--text-muted);transition:background var(--transition-fast)}
+.status-dot.ready{background:var(--positive)}
+.status-dot.recording{background:var(--negative);animation:blink 1s ease-in-out infinite}
+.status-dot.processing{background:var(--accent);animation:blink 0.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg);margin-top:var(--space-3xl)}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-md)}
+.footer-text{font-size:0.7rem;color:var(--text-muted);letter-spacing:0.04em}
+.toast{position:fixed;bottom:var(--space-xl);right:var(--space-xl);background:var(--bg-elevated);border:1px solid var(--border);border-left:3px solid var(--negative);color:var(--text-primary);font-size:0.8rem;padding:var(--space-md) var(--space-lg);border-radius:var(--radius-sm);z-index:300;transform:translateX(120%);transition:transform var(--transition-med);max-width:360px}
+.toast.show{transform:translateX(0)}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .counters{grid-template-columns:repeat(2,1fr)}
+  .ai-stats-row{grid-template-columns:repeat(2,1fr)}
+  .counter-value{font-size:1.4rem}
+  .hero{padding:var(--space-2xl) 0 var(--space-xl)}
+  .input-section{padding:var(--space-lg)}
+  .record-controls{justify-content:center}
+}
+.hidden{display:none!important}
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>◈ ASGE</h1>
-      <p class="header-full-name">Ambivalence-Centered Semantic Geometry Engine</p>
-      <p class="subtitle">Live ambivalence analysis • Formula: Σ(pair count) / minute</p>
-    </header>
-    
-    <div class="controls">
-      <select id="language">
-        <option value="en-US">🇺🇸 English</option>
-        <option value="tr-TR">🇹🇷 Türkçe</option>
-        <option value="fr-FR">🇫🇷 Français</option>
-      </select>
-      <button class="btn-start" id="startBtn" onclick="startRecording()">🎙️ Start Recording</button>
-      <button class="btn-pause hidden" id="pauseBtn" onclick="pauseRecording()">⏸️ Pause</button>
-      <button class="btn-start hidden" id="resumeBtn" onclick="resumeRecording()">▶️ Resume</button>
-      <button class="btn-stop hidden" id="stopBtn" onclick="stopRecording()">⏹️ Stop</button>
-      <button class="btn-manual" id="manualBtn" onclick="toggleManual()">📝 Manual Input</button>
-      <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔔 Sound On</button>
-    </div>
-    
-    <div class="sound-levels hidden" id="soundLevels">
-      <div class="sound-level-indicator" id="level2" style="background: rgba(59, 130, 246, 0.3); color: #3b82f6;">2️⃣ TWO</div>
-      <div class="sound-level-indicator" id="level3" style="background: rgba(139, 92, 246, 0.3); color: #8b5cf6;">3️⃣ THREE</div>
-      <div class="sound-level-indicator" id="level4" style="background: rgba(245, 158, 11, 0.3); color: #f59e0b;">4️⃣ FOUR</div>
-      <div class="sound-level-indicator" id="level5" style="background: rgba(239, 68, 68, 0.3); color: #ef4444;">5️⃣ FIVE</div>
-    </div>
-    
-    <div class="manual-section" id="manualSection">
-      <p class="manual-hint">Each line = 1 minute. Paste the text you want to analyze:</p>
-      <textarea id="manualInput" placeholder="Minute 1: It was a good day but the weather was bad...&#10;Minute 2: Big dreams start with small steps..."></textarea>
-      <button class="btn-analyze" onclick="processManualInput()">Analyze</button>
-    </div>
-    
-    <div class="timer-section hidden" id="timerSection">
-      <div class="timer-box time">
-        <div class="timer-value" id="timeDisplay">00:00</div>
-        <div class="timer-label" id="statusLabel">🔴 RECORDING</div>
-      </div>
-      <div class="timer-box minute">
-        <div class="timer-value" id="minuteDisplay">1</div>
-        <div class="timer-label">MINUTE</div>
+
+<header>
+  <nav class="nav-inner" role="navigation" aria-label="Main navigation">
+    <div class="logo"><span class="logo-dot" aria-hidden="true"></span>ASGE<span class="logo-sub">Semantic Geometry Engine</span></div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false" id="hamburgerBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#input">Analyze</a>
+      <a href="#chartSection">Chart</a>
+      <a href="#resultsSection">Results</a>
+      <div class="nav-controls">
+        <label for="language" class="visually-hidden">Language</label>
+        <select class="lang-select" id="language" aria-label="Select language">
+          <option value="tr-TR" selected>TR</option>
+          <option value="en-US">EN</option>
+          <option value="fr-FR">FR</option>
+        </select>
+        <span class="status-dot" id="statusDot" title="Status: Ready"></span>
       </div>
     </div>
-    
-    <div class="live-chart-container hidden" id="chartSection">
-      <div class="detection-popup" id="detectionPopup">
-        <div class="detection-label">NEW PAIR DETECTED!</div>
-        <div class="detection-word" id="detectionWord"></div>
+  </nav>
+</header>
+
+<!-- DETECTION POPUP -->
+<div class="detection-popup" id="detectionPopup">NEW PAIR: <span id="detectionWord"></span></div>
+
+<main>
+  <section class="hero" id="input">
+    <div class="hero-text">
+      <h1>Uncover the <span class="highlight">Ambivalent forces</span> hidden in speech</h1>
+      <p>ASGE detects ambivalent semantic pairs — contradictions, tensions, and polarities buried in natural language. Speak or paste text, and let the geometry engine map the conflict landscape of your discourse.</p>
+    </div>
+
+    <div class="input-section" id="inputSection">
+      <div class="input-tabs" role="tablist">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="mic" id="tabMic">⦿ Microphone</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="text" id="tabText">⌨ Paste Text</button>
       </div>
-      
-      <div class="chart-header">
-        <div class="chart-title">
-          <div class="pulse-dot" id="pulseDot"></div>
-          <span>📊 LIVE CHART: Ambivalence Analysis</span>
+
+      <!-- MIC -->
+      <div class="mic-input-area" id="micArea">
+        <div class="waveform-container">
+          <canvas class="waveform-canvas" id="waveformCanvas" role="img" aria-label="Ses dalga formu"></canvas>
+          <span class="waveform-placeholder" id="waveformPlaceholder">Press record to begin capture</span>
         </div>
-        <div class="live-stats">
-          <div class="live-stat ratio">
-            <div class="live-stat-label">Current Ratio</div>
-            <div class="live-stat-value" id="ratioDisplay">0.000</div>
-          </div>
-          <div class="live-stat current">
-            <div class="live-stat-label">This Minute</div>
-            <div class="live-stat-value" id="currentMinuteDisplay">0</div>
-          </div>
+        <div class="record-controls">
+          <button class="btn-record" id="btnRecord" aria-label="Start recording" title="Record"></button>
+          <button class="btn-secondary" id="btnPause" disabled>PAUSE</button>
+          <button class="btn-secondary" id="btnStop" disabled>STOP & ANALYZE</button>
+          <button class="btn-secondary sound-on" id="soundToggle">🔔 SOUND</button>
+        </div>
+        <!-- SOUND LEVELS -->
+        <div class="sound-levels hidden" id="soundLevels">
+          <div class="sound-level-indicator" id="level2" style="background:rgba(107,163,214,0.3);color:var(--pair-a)">2 PAIRS</div>
+          <div class="sound-level-indicator" id="level3" style="background:rgba(139,92,246,0.3);color:#8b5cf6">3 PAIRS</div>
+          <div class="sound-level-indicator" id="level4" style="background:rgba(212,148,58,0.3);color:var(--accent)">4 PAIRS</div>
+          <div class="sound-level-indicator" id="level5" style="background:rgba(196,92,92,0.3);color:var(--negative)">5 PAIRS</div>
         </div>
       </div>
-      
+
+      <!-- TEXT -->
+      <div class="text-input-area" id="textArea">
+        <label for="manualInput" class="visually-hidden">Text to analyze</label>
+        <textarea class="text-area" id="manualInput" placeholder="Paste or type your text here. Each line = 1 minute. The engine works best with 50+ words."></textarea>
+        <button class="btn-analyze" id="btnAnalyzeText" disabled>Analyze Text</button>
+      </div>
+
+      <!-- COUNTERS -->
+      <div class="counters">
+        <div class="counter-card"><div class="counter-label">Duration</div><div class="counter-value" id="timerDisplay">00:00</div></div>
+        <div class="counter-card"><div class="counter-label">Minute</div><div class="counter-value" id="minuteDisplay">1</div></div>
+        <div class="counter-card"><div class="counter-label">Words</div><div class="counter-value" id="wordDisplay">0</div></div>
+        <div class="counter-card"><div class="counter-label">Pairs</div><div class="counter-value pairs" id="pairDisplay">0</div></div>
+      </div>
+      <div class="counters" style="grid-template-columns:repeat(3,1fr);margin-top:var(--space-sm)">
+        <div class="counter-card"><div class="counter-label">Total Ratio</div><div class="counter-value" id="ratioDisplay" style="color:var(--positive)">0.000</div></div>
+        <div class="counter-card"><div class="counter-label">This Minute</div><div class="counter-value" id="currentMinuteDisplay" style="color:var(--accent-bright)">0</div></div>
+        <div class="counter-card"><div class="counter-label">Formula</div><div class="counter-value" style="font-size:0.9rem;color:var(--text-secondary)">Σ(pairs) / min</div></div>
+      </div>
+
       <div class="formula-box">
-        <span style="color: #9ca3af;">Formula: </span>
-        <code id="formulaDisplay">0 / 1 = 0.000</code>
+        <span>Formula: </span><code id="formulaDisplay">0 / 1 = 0.000</code>
       </div>
 
-      <!-- Chart Type Selector -->
-      <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-        <button class="chart-type-btn active" data-type="wave" onclick="switchChartType('wave')">
-          〰️ Sine Wave
-        </button>
-        <button class="chart-type-btn" data-type="bar" onclick="switchChartType('bar')">
-          📊 Bar Chart
-        </button>
-        <button class="chart-type-btn" data-type="delta" onclick="switchChartType('delta')">
-          📈 Change (Δ)
-        </button>
+      <!-- TRANSCRIPT -->
+      <div class="transcript-panel" id="transcriptPanel"></div>
+      <!-- LOCAL PAIRS -->
+      <div class="local-pairs-panel" id="localPairsPanel">
+        <div class="local-pairs-header">Detected Pairs</div>
+        <div id="localPairsList"></div>
       </div>
-      
-      <div class="chart-wrapper">
-        <canvas id="liveChart"></canvas>
-      </div>
-      
-      <div class="chart-legend" id="chartLegend">
-        <div class="legend-item">
-          <div style="width: 20px; height: 4px; background: #10b981; border-radius: 2px;"></div>
-          <span style="color: #10b981;">Wave 1 (Upper)</span>
+      <!-- WORD CLOUD -->
+      <div class="wordcloud-panel" id="wordcloudPanel">
+        <div class="wordcloud-header">
+          <div class="wordcloud-title">Word Frequency Map</div>
+          <div class="wordcloud-minute" id="wordcloudMinute">0 unique words</div>
         </div>
-        <div class="legend-item">
-          <div style="width: 20px; height: 4px; background: #f59e0b; border-radius: 2px;"></div>
-          <span style="color: #f59e0b;">Wave 2 (Lower)</span>
+        <div class="wordcloud-container" id="wordcloudContainer"><span class="wordcloud-empty">Start speaking...</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="diagonal-divider" aria-hidden="true"></div>
+
+  <!-- CHART -->
+  <section class="chart-section" id="chartSection">
+    <h2 class="section-title">Minute-by-Minute Trend</h2>
+    <div class="chart-container">
+      <div class="chart-header">
+        <span class="chart-label">Ambivalent Pair Density</span>
+        <div class="chart-type-btns">
+          <button class="chart-type-btn active" data-type="wave" id="ctWave">〰️ Wave</button>
+          <button class="chart-type-btn" data-type="bar" id="ctBar">📊 Bar</button>
+          <button class="chart-type-btn" data-type="delta" id="ctDelta">📈 Δ Delta</button>
         </div>
-        <div class="legend-item">
-          <span style="color: #6b7280; font-size: 11px;">0 = contact point</span>
-        </div>
       </div>
+      <div class="chart-canvas-wrap"><canvas id="liveChart"></canvas></div>
     </div>
-    
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Total Words</div>
-        <div class="stat-value" id="totalWords" style="color: #6366f1;">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Ambivalence Pairs</div>
-        <div class="stat-value" id="totalPairs" style="color: #ec4899;">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Ratio</div>
-        <div class="stat-value" id="totalRatio" style="color: #10b981;">0.000</div>
-      </div>
+  </section>
+
+  <div class="diagonal-divider" aria-hidden="true" style="background:linear-gradient(175deg,var(--bg-surface) 49%,var(--bg-deep) 51%)"></div>
+
+  <!-- AI RESULTS -->
+  <section class="results-section" id="resultsSection">
+    <div id="aiLoading" class="hidden" style="text-align:center;padding:var(--space-xl);color:var(--text-secondary)">
+      <div class="loading-spinner" style="margin:0 auto var(--space-md)"></div>
+      <div>Mapping semantic geometry…</div>
     </div>
-    
-    <div class="wordcloud-section hidden" id="wordcloudSection">
-      <div class="wordcloud-header">
-        <div class="wordcloud-title">☁️ Word Frequency Map (Cumulative)</div>
-        <div class="wordcloud-minute" id="wordcloudMinute">Total: 0 words</div>
-      </div>
-      <div class="wordcloud-container" id="wordcloudContainer">
-        <span class="wordcloud-empty">Start speaking...</span>
-      </div>
-    </div>
-    
-    <div class="pairs-section hidden" id="pairsSection">
-      <div class="pairs-title">Most Detected Pairs</div>
-      <div class="pairs-list" id="pairsList"></div>
-    </div>
-    
-    <div class="transcript-section hidden" id="transcriptSection">
-      <div class="transcript-title">📜 Transcript</div>
-      <div class="transcript-content" id="transcriptContent"></div>
-    </div>
-    
-    <!-- AI Analysis Panel -->
-    <div class="ai-results-panel hidden" id="aiResultsPanel">
+    <div id="aiStatsRow" class="ai-stats-row hidden"></div>
+    <div id="aiSummaryPanel" class="ai-panel hidden">
       <div class="ai-panel-header">
-        <span class="ai-panel-title">🤖 AI Deep Analysis (ASGE)</span>
-        <span class="ai-panel-mode" id="aiPanelMode"></span>
+        <span class="ai-badge">AI</span>
+        <span class="ai-panel-title" id="aiPanelTitle">Semantic Conflict Summary</span>
       </div>
-      <div id="aiPanelContent">
-        <div class="ai-loading" id="aiLoading">⏳ Waiting for AI analysis...</div>
-      </div>
+      <div class="ai-summary-text" id="aiSummaryText"><p>Analysis results will appear here after processing.</p></div>
     </div>
+    <h2 class="section-title hidden" id="aiPairsTitle">Detected Ambivalent Pairs</h2>
+    <div class="pairs-grid" id="aiPairsGrid"></div>
+    <h2 class="section-title hidden" id="aiTrendsTitle">Minute Trends</h2>
+    <div class="trends-grid" id="aiTrendsGrid"></div>
+  </section>
+</main>
 
-    <footer>
-      <p><a href="https://llulllab.com" style="color:var(--gold);text-decoration:none;">llulllab.com</a></p>
-      <p style="margin-top:6px;">© 2026 Llull Lab · <a href="/privacy-policy" style="color:var(--text-muted);text-decoration:none;">Privacy Policy</a> · <a href="/terms-of-use" style="color:var(--text-muted);text-decoration:none;">Terms of Use</a></p>
-    </footer>
-  </div>
+<footer><div class="footer-inner">
+  <span class="footer-text">ASGE v6.0 — Ambivalence-Centered Semantic Geometry Engine</span>
+  <span class="footer-text">Built for linguistic exploration • Chrome recommended • TR + EN + FR</span>
+</div></footer>
 
-  <script>
-    // Turkish word pairs (100 pairs = 200 entries)
-    const TURKISH_PAIRS = {
-      // Basic adjectives
-      'iyi': 'kötü', 'kötü': 'iyi',
-      'güzel': 'çirkin', 'çirkin': 'güzel',
-      'büyük': 'küçük', 'küçük': 'büyük',
-      'uzun': 'kısa', 'kısa': 'uzun',
-      'hızlı': 'yavaş', 'yavaş': 'hızlı',
-      'sıcak': 'soğuk', 'soğuk': 'sıcak',
-      'yeni': 'eski', 'eski': 'yeni',
-      'genç': 'yaşlı', 'yaşlı': 'genç',
-      'zengin': 'fakir', 'fakir': 'zengin',
-      'kolay': 'zor', 'zor': 'kolay',
-      'doğru': 'yanlış', 'yanlış': 'doğru',
-      'açık': 'kapalı', 'kapalı': 'açık',
-      'dolu': 'boş', 'boş': 'dolu',
-      'mutlu': 'mutsuz', 'mutsuz': 'mutlu',
-      'güçlü': 'zayıf', 'zayıf': 'güçlü',
-      'parlak': 'karanlık', 'karanlık': 'parlak',
-      'temiz': 'kirli', 'kirli': 'temiz',
-      'yumuşak': 'sert', 'sert': 'yumuşak',
-      'ağır': 'hafif', 'hafif': 'ağır',
-      'dar': 'geniş', 'geniş': 'dar',
-      'yüksek': 'alçak', 'alçak': 'yüksek',
-      'kalın': 'ince', 'ince': 'kalın',
-      'yakın': 'uzak', 'uzak': 'yakın',
-      'derin': 'sığ', 'sığ': 'derin',
-      'tatlı': 'acı', 'acı': 'tatlı',
-      'kuru': 'ıslak', 'ıslak': 'kuru',
-      'sağlıklı': 'hasta', 'hasta': 'sağlıklı',
-      'dürüst': 'yalancı', 'yalancı': 'dürüst',
-      'cesur': 'korkak', 'korkak': 'cesur',
-      'akıllı': 'aptal', 'aptal': 'akıllı',
-      'tembel': 'çalışkan', 'çalışkan': 'tembel',
-      'sakin': 'hareketli', 'hareketli': 'sakin',
-      'sessiz': 'gürültülü', 'gürültülü': 'sessiz',
-      'düz': 'eğri', 'eğri': 'düz',
-      'sivri': 'küt', 'küt': 'sivri',
-      'sıkı': 'gevşek', 'gevşek': 'sıkı',
-      'canlı': 'ölü', 'ölü': 'canlı',
-      'özgür': 'tutsak', 'tutsak': 'özgür',
-      'haklı': 'haksız', 'haksız': 'haklı',
-      'zararlı': 'yararlı', 'yararlı': 'zararlı',
-      'olumlu': 'olumsuz', 'olumsuz': 'olumlu',
-      'kalıcı': 'geçici', 'geçici': 'kalıcı',
-      'özel': 'genel', 'genel': 'özel',
-      'somut': 'soyut', 'soyut': 'somut',
-      'basit': 'karmaşık', 'karmaşık': 'basit',
-      'normal': 'anormal', 'anormal': 'normal',
-      'modern': 'geleneksel', 'geleneksel': 'modern',
-      'doğal': 'yapay', 'yapay': 'doğal',
-      'gerçek': 'sahte', 'sahte': 'gerçek',
-      'resmi': 'gayriresmi', 'gayriresmi': 'resmi',
-      'şanslı': 'şanssız', 'şanssız': 'şanslı',
-      'nazik': 'kaba', 'kaba': 'nazik',
-      'kibar': 'terbiyesiz', 'terbiyesiz': 'kibar',
-      'cömert': 'cimri', 'cimri': 'cömert',
-      'sabırlı': 'sabırsız', 'sabırsız': 'sabırlı',
-      'dikkatli': 'dikkatsiz', 'dikkatsiz': 'dikkatli',
-      'düzenli': 'düzensiz', 'düzensiz': 'düzenli',
-      'mantıklı': 'mantıksız', 'mantıksız': 'mantıklı',
-      'mümkün': 'imkansız', 'imkansız': 'mümkün',
-      'görünür': 'görünmez', 'görünmez': 'görünür',
-      // Verbs
-      'gelmek': 'gitmek', 'gitmek': 'gelmek',
-      'almak': 'vermek', 'vermek': 'almak',
-      'açmak': 'kapatmak', 'kapatmak': 'açmak',
-      'başlamak': 'bitmek', 'bitmek': 'başlamak',
-      'doğmak': 'ölmek', 'ölmek': 'doğmak',
-      'gülmek': 'ağlamak', 'ağlamak': 'gülmek',
-      'sevmek': 'nefret etmek', 'nefret etmek': 'sevmek',
-      'kazanmak': 'kaybetmek', 'kaybetmek': 'kazanmak',
-      'hatırlamak': 'unutmak', 'unutmak': 'hatırlamak',
-      'kabul etmek': 'reddetmek', 'reddetmek': 'kabul etmek',
-      'övmek': 'yermek', 'yermek': 'övmek',
-      'binmek': 'inmek', 'inmek': 'binmek',
-      'kalkmak': 'oturmak', 'oturmak': 'kalkmak',
-      'uyumak': 'uyanmak', 'uyanmak': 'uyumak',
-      'satmak': 'satın almak', 'satın almak': 'satmak',
-      'çıkmak': 'girmek', 'girmek': 'çıkmak',
-      'artmak': 'azalmak', 'azalmak': 'artmak',
-      'yükselmek': 'düşmek', 'düşmek': 'yükselmek',
-      'toplamak': 'dağıtmak', 'dağıtmak': 'toplamak',
-      'yapmak': 'bozmak', 'bozmak': 'yapmak',
-      'kurmak': 'yıkmak', 'yıkmak': 'kurmak',
-      'bulmak': 'kaybetmek',
-      'göstermek': 'gizlemek', 'gizlemek': 'göstermek',
-      'izin vermek': 'yasaklamak', 'yasaklamak': 'izin vermek',
-      'ithal etmek': 'ihraç etmek', 'ihraç etmek': 'ithal etmek',
-      'sormak': 'cevaplamak', 'cevaplamak': 'sormak',
-      'suçlamak': 'savunmak', 'savunmak': 'suçlamak',
-      'övmek': 'eleştirmek', 'eleştirmek': 'övmek',
-      'yakmak': 'söndürmek', 'söndürmek': 'yakmak',
-      'birleştirmek': 'ayırmak', 'ayırmak': 'birleştirmek',
-      'çoğalmak': 'azalmak',
-      'hızlanmak': 'yavaşlamak', 'yavaşlamak': 'hızlanmak',
-      // Adverbs and others
-      'erken': 'geç', 'geç': 'erken',
-      'yukarı': 'aşağı', 'aşağı': 'yukarı',
-      'önce': 'sonra', 'sonra': 'önce',
-      'ileri': 'geri', 'geri': 'ileri',
-      'içeri': 'dışarı', 'dışarı': 'içeri',
-      'burada': 'orada', 'orada': 'burada',
-      'hep': 'hiç', 'hiç': 'hep',
-      'çok': 'az', 'az': 'çok',
-      'sık': 'nadir', 'nadir': 'sık',
-      'beraber': 'ayrı', 'ayrı': 'beraber',
-      // Nouns
-      'evet': 'hayır', 'hayır': 'evet',
-      'var': 'yok', 'yok': 'var',
-      'gündüz': 'gece', 'gece': 'gündüz',
-      'yaz': 'kış', 'kış': 'yaz',
-      'sabah': 'akşam', 'akşam': 'sabah',
-      'ilk': 'son', 'son': 'ilk',
-      'aç': 'tok', 'tok': 'aç',
-      'ucuz': 'pahalı', 'pahalı': 'ucuz',
-      'barış': 'savaş', 'savaş': 'barış',
-      'dost': 'düşman', 'düşman': 'dost',
-      'aşk': 'nefret', 'nefret': 'aşk',
-      'umut': 'umutsuzluk', 'umutsuzluk': 'umut',
-      'başarı': 'başarısızlık', 'başarısızlık': 'başarı',
-      'artı': 'eksi', 'eksi': 'artı',
-      'kadın': 'erkek', 'erkek': 'kadın',
-      'anne': 'baba', 'baba': 'anne',
-      'oğul': 'kız', 'kız': 'oğul',
-      'cennet': 'cehennem', 'cehennem': 'cennet',
-      'giriş': 'çıkış', 'çıkış': 'giriş',
-      'soru': 'cevap', 'cevap': 'soru',
-      'problem': 'çözüm', 'çözüm': 'problem',
-      'kuzey': 'güney', 'güney': 'kuzey',
-      'doğu': 'batı', 'batı': 'doğu',
-      'sol': 'sağ', 'sağ': 'sol',
-      'avantaj': 'dezavantaj', 'dezavantaj': 'avantaj',
-      'güç': 'zayıflık', 'zayıflık': 'güç',
-      'gerçek': 'yalan', 'yalan': 'gerçek',
-      'düzen': 'kaos', 'kaos': 'düzen',
-      'ses': 'sessizlik', 'sessizlik': 'ses',
-      'zafer': 'yenilgi', 'yenilgi': 'zafer',
-      'sevinç': 'üzüntü', 'üzüntü': 'sevinç',
-      'zevk': 'acı',
-      'hayat': 'ölüm', 'ölüm': 'hayat',
-      'baş': 'son',
-      'ön': 'arka', 'arka': 'ön',
-      'üst': 'alt', 'alt': 'üst',
-      'iç': 'dış', 'dış': 'iç',
-      'ağaç': 'orman',
-      'deniz': 'kara', 'kara': 'deniz',
-      'dağ': 'ova', 'ova': 'dağ',
-      'şehir': 'köy', 'köy': 'şehir',
-      'zenginlik': 'fakirlik', 'fakirlik': 'zenginlik',
-      'özgürlük': 'esaret', 'esaret': 'özgürlük',
-      'adalet': 'adaletsizlik', 'adaletsizlik': 'adalet',
-      'güven': 'güvensizlik', 'güvensizlik': 'güven',
-      'saygı': 'saygısızlık', 'saygısızlık': 'saygı',
-      'sevgi': 'kin', 'kin': 'sevgi',
-      'neşe': 'keder', 'keder': 'neşe',
-      'korku': 'cesaret', 'cesaret': 'korku',
-      'güven': 'şüphe', 'şüphe': 'güven',
-      'bilgi': 'cehalet', 'cehalet': 'bilgi',
-      'akıl': 'delilik', 'delilik': 'akıl',
-      'sağlık': 'hastalık', 'hastalık': 'sağlık',
-      'bolluk': 'kıtlık', 'kıtlık': 'bolluk',
-      'bereket': 'kuraklık', 'kuraklık': 'bereket',
-      'varlık': 'yokluk', 'yokluk': 'varlık',
-      'hareket': 'durgunluk', 'durgunluk': 'hareket',
-      'hız': 'yavaşlık', 'yavaşlık': 'hız',
-      'sertlik': 'yumuşaklık', 'yumuşaklık': 'sertlik',
-      'sorumluluk': 'sorumsuzluk', 'sorumsuzluk': 'sorumluluk',
-      'ciddiyet': 'şaka', 'şaka': 'ciddiyet',
-      'gerginlik': 'rahatlık', 'rahatlık': 'gerginlik',
-      'stres': 'huzur', 'huzur': 'stres',
-      'meşgul': 'boş',
-      'dik': 'yatık', 'yatık': 'dik',
-      'keskin': 'kör', 'kör': 'keskin',
-      'parlak': 'mat', 'mat': 'parlak',
-      'şeffaf': 'opak', 'opak': 'şeffaf',
-      'katı': 'sıvı', 'sıvı': 'katı',
-      'taze': 'bayat', 'bayat': 'taze',
-      'olgun': 'ham', 'ham': 'olgun',
-      'ham': 'pişmiş', 'pişmiş': 'ham',
-      'sade': 'süslü', 'süslü': 'sade',
-      'minimalist': 'maksimalist', 'maksimalist': 'minimalist',
-      'yoğun': 'seyrek', 'seyrek': 'yoğun',
-      'hoş': 'nahoş', 'nahoş': 'hoş',
-      'tatlı': 'ekşi', 'ekşi': 'tatlı',
-      'gönüllü': 'zorunlu', 'zorunlu': 'gönüllü',
-      'aktif': 'pasif', 'pasif': 'aktif',
-      'profesyonel': 'amatör', 'amatör': 'profesyonel',
-      'maksimum': 'minimum', 'minimum': 'maksimum',
-      'majör': 'minör', 'minör': 'majör',
-      'pozitif': 'negatif', 'negatif': 'pozitif',
-      'konkav': 'konveks', 'konveks': 'konkav',
-      'içbükey': 'dışbükey', 'dışbükey': 'içbükey',
-      'objektif': 'subjektif', 'subjektif': 'objektif',
-      'simetrik': 'asimetrik', 'asimetrik': 'simetrik',
-      'rasyonel': 'irrasyonel', 'irrasyonel': 'rasyonel',
-      'yerli': 'yabancı',
-      'ulusal': 'uluslararası', 'uluslararası': 'ulusal',
-      'bireysel': 'toplumsal', 'toplumsal': 'bireysel',
-      'teorik': 'pratik', 'pratik': 'teorik',
-      'soyut': 'somut',
-      'dikey': 'yatay', 'yatay': 'dikey',
-      'merkezi': 'yerel', 'yerel': 'merkezi',
-      'evrensel': 'yerel',
-      'itici': 'çekici', 'çekici': 'itici',
-      'karamsar': 'iyimser', 'iyimser': 'karamsar'
-    };
+<div class="loading-overlay" id="loadingOverlay" role="alert" aria-live="polite">
+  <div class="loading-spinner"></div><div class="loading-text">Mapping semantic geometry…</div>
+</div>
+<div class="toast" id="toast" role="alert" aria-live="assertive"></div>
 
-    // English word pairs (100 pairs = 200 entries)
-    const ENGLISH_PAIRS = {
-      // Basic adjectives
-      'good': 'bad', 'bad': 'good',
-      'big': 'small', 'small': 'big',
-      'large': 'tiny', 'tiny': 'large',
-      'hot': 'cold', 'cold': 'hot',
-      'warm': 'cool', 'cool': 'warm',
-      'fast': 'slow', 'slow': 'fast',
-      'quick': 'sluggish', 'sluggish': 'quick',
-      'happy': 'sad', 'sad': 'happy',
-      'joyful': 'miserable', 'miserable': 'joyful',
-      'old': 'new', 'new': 'old',
-      'young': 'elderly', 'elderly': 'young',
-      'ancient': 'modern', 'modern': 'ancient',
-      'rich': 'poor', 'poor': 'rich',
-      'wealthy': 'broke', 'broke': 'wealthy',
-      'easy': 'hard', 'hard': 'easy',
-      'simple': 'complex', 'complex': 'simple',
-      'true': 'false', 'false': 'true',
-      'right': 'wrong', 'wrong': 'right',
-      'correct': 'incorrect', 'incorrect': 'correct',
-      'strong': 'weak', 'weak': 'strong',
-      'powerful': 'powerless', 'powerless': 'powerful',
-      'light': 'dark', 'dark': 'light',
-      'bright': 'dim', 'dim': 'bright',
-      'heavy': 'lightweight', 'lightweight': 'heavy',
-      'thick': 'thin', 'thin': 'thick',
-      'wide': 'narrow', 'narrow': 'wide',
-      'deep': 'shallow', 'shallow': 'deep',
-      'high': 'low', 'low': 'high',
-      'tall': 'short', 'short': 'tall',
-      'long': 'brief', 'brief': 'long',
-      'near': 'far', 'far': 'near',
-      'close': 'distant', 'distant': 'close',
-      'clean': 'dirty', 'dirty': 'clean',
-      'pure': 'impure', 'impure': 'pure',
-      'safe': 'dangerous', 'dangerous': 'safe',
-      'secure': 'insecure', 'insecure': 'secure',
-      'beautiful': 'ugly', 'ugly': 'beautiful',
-      'pretty': 'hideous', 'hideous': 'pretty',
-      'smart': 'stupid', 'stupid': 'smart',
-      'clever': 'foolish', 'foolish': 'clever',
-      'brave': 'cowardly', 'cowardly': 'brave',
-      'loud': 'quiet', 'quiet': 'loud',
-      'noisy': 'silent', 'silent': 'noisy',
-      'soft': 'rough', 'rough': 'soft',
-      'smooth': 'bumpy', 'bumpy': 'smooth',
-      'wet': 'dry', 'dry': 'wet',
-      'full': 'empty', 'empty': 'full',
-      'alive': 'dead', 'dead': 'alive',
-      'awake': 'asleep', 'asleep': 'awake',
-      'healthy': 'sick', 'sick': 'healthy',
-      'honest': 'dishonest', 'dishonest': 'honest',
-      'kind': 'cruel', 'cruel': 'kind',
-      'generous': 'selfish', 'selfish': 'generous',
-      'polite': 'rude', 'rude': 'polite',
-      'patient': 'impatient', 'impatient': 'patient',
-      'lucky': 'unlucky', 'unlucky': 'lucky',
-      'possible': 'impossible', 'impossible': 'possible',
-      'visible': 'invisible', 'invisible': 'visible',
-      'legal': 'illegal', 'illegal': 'legal',
-      'normal': 'abnormal', 'abnormal': 'normal',
-      'regular': 'irregular', 'irregular': 'regular',
-      'positive': 'negative', 'negative': 'positive',
-      'optimistic': 'pessimistic', 'pessimistic': 'optimistic',
-      'permanent': 'temporary', 'temporary': 'permanent',
-      'public': 'private', 'private': 'public',
-      'natural': 'artificial', 'artificial': 'natural',
-      'real': 'fake', 'fake': 'real',
-      'guilty': 'innocent', 'innocent': 'guilty',
-      'famous': 'unknown', 'unknown': 'famous',
-      'cheap': 'expensive', 'expensive': 'cheap',
-      // Verbs
-      'love': 'hate', 'hate': 'love',
-      'like': 'dislike', 'dislike': 'like',
-      'open': 'close', 'close': 'open',
-      'start': 'stop', 'stop': 'start',
-      'begin': 'end', 'end': 'begin',
-      'win': 'lose', 'lose': 'win',
-      'succeed': 'fail', 'fail': 'succeed',
-      'buy': 'sell', 'sell': 'buy',
-      'give': 'take', 'take': 'give',
-      'send': 'receive', 'receive': 'send',
-      'push': 'pull', 'pull': 'push',
-      'rise': 'fall', 'fall': 'rise',
-      'raise': 'lower', 'lower': 'raise',
-      'come': 'go', 'go': 'come',
-      'arrive': 'leave', 'leave': 'arrive',
-      'enter': 'exit', 'exit': 'enter',
-      'appear': 'disappear', 'disappear': 'appear',
-      'show': 'hide', 'hide': 'show',
-      'reveal': 'conceal', 'conceal': 'reveal',
-      'remember': 'forget', 'forget': 'remember',
-      'accept': 'reject', 'reject': 'accept',
-      'agree': 'disagree', 'disagree': 'agree',
-      'allow': 'forbid', 'forbid': 'allow',
-      'permit': 'prohibit', 'prohibit': 'permit',
-      'create': 'destroy', 'destroy': 'create',
-      'build': 'demolish', 'demolish': 'build',
-      'increase': 'decrease', 'decrease': 'increase',
-      'expand': 'shrink', 'shrink': 'expand',
-      'attack': 'defend', 'defend': 'attack',
-      'laugh': 'cry', 'cry': 'laugh',
-      'smile': 'frown', 'frown': 'smile',
-      // Adverbs and others
-      'up': 'down', 'down': 'up',
-      'yes': 'no', 'no': 'yes',
-      'always': 'never', 'never': 'always',
-      'often': 'rarely', 'rarely': 'often',
-      'before': 'after', 'after': 'before',
-      'early': 'late', 'late': 'early',
-      'now': 'later', 'later': 'now',
-      'here': 'there', 'there': 'here',
-      'inside': 'outside', 'outside': 'inside',
-      'forward': 'backward', 'backward': 'forward',
-      'more': 'less', 'less': 'more',
-      'many': 'few', 'few': 'many',
-      'much': 'little', 'little': 'much',
-      'together': 'apart', 'apart': 'together',
-      // Nouns
-      'first': 'last', 'last': 'first',
-      'best': 'worst', 'worst': 'best',
-      'success': 'failure', 'failure': 'success',
-      'victory': 'defeat', 'defeat': 'victory',
-      'peace': 'war', 'war': 'peace',
-      'friend': 'enemy', 'enemy': 'friend',
-      'ally': 'opponent', 'opponent': 'ally',
-      'hope': 'despair', 'despair': 'hope',
-      'joy': 'sorrow', 'sorrow': 'joy',
-      'pleasure': 'pain', 'pain': 'pleasure',
-      'life': 'death', 'death': 'life',
-      'birth': 'demise', 'demise': 'birth',
-      'day': 'night', 'night': 'day',
-      'morning': 'evening', 'evening': 'morning',
-      'summer': 'winter', 'winter': 'summer',
-      'sunrise': 'sunset', 'sunset': 'sunrise',
-      'heaven': 'hell', 'hell': 'heaven',
-      'man': 'woman', 'woman': 'man',
-      'boy': 'girl', 'girl': 'boy',
-      'father': 'mother', 'mother': 'father',
-      'son': 'daughter', 'daughter': 'son',
-      'husband': 'wife', 'wife': 'husband',
-      'question': 'answer', 'answer': 'question',
-      'problem': 'solution', 'solution': 'problem',
-      'entrance': 'exit',
-      'north': 'south', 'south': 'north',
-      'east': 'west', 'west': 'east',
-      'left': 'right',
-      'strength': 'weakness', 'weakness': 'strength',
-      'truth': 'lie', 'lie': 'truth',
-      'order': 'chaos', 'chaos': 'order',
-      'noise': 'silence', 'silence': 'noise',
-      'advantage': 'disadvantage', 'disadvantage': 'advantage',
-      'top': 'bottom', 'bottom': 'top',
-      'front': 'back', 'back': 'front',
-      'above': 'below', 'below': 'above',
-      'over': 'under', 'under': 'over',
-      'land': 'sea', 'sea': 'land',
-      'city': 'village', 'village': 'city',
-      'urban': 'rural', 'rural': 'urban',
-      'freedom': 'slavery', 'slavery': 'freedom',
-      'justice': 'injustice', 'injustice': 'justice',
-      'trust': 'distrust', 'distrust': 'trust',
-      'respect': 'disrespect', 'disrespect': 'respect',
-      'knowledge': 'ignorance', 'ignorance': 'knowledge',
-      'wisdom': 'folly', 'folly': 'wisdom',
-      'courage': 'fear', 'fear': 'courage',
-      'confidence': 'doubt', 'doubt': 'confidence',
-      'health': 'illness', 'illness': 'health',
-      'wealth': 'poverty', 'poverty': 'wealth',
-      'abundance': 'scarcity', 'scarcity': 'abundance',
-      'presence': 'absence', 'absence': 'presence',
-      'movement': 'stillness', 'stillness': 'movement',
-      'speed': 'slowness', 'slowness': 'speed',
-      'tension': 'relaxation', 'relaxation': 'tension',
-      'stress': 'calm', 'calm': 'stress',
-      'clarity': 'confusion', 'confusion': 'clarity',
-      'certainty': 'uncertainty', 'uncertainty': 'certainty',
-      'busy': 'idle', 'idle': 'busy',
-      'sharp': 'blunt', 'blunt': 'sharp',
-      'shiny': 'dull', 'dull': 'shiny',
-      'transparent': 'opaque', 'opaque': 'transparent',
-      'solid': 'liquid', 'liquid': 'solid',
-      'fresh': 'stale', 'stale': 'fresh',
-      'ripe': 'unripe', 'unripe': 'ripe',
-      'raw': 'cooked', 'cooked': 'raw',
-      'plain': 'fancy', 'fancy': 'plain',
-      'dense': 'sparse', 'sparse': 'dense',
-      'pleasant': 'unpleasant', 'unpleasant': 'pleasant',
-      'sweet': 'sour', 'sour': 'sweet',
-      'voluntary': 'mandatory', 'mandatory': 'voluntary',
-      'active': 'passive', 'passive': 'active',
-      'professional': 'amateur', 'amateur': 'professional',
-      'maximum': 'minimum', 'minimum': 'maximum',
-      'major': 'minor', 'minor': 'major',
-      'concave': 'convex', 'convex': 'concave',
-      'objective': 'subjective', 'subjective': 'objective',
-      'symmetric': 'asymmetric', 'asymmetric': 'symmetric',
-      'rational': 'irrational', 'irrational': 'rational',
-      'domestic': 'foreign', 'foreign': 'domestic',
-      'individual': 'collective', 'collective': 'individual',
-      'theoretical': 'practical', 'practical': 'theoretical',
-      'vertical': 'horizontal', 'horizontal': 'vertical',
-      'central': 'local', 'local': 'central',
-      'attractive': 'repulsive', 'repulsive': 'attractive'
-    };
+<script>
+(function(){
+'use strict';
 
-    // French word pairs (100 pairs = 200 entries)
-    const FRENCH_PAIRS = {
-      // Basic adjectives
-      'bon': 'mauvais', 'mauvais': 'bon',
-      'bonne': 'mauvaise', 'mauvaise': 'bonne',
-      'bien': 'mal', 'mal': 'bien',
-      'grand': 'petit', 'petit': 'grand',
-      'grande': 'petite', 'petite': 'grande',
-      'gros': 'mince', 'mince': 'gros',
-      'chaud': 'froid', 'froid': 'chaud',
-      'chaude': 'froide', 'froide': 'chaude',
-      'rapide': 'lent', 'lent': 'rapide',
-      'vite': 'lentement', 'lentement': 'vite',
-      'heureux': 'malheureux', 'malheureux': 'heureux',
-      'heureuse': 'malheureuse', 'malheureuse': 'heureuse',
-      'content': 'mécontent', 'mécontent': 'content',
-      'joyeux': 'triste', 'triste': 'joyeux',
-      'vieux': 'jeune', 'jeune': 'vieux',
-      'ancien': 'nouveau', 'nouveau': 'ancien',
-      'ancienne': 'nouvelle', 'nouvelle': 'ancienne',
-      'riche': 'pauvre', 'pauvre': 'riche',
-      'facile': 'difficile', 'difficile': 'facile',
-      'simple': 'compliqué', 'compliqué': 'simple',
-      'vrai': 'faux', 'faux': 'vrai',
-      'correct': 'incorrect', 'incorrect': 'correct',
-      'fort': 'faible', 'faible': 'fort',
-      'puissant': 'impuissant', 'impuissant': 'puissant',
-      'clair': 'sombre', 'sombre': 'clair',
-      'lumineux': 'obscur', 'obscur': 'lumineux',
-      'lourd': 'léger', 'léger': 'lourd',
-      'épais': 'mince',
-      'large': 'étroit', 'étroit': 'large',
-      'profond': 'superficiel', 'superficiel': 'profond',
-      'haut': 'bas', 'bas': 'haut',
-      'long': 'court', 'court': 'long',
-      'proche': 'loin', 'loin': 'proche',
-      'propre': 'sale', 'sale': 'propre',
-      'pur': 'impur', 'impur': 'pur',
-      'sûr': 'dangereux', 'dangereux': 'sûr',
-      'beau': 'laid', 'laid': 'beau',
-      'belle': 'laide', 'laide': 'belle',
-      'joli': 'moche', 'moche': 'joli',
-      'intelligent': 'stupide', 'stupide': 'intelligent',
-      'sage': 'fou', 'fou': 'sage',
-      'courageux': 'lâche', 'lâche': 'courageux',
-      'brave': 'peureux', 'peureux': 'brave',
-      'bruyant': 'silencieux', 'silencieux': 'bruyant',
-      'doux': 'dur', 'dur': 'doux',
-      'mouillé': 'sec', 'sec': 'mouillé',
-      'plein': 'vide', 'vide': 'plein',
-      'vivant': 'mort', 'mort': 'vivant',
-      'éveillé': 'endormi', 'endormi': 'éveillé',
-      'sain': 'malade', 'malade': 'sain',
-      'honnête': 'malhonnête', 'malhonnête': 'honnête',
-      'gentil': 'méchant', 'méchant': 'gentil',
-      'généreux': 'avare', 'avare': 'généreux',
-      'poli': 'impoli', 'impoli': 'poli',
-      'patient': 'impatient', 'impatient': 'patient',
-      'possible': 'impossible', 'impossible': 'possible',
-      'visible': 'invisible', 'invisible': 'visible',
-      'légal': 'illégal', 'illégal': 'légal',
-      'normal': 'anormal', 'anormal': 'normal',
-      'positif': 'négatif', 'négatif': 'positif',
-      'optimiste': 'pessimiste', 'pessimiste': 'optimiste',
-      'permanent': 'temporaire', 'temporaire': 'permanent',
-      'public': 'privé', 'privé': 'public',
-      'naturel': 'artificiel', 'artificiel': 'naturel',
-      'réel': 'imaginaire', 'imaginaire': 'réel',
-      'utile': 'inutile', 'inutile': 'utile',
-      'présent': 'absent', 'absent': 'présent',
-      'coupable': 'innocent', 'innocent': 'coupable',
-      'célèbre': 'inconnu', 'inconnu': 'célèbre',
-      'cher': 'bon marché', 'bon marché': 'cher',
-      // Verbs
-      'aimer': 'détester', 'détester': 'aimer',
-      'adorer': 'haïr', 'haïr': 'adorer',
-      'ouvrir': 'fermer', 'fermer': 'ouvrir',
-      'commencer': 'finir', 'finir': 'commencer',
-      'débuter': 'terminer', 'terminer': 'débuter',
-      'gagner': 'perdre', 'perdre': 'gagner',
-      'réussir': 'échouer', 'échouer': 'réussir',
-      'acheter': 'vendre', 'vendre': 'acheter',
-      'donner': 'prendre', 'prendre': 'donner',
-      'recevoir': 'envoyer', 'envoyer': 'recevoir',
-      'pousser': 'tirer', 'tirer': 'pousser',
-      'monter': 'descendre', 'descendre': 'monter',
-      'lever': 'baisser', 'baisser': 'lever',
-      'venir': 'partir', 'partir': 'venir',
-      'arriver': 'quitter', 'quitter': 'arriver',
-      'entrer': 'sortir', 'sortir': 'entrer',
-      'apparaître': 'disparaître', 'disparaître': 'apparaître',
-      'montrer': 'cacher', 'cacher': 'montrer',
-      'révéler': 'dissimuler', 'dissimuler': 'révéler',
-      'oublier': 'rappeler', 'rappeler': 'oublier',
-      'accepter': 'refuser', 'refuser': 'accepter',
-      'permettre': 'interdire', 'interdire': 'permettre',
-      'créer': 'détruire', 'détruire': 'créer',
-      'construire': 'démolir', 'démolir': 'construire',
-      'augmenter': 'diminuer', 'diminuer': 'augmenter',
-      'agrandir': 'réduire', 'réduire': 'agrandir',
-      'attaquer': 'défendre', 'défendre': 'attaquer',
-      'rire': 'pleurer', 'pleurer': 'rire',
-      'sourire': 'grimacer', 'grimacer': 'sourire',
-      'naître': 'mourir', 'mourir': 'naître',
-      'allumer': 'éteindre', 'éteindre': 'allumer',
-      'ajouter': 'enlever', 'enlever': 'ajouter',
-      'avancer': 'reculer', 'reculer': 'avancer',
-      'accélérer': 'ralentir', 'ralentir': 'accélérer',
-      // Adverbs and others
-      'oui': 'non', 'non': 'oui',
-      'toujours': 'jamais', 'jamais': 'toujours',
-      'souvent': 'rarement', 'rarement': 'souvent',
-      'avant': 'après', 'après': 'avant',
-      'tôt': 'tard', 'tard': 'tôt',
-      'maintenant': 'plus tard',
-      'ici': 'là-bas', 'là-bas': 'ici',
-      'dedans': 'dehors', 'dehors': 'dedans',
-      'intérieur': 'extérieur', 'extérieur': 'intérieur',
-      'devant': 'derrière', 'derrière': 'devant',
-      'plus': 'moins', 'moins': 'plus',
-      'beaucoup': 'peu', 'peu': 'beaucoup',
-      'tout': 'rien', 'rien': 'tout',
-      'ensemble': 'séparément', 'séparément': 'ensemble',
-      // Nouns
-      'début': 'fin', 'fin': 'début',
-      'premier': 'dernier', 'dernier': 'premier',
-      'meilleur': 'pire', 'pire': 'meilleur',
-      'succès': 'échec', 'échec': 'succès',
-      'victoire': 'défaite', 'défaite': 'victoire',
-      'paix': 'guerre', 'guerre': 'paix',
-      'ami': 'ennemi', 'ennemi': 'ami',
-      'amour': 'haine', 'haine': 'amour',
-      'espoir': 'désespoir', 'désespoir': 'espoir',
-      'joie': 'tristesse', 'tristesse': 'joie',
-      'bonheur': 'malheur', 'malheur': 'bonheur',
-      'plaisir': 'douleur', 'douleur': 'plaisir',
-      'vie': 'mort',
-      'jour': 'nuit', 'nuit': 'jour',
-      'matin': 'soir', 'soir': 'matin',
-      'été': 'hiver', 'hiver': 'été',
-      'printemps': 'automne', 'automne': 'printemps',
-      'lumière': 'obscurité', 'obscurité': 'lumière',
-      'ciel': 'terre', 'terre': 'ciel',
-      'paradis': 'enfer', 'enfer': 'paradis',
-      'homme': 'femme', 'femme': 'homme',
-      'garçon': 'fille', 'fille': 'garçon',
-      'père': 'mère', 'mère': 'père',
-      'fils': 'fille',
-      'frère': 'soeur', 'soeur': 'frère',
-      'mari': 'épouse', 'épouse': 'mari',
-      'question': 'réponse', 'réponse': 'question',
-      'problème': 'solution', 'solution': 'problème',
-      'nord': 'sud', 'sud': 'nord',
-      'est': 'ouest', 'ouest': 'est',
-      'gauche': 'droite', 'droite': 'gauche',
-      'entrée': 'sortie', 'sortie': 'entrée',
-      'avantage': 'inconvénient', 'inconvénient': 'avantage',
-      'force': 'faiblesse', 'faiblesse': 'force',
-      'vérité': 'mensonge', 'mensonge': 'vérité',
-      'ordre': 'désordre', 'désordre': 'ordre',
-      'bruit': 'silence', 'silence': 'bruit',
-      'dessus': 'dessous', 'dessous': 'dessus',
-      'haut': 'bas',
-      'terre': 'mer', 'mer': 'terre',
-      'ville': 'campagne', 'campagne': 'ville',
-      'urbain': 'rural', 'rural': 'urbain',
-      'liberté': 'esclavage', 'esclavage': 'liberté',
-      'justice': 'injustice', 'injustice': 'justice',
-      'confiance': 'méfiance', 'méfiance': 'confiance',
-      'respect': 'irrespect', 'irrespect': 'respect',
-      'savoir': 'ignorance', 'ignorance': 'savoir',
-      'sagesse': 'folie', 'folie': 'sagesse',
-      'courage': 'peur', 'peur': 'courage',
-      'santé': 'maladie', 'maladie': 'santé',
-      'richesse': 'pauvreté', 'pauvreté': 'richesse',
-      'abondance': 'pénurie', 'pénurie': 'abondance',
-      'présence': 'absence',
-      'mouvement': 'immobilité', 'immobilité': 'mouvement',
-      'vitesse': 'lenteur', 'lenteur': 'vitesse',
-      'tension': 'détente', 'détente': 'tension',
-      'stress': 'calme', 'calme': 'stress',
-      'clarté': 'confusion', 'confusion': 'clarté',
-      'certitude': 'incertitude', 'incertitude': 'certitude',
-      'jeunesse': 'vieillesse', 'vieillesse': 'jeunesse',
-      'beauté': 'laideur', 'laideur': 'beauté',
-      'occupé': 'libre', 'libre': 'occupé',
-      'pointu': 'émoussé', 'émoussé': 'pointu',
-      'brillant': 'terne', 'terne': 'brillant',
-      'transparent': 'opaque', 'opaque': 'transparent',
-      'solide': 'liquide', 'liquide': 'solide',
-      'frais': 'périmé', 'périmé': 'frais',
-      'mûr': 'immature', 'immature': 'mûr',
-      'cru': 'cuit', 'cuit': 'cru',
-      'sobre': 'extravagant', 'extravagant': 'sobre',
-      'dense': 'clairsemé', 'clairsemé': 'dense',
-      'agréable': 'désagréable', 'désagréable': 'agréable',
-      'sucré': 'amer', 'amer': 'sucré',
-      'volontaire': 'obligatoire', 'obligatoire': 'volontaire',
-      'actif': 'passif', 'passif': 'actif',
-      'professionnel': 'amateur', 'amateur': 'professionnel',
-      'maximum': 'minimum', 'minimum': 'maximum',
-      'majeur': 'mineur', 'mineur': 'majeur',
-      'concave': 'convexe', 'convexe': 'concave',
-      'objectif': 'subjectif', 'subjectif': 'objectif',
-      'symétrique': 'asymétrique', 'asymétrique': 'symétrique',
-      'rationnel': 'irrationnel', 'irrationnel': 'rationnel'
-    };
+// ========== FULL ANTONYM DICTIONARIES (from v5-luxury) ==========
+const TURKISH_PAIRS={'iyi': 'kötü', 'kötü': 'iyi','güzel': 'çirkin', 'çirkin': 'güzel','büyük': 'küçük', 'küçük': 'büyük','uzun': 'kısa', 'kısa': 'uzun','hızlı': 'yavaş', 'yavaş': 'hızlı','sıcak': 'soğuk', 'soğuk': 'sıcak','yeni': 'eski', 'eski': 'yeni','genç': 'yaşlı', 'yaşlı': 'genç','zengin': 'fakir', 'fakir': 'zengin','kolay': 'zor', 'zor': 'kolay','doğru': 'yanlış', 'yanlış': 'doğru','açık': 'kapalı', 'kapalı': 'açık','dolu': 'boş', 'boş': 'dolu','mutlu': 'mutsuz', 'mutsuz': 'mutlu','güçlü': 'zayıf', 'zayıf': 'güçlü','parlak': 'karanlık', 'karanlık': 'parlak','temiz': 'kirli', 'kirli': 'temiz','yumuşak': 'sert', 'sert': 'yumuşak','ağır': 'hafif', 'hafif': 'ağır','dar': 'geniş', 'geniş': 'dar','yüksek': 'alçak', 'alçak': 'yüksek','kalın': 'ince', 'ince': 'kalın','yakın': 'uzak', 'uzak': 'yakın','derin': 'sığ', 'sığ': 'derin','tatlı': 'acı', 'acı': 'tatlı','kuru': 'ıslak', 'ıslak': 'kuru','sağlıklı': 'hasta', 'hasta': 'sağlıklı','dürüst': 'yalancı', 'yalancı': 'dürüst','cesur': 'korkak', 'korkak': 'cesur','akıllı': 'aptal', 'aptal': 'akıllı','tembel': 'çalışkan', 'çalışkan': 'tembel','sakin': 'hareketli', 'hareketli': 'sakin','sessiz': 'gürültülü', 'gürültülü': 'sessiz','düz': 'eğri', 'eğri': 'düz','sivri': 'küt', 'küt': 'sivri','sıkı': 'gevşek', 'gevşek': 'sıkı','canlı': 'ölü', 'ölü': 'canlı','özgür': 'tutsak', 'tutsak': 'özgür','haklı': 'haksız', 'haksız': 'haklı','zararlı': 'yararlı', 'yararlı': 'zararlı','olumlu': 'olumsuz', 'olumsuz': 'olumlu','kalıcı': 'geçici', 'geçici': 'kalıcı','özel': 'genel', 'genel': 'özel','somut': 'soyut', 'soyut': 'somut','basit': 'karmaşık', 'karmaşık': 'basit','normal': 'anormal', 'anormal': 'normal','modern': 'geleneksel', 'geleneksel': 'modern','doğal': 'yapay', 'yapay': 'doğal','gerçek': 'sahte', 'sahte': 'gerçek','resmi': 'gayriresmi', 'gayriresmi': 'resmi','şanslı': 'şanssız', 'şanssız': 'şanslı','nazik': 'kaba', 'kaba': 'nazik','kibar': 'terbiyesiz', 'terbiyesiz': 'kibar','cömert': 'cimri', 'cimri': 'cömert','sabırlı': 'sabırsız', 'sabırsız': 'sabırlı','dikkatli': 'dikkatsiz', 'dikkatsiz': 'dikkatli','düzenli': 'düzensiz', 'düzensiz': 'düzenli','mantıklı': 'mantıksız', 'mantıksız': 'mantıklı','mümkün': 'imkansız', 'imkansız': 'mümkün','görünür': 'görünmez', 'görünmez': 'görünür','gelmek': 'gitmek', 'gitmek': 'gelmek','almak': 'vermek', 'vermek': 'almak','açmak': 'kapatmak', 'kapatmak': 'açmak','başlamak': 'bitmek', 'bitmek': 'başlamak','doğmak': 'ölmek', 'ölmek': 'doğmak','gülmek': 'ağlamak', 'ağlamak': 'gülmek','sevmek': 'nefret etmek', 'nefret etmek': 'sevmek','kazanmak': 'kaybetmek', 'kaybetmek': 'kazanmak','hatırlamak': 'unutmak', 'unutmak': 'hatırlamak','kabul etmek': 'reddetmek', 'reddetmek': 'kabul etmek','övmek': 'yermek', 'yermek': 'övmek','binmek': 'inmek', 'inmek': 'binmek','kalkmak': 'oturmak', 'oturmak': 'kalkmak','uyumak': 'uyanmak', 'uyanmak': 'uyumak','satmak': 'satın almak', 'satın almak': 'satmak','çıkmak': 'girmek', 'girmek': 'çıkmak','artmak': 'azalmak', 'azalmak': 'artmak','yükselmek': 'düşmek', 'düşmek': 'yükselmek','toplamak': 'dağıtmak', 'dağıtmak': 'toplamak','yapmak': 'bozmak', 'bozmak': 'yapmak','kurmak': 'yıkmak', 'yıkmak': 'kurmak','bulmak': 'kaybetmek','göstermek': 'gizlemek', 'gizlemek': 'göstermek','izin vermek': 'yasaklamak', 'yasaklamak': 'izin vermek','ithal etmek': 'ihraç etmek', 'ihraç etmek': 'ithal etmek','sormak': 'cevaplamak', 'cevaplamak': 'sormak','suçlamak': 'savunmak', 'savunmak': 'suçlamak','övmek': 'eleştirmek', 'eleştirmek': 'övmek','yakmak': 'söndürmek', 'söndürmek': 'yakmak','birleştirmek': 'ayırmak', 'ayırmak': 'birleştirmek','çoğalmak': 'azalmak','hızlanmak': 'yavaşlamak', 'yavaşlamak': 'hızlanmak','erken': 'geç', 'geç': 'erken','yukarı': 'aşağı', 'aşağı': 'yukarı','önce': 'sonra', 'sonra': 'önce','ileri': 'geri', 'geri': 'ileri','içeri': 'dışarı', 'dışarı': 'içeri','burada': 'orada', 'orada': 'burada','hep': 'hiç', 'hiç': 'hep','çok': 'az', 'az': 'çok','sık': 'nadir', 'nadir': 'sık','beraber': 'ayrı', 'ayrı': 'beraber','evet': 'hayır', 'hayır': 'evet','var': 'yok', 'yok': 'var','gündüz': 'gece', 'gece': 'gündüz','yaz': 'kış', 'kış': 'yaz','sabah': 'akşam', 'akşam': 'sabah','ilk': 'son', 'son': 'ilk','aç': 'tok', 'tok': 'aç','ucuz': 'pahalı', 'pahalı': 'ucuz','barış': 'savaş', 'savaş': 'barış','dost': 'düşman', 'düşman': 'dost','aşk': 'nefret', 'nefret': 'aşk','umut': 'umutsuzluk', 'umutsuzluk': 'umut','başarı': 'başarısızlık', 'başarısızlık': 'başarı','artı': 'eksi', 'eksi': 'artı','kadın': 'erkek', 'erkek': 'kadın','anne': 'baba', 'baba': 'anne','oğul': 'kız', 'kız': 'oğul','cennet': 'cehennem', 'cehennem': 'cennet','giriş': 'çıkış', 'çıkış': 'giriş','soru': 'cevap', 'cevap': 'soru','problem': 'çözüm', 'çözüm': 'problem','kuzey': 'güney', 'güney': 'kuzey','doğu': 'batı', 'batı': 'doğu','sol': 'sağ', 'sağ': 'sol','avantaj': 'dezavantaj', 'dezavantaj': 'avantaj','güç': 'zayıflık', 'zayıflık': 'güç','gerçek': 'yalan', 'yalan': 'gerçek','düzen': 'kaos', 'kaos': 'düzen','ses': 'sessizlik', 'sessizlik': 'ses','zafer': 'yenilgi', 'yenilgi': 'zafer','sevinç': 'üzüntü', 'üzüntü': 'sevinç','zevk': 'acı','hayat': 'ölüm', 'ölüm': 'hayat','baş': 'son','ön': 'arka', 'arka': 'ön','üst': 'alt', 'alt': 'üst','iç': 'dış', 'dış': 'iç','ağaç': 'orman','deniz': 'kara', 'kara': 'deniz','dağ': 'ova', 'ova': 'dağ','şehir': 'köy', 'köy': 'şehir','zenginlik': 'fakirlik', 'fakirlik': 'zenginlik','özgürlük': 'esaret', 'esaret': 'özgürlük','adalet': 'adaletsizlik', 'adaletsizlik': 'adalet','güven': 'güvensizlik', 'güvensizlik': 'güven','saygı': 'saygısızlık', 'saygısızlık': 'saygı','sevgi': 'kin', 'kin': 'sevgi','neşe': 'keder', 'keder': 'neşe','korku': 'cesaret', 'cesaret': 'korku','güven': 'şüphe', 'şüphe': 'güven','bilgi': 'cehalet', 'cehalet': 'bilgi','akıl': 'delilik', 'delilik': 'akıl','sağlık': 'hastalık', 'hastalık': 'sağlık','bolluk': 'kıtlık', 'kıtlık': 'bolluk','bereket': 'kuraklık', 'kuraklık': 'bereket','varlık': 'yokluk', 'yokluk': 'varlık','hareket': 'durgunluk', 'durgunluk': 'hareket','hız': 'yavaşlık', 'yavaşlık': 'hız','sertlik': 'yumuşaklık', 'yumuşaklık': 'sertlik','sorumluluk': 'sorumsuzluk', 'sorumsuzluk': 'sorumluluk','ciddiyet': 'şaka', 'şaka': 'ciddiyet','gerginlik': 'rahatlık', 'rahatlık': 'gerginlik','stres': 'huzur', 'huzur': 'stres','meşgul': 'boş','dik': 'yatık', 'yatık': 'dik','keskin': 'kör', 'kör': 'keskin','parlak': 'mat', 'mat': 'parlak','şeffaf': 'opak', 'opak': 'şeffaf','katı': 'sıvı', 'sıvı': 'katı','taze': 'bayat', 'bayat': 'taze','olgun': 'ham', 'ham': 'olgun','ham': 'pişmiş', 'pişmiş': 'ham','sade': 'süslü', 'süslü': 'sade','minimalist': 'maksimalist', 'maksimalist': 'minimalist','yoğun': 'seyrek', 'seyrek': 'yoğun','hoş': 'nahoş', 'nahoş': 'hoş','tatlı': 'ekşi', 'ekşi': 'tatlı','gönüllü': 'zorunlu', 'zorunlu': 'gönüllü','aktif': 'pasif', 'pasif': 'aktif','profesyonel': 'amatör', 'amatör': 'profesyonel','maksimum': 'minimum', 'minimum': 'maksimum','majör': 'minör', 'minör': 'majör','pozitif': 'negatif', 'negatif': 'pozitif','konkav': 'konveks', 'konveks': 'konkav','içbükey': 'dışbükey', 'dışbükey': 'içbükey','objektif': 'subjektif', 'subjektif': 'objektif','simetrik': 'asimetrik', 'asimetrik': 'simetrik','rasyonel': 'irrasyonel', 'irrasyonel': 'rasyonel','yerli': 'yabancı','ulusal': 'uluslararası', 'uluslararası': 'ulusal','bireysel': 'toplumsal', 'toplumsal': 'bireysel','teorik': 'pratik', 'pratik': 'teorik','soyut': 'somut','dikey': 'yatay', 'yatay': 'dikey','merkezi': 'yerel', 'yerel': 'merkezi','evrensel': 'yerel','itici': 'çekici', 'çekici': 'itici','karamsar': 'iyimser', 'iyimser': 'karamsar'};
 
-    // State
-    let isRecording = false;
-    let isPaused = false;
-    let recognition = null;
-    let micStream = null; // Keep mic stream open to avoid repeated permission prompts
-    let timerInterval = null;
-    let elapsedTime = 0;
-    let currentMinute = 0;
-    let transcript = '';
-    let totalWords = 0;
-    let detectedPairs = [];
-    let minuteData = [];
-    let currentMinutePairs = 0;
-    let currentMinuteWords = [];
-    let liveChart = null;
-    let chartType = 'wave'; // 'wave', 'bar', 'delta'
-    let pairCountsPerMinute = [0]; // Pair count per minute
-    
-    // Speech recognition restart controls
-    let restartAttempts = 0;
-    const MAX_RESTART_ATTEMPTS = 50;
-    let lastRestartTime = 0;
-    const MIN_RESTART_INTERVAL = 300; // ms
-    
-    // Sound system
-    let audioContext = null;
-    let playedAlerts = new Set(); // Track alerts played this minute
-    let soundEnabled = true;
-    
-    // Sound level settings (for 2, 3, 4, 5 pairs)
-    const ALERT_LEVELS = {
-      2: { freq: [440, 554], duration: 0.15, name: 'TWO', color: '#3b82f6' },
-      3: { freq: [523, 659, 523], duration: 0.12, name: 'THREE', color: '#8b5cf6' },
-      4: { freq: [659, 784, 880], duration: 0.1, name: 'FOUR', color: '#f59e0b' },
-      5: { freq: [784, 988, 1175, 1319], duration: 0.08, name: 'FIVE', color: '#ef4444' }
-    };
-    
-    function initAudioContext() {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      return audioContext;
+const ENGLISH_PAIRS={'good': 'bad', 'bad': 'good','big': 'small', 'small': 'big','large': 'tiny', 'tiny': 'large','hot': 'cold', 'cold': 'hot','warm': 'cool', 'cool': 'warm','fast': 'slow', 'slow': 'fast','quick': 'sluggish', 'sluggish': 'quick','happy': 'sad', 'sad': 'happy','joyful': 'miserable', 'miserable': 'joyful','old': 'new', 'new': 'old','young': 'elderly', 'elderly': 'young','ancient': 'modern', 'modern': 'ancient','rich': 'poor', 'poor': 'rich','wealthy': 'broke', 'broke': 'wealthy','easy': 'hard', 'hard': 'easy','simple': 'complex', 'complex': 'simple','true': 'false', 'false': 'true','right': 'wrong', 'wrong': 'right','correct': 'incorrect', 'incorrect': 'correct','strong': 'weak', 'weak': 'strong','powerful': 'powerless', 'powerless': 'powerful','light': 'dark', 'dark': 'light','bright': 'dim', 'dim': 'bright','heavy': 'lightweight', 'lightweight': 'heavy','thick': 'thin', 'thin': 'thick','wide': 'narrow', 'narrow': 'wide','deep': 'shallow', 'shallow': 'deep','high': 'low', 'low': 'high','tall': 'short', 'short': 'tall','long': 'brief', 'brief': 'long','near': 'far', 'far': 'near','close': 'distant', 'distant': 'close','clean': 'dirty', 'dirty': 'clean','pure': 'impure', 'impure': 'pure','safe': 'dangerous', 'dangerous': 'safe','secure': 'insecure', 'insecure': 'secure','beautiful': 'ugly', 'ugly': 'beautiful','pretty': 'hideous', 'hideous': 'pretty','smart': 'stupid', 'stupid': 'smart','clever': 'foolish', 'foolish': 'clever','brave': 'cowardly', 'cowardly': 'brave','loud': 'quiet', 'quiet': 'loud','noisy': 'silent', 'silent': 'noisy','soft': 'rough', 'rough': 'soft','smooth': 'bumpy', 'bumpy': 'smooth','wet': 'dry', 'dry': 'wet','full': 'empty', 'empty': 'full','alive': 'dead', 'dead': 'alive','awake': 'asleep', 'asleep': 'awake','healthy': 'sick', 'sick': 'healthy','honest': 'dishonest', 'dishonest': 'honest','kind': 'cruel', 'cruel': 'kind','generous': 'selfish', 'selfish': 'generous','polite': 'rude', 'rude': 'polite','patient': 'impatient', 'impatient': 'patient','lucky': 'unlucky', 'unlucky': 'lucky','possible': 'impossible', 'impossible': 'possible','visible': 'invisible', 'invisible': 'visible','legal': 'illegal', 'illegal': 'legal','normal': 'abnormal', 'abnormal': 'normal','regular': 'irregular', 'irregular': 'regular','positive': 'negative', 'negative': 'positive','optimistic': 'pessimistic', 'pessimistic': 'optimistic','permanent': 'temporary', 'temporary': 'permanent','public': 'private', 'private': 'public','natural': 'artificial', 'artificial': 'natural','real': 'fake', 'fake': 'real','guilty': 'innocent', 'innocent': 'guilty','famous': 'unknown', 'unknown': 'famous','cheap': 'expensive', 'expensive': 'cheap','love': 'hate', 'hate': 'love','like': 'dislike', 'dislike': 'like','open': 'close', 'close': 'open','start': 'stop', 'stop': 'start','begin': 'end', 'end': 'begin','win': 'lose', 'lose': 'win','succeed': 'fail', 'fail': 'succeed','buy': 'sell', 'sell': 'buy','give': 'take', 'take': 'give','send': 'receive', 'receive': 'send','push': 'pull', 'pull': 'push','rise': 'fall', 'fall': 'rise','raise': 'lower', 'lower': 'raise','come': 'go', 'go': 'come','arrive': 'leave', 'leave': 'arrive','enter': 'exit', 'exit': 'enter','appear': 'disappear', 'disappear': 'appear','show': 'hide', 'hide': 'show','reveal': 'conceal', 'conceal': 'reveal','remember': 'forget', 'forget': 'remember','accept': 'reject', 'reject': 'accept','agree': 'disagree', 'disagree': 'agree','allow': 'forbid', 'forbid': 'allow','permit': 'prohibit', 'prohibit': 'permit','create': 'destroy', 'destroy': 'create','build': 'demolish', 'demolish': 'build','increase': 'decrease', 'decrease': 'increase','expand': 'shrink', 'shrink': 'expand','attack': 'defend', 'defend': 'attack','laugh': 'cry', 'cry': 'laugh','smile': 'frown', 'frown': 'smile','up': 'down', 'down': 'up','yes': 'no', 'no': 'yes','always': 'never', 'never': 'always','often': 'rarely', 'rarely': 'often','before': 'after', 'after': 'before','early': 'late', 'late': 'early','now': 'later', 'later': 'now','here': 'there', 'there': 'here','inside': 'outside', 'outside': 'inside','forward': 'backward', 'backward': 'forward','more': 'less', 'less': 'more','many': 'few', 'few': 'many','much': 'little', 'little': 'much','together': 'apart', 'apart': 'together','first': 'last', 'last': 'first','best': 'worst', 'worst': 'best','success': 'failure', 'failure': 'success','victory': 'defeat', 'defeat': 'victory','peace': 'war', 'war': 'peace','friend': 'enemy', 'enemy': 'friend','ally': 'opponent', 'opponent': 'ally','hope': 'despair', 'despair': 'hope','joy': 'sorrow', 'sorrow': 'joy','pleasure': 'pain', 'pain': 'pleasure','life': 'death', 'death': 'life','birth': 'demise', 'demise': 'birth','day': 'night', 'night': 'day','morning': 'evening', 'evening': 'morning','summer': 'winter', 'winter': 'summer','sunrise': 'sunset', 'sunset': 'sunrise','heaven': 'hell', 'hell': 'heaven','man': 'woman', 'woman': 'man','boy': 'girl', 'girl': 'boy','father': 'mother', 'mother': 'father','son': 'daughter', 'daughter': 'son','husband': 'wife', 'wife': 'husband','question': 'answer', 'answer': 'question','problem': 'solution', 'solution': 'problem','entrance': 'exit','north': 'south', 'south': 'north','east': 'west', 'west': 'east','left': 'right','strength': 'weakness', 'weakness': 'strength','truth': 'lie', 'lie': 'truth','order': 'chaos', 'chaos': 'order','noise': 'silence', 'silence': 'noise','advantage': 'disadvantage', 'disadvantage': 'advantage','top': 'bottom', 'bottom': 'top','front': 'back', 'back': 'front','above': 'below', 'below': 'above','over': 'under', 'under': 'over','land': 'sea', 'sea': 'land','city': 'village', 'village': 'city','urban': 'rural', 'rural': 'urban','freedom': 'slavery', 'slavery': 'freedom','justice': 'injustice', 'injustice': 'justice','trust': 'distrust', 'distrust': 'trust','respect': 'disrespect', 'disrespect': 'respect','knowledge': 'ignorance', 'ignorance': 'knowledge','wisdom': 'folly', 'folly': 'wisdom','courage': 'fear', 'fear': 'courage','confidence': 'doubt', 'doubt': 'confidence','health': 'illness', 'illness': 'health','wealth': 'poverty', 'poverty': 'wealth','abundance': 'scarcity', 'scarcity': 'abundance','presence': 'absence', 'absence': 'presence','movement': 'stillness', 'stillness': 'movement','speed': 'slowness', 'slowness': 'speed','tension': 'relaxation', 'relaxation': 'tension','stress': 'calm', 'calm': 'stress','clarity': 'confusion', 'confusion': 'clarity','certainty': 'uncertainty', 'uncertainty': 'certainty','busy': 'idle', 'idle': 'busy','sharp': 'blunt', 'blunt': 'sharp','shiny': 'dull', 'dull': 'shiny','transparent': 'opaque', 'opaque': 'transparent','solid': 'liquid', 'liquid': 'solid','fresh': 'stale', 'stale': 'fresh','ripe': 'unripe', 'unripe': 'ripe','raw': 'cooked', 'cooked': 'raw','plain': 'fancy', 'fancy': 'plain','dense': 'sparse', 'sparse': 'dense','pleasant': 'unpleasant', 'unpleasant': 'pleasant','sweet': 'sour', 'sour': 'sweet','voluntary': 'mandatory', 'mandatory': 'voluntary','active': 'passive', 'passive': 'active','professional': 'amateur', 'amateur': 'professional','maximum': 'minimum', 'minimum': 'maximum','major': 'minor', 'minor': 'major','concave': 'convex', 'convex': 'concave','objective': 'subjective', 'subjective': 'objective','symmetric': 'asymmetric', 'asymmetric': 'symmetric','rational': 'irrational', 'irrational': 'rational','domestic': 'foreign', 'foreign': 'domestic','individual': 'collective', 'collective': 'individual','theoretical': 'practical', 'practical': 'theoretical','vertical': 'horizontal', 'horizontal': 'vertical','central': 'local', 'local': 'central','attractive': 'repulsive', 'repulsive': 'attractive'};
+
+const FRENCH_PAIRS={'bon': 'mauvais', 'mauvais': 'bon','bonne': 'mauvaise', 'mauvaise': 'bonne','bien': 'mal', 'mal': 'bien','grand': 'petit', 'petit': 'grand','grande': 'petite', 'petite': 'grande','gros': 'mince', 'mince': 'gros','chaud': 'froid', 'froid': 'chaud','chaude': 'froide', 'froide': 'chaude','rapide': 'lent', 'lent': 'rapide','vite': 'lentement', 'lentement': 'vite','heureux': 'malheureux', 'malheureux': 'heureux','heureuse': 'malheureuse', 'malheureuse': 'heureuse','content': 'mécontent', 'mécontent': 'content','joyeux': 'triste', 'triste': 'joyeux','vieux': 'jeune', 'jeune': 'vieux','ancien': 'nouveau', 'nouveau': 'ancien','ancienne': 'nouvelle', 'nouvelle': 'ancienne','riche': 'pauvre', 'pauvre': 'riche','facile': 'difficile', 'difficile': 'facile','simple': 'compliqué', 'compliqué': 'simple','vrai': 'faux', 'faux': 'vrai','correct': 'incorrect', 'incorrect': 'correct','fort': 'faible', 'faible': 'fort','puissant': 'impuissant', 'impuissant': 'puissant','clair': 'sombre', 'sombre': 'clair','lumineux': 'obscur', 'obscur': 'lumineux','lourd': 'léger', 'léger': 'lourd','épais': 'mince','large': 'étroit', 'étroit': 'large','profond': 'superficiel', 'superficiel': 'profond','haut': 'bas', 'bas': 'haut','long': 'court', 'court': 'long','proche': 'loin', 'loin': 'proche','propre': 'sale', 'sale': 'propre','pur': 'impur', 'impur': 'pur','sûr': 'dangereux', 'dangereux': 'sûr','beau': 'laid', 'laid': 'beau','belle': 'laide', 'laide': 'belle','joli': 'moche', 'moche': 'joli','intelligent': 'stupide', 'stupide': 'intelligent','sage': 'fou', 'fou': 'sage','courageux': 'lâche', 'lâche': 'courageux','brave': 'peureux', 'peureux': 'brave','bruyant': 'silencieux', 'silencieux': 'bruyant','doux': 'dur', 'dur': 'doux','mouillé': 'sec', 'sec': 'mouillé','plein': 'vide', 'vide': 'plein','vivant': 'mort', 'mort': 'vivant','éveillé': 'endormi', 'endormi': 'éveillé','sain': 'malade', 'malade': 'sain','honnête': 'malhonnête', 'malhonnête': 'honnête','gentil': 'méchant', 'méchant': 'gentil','généreux': 'avare', 'avare': 'généreux','poli': 'impoli', 'impoli': 'poli','patient': 'impatient', 'impatient': 'patient','possible': 'impossible', 'impossible': 'possible','visible': 'invisible', 'invisible': 'visible','légal': 'illégal', 'illégal': 'légal','normal': 'anormal', 'anormal': 'normal','positif': 'négatif', 'négatif': 'positif','optimiste': 'pessimiste', 'pessimiste': 'optimiste','permanent': 'temporaire', 'temporaire': 'permanent','public': 'privé', 'privé': 'public','naturel': 'artificiel', 'artificiel': 'naturel','réel': 'imaginaire', 'imaginaire': 'réel','utile': 'inutile', 'inutile': 'utile','présent': 'absent', 'absent': 'présent','coupable': 'innocent', 'innocent': 'coupable','célèbre': 'inconnu', 'inconnu': 'célèbre','cher': 'bon marché', 'bon marché': 'cher','aimer': 'détester', 'détester': 'aimer','adorer': 'haïr', 'haïr': 'adorer','ouvrir': 'fermer', 'fermer': 'ouvrir','commencer': 'finir', 'finir': 'commencer','débuter': 'terminer', 'terminer': 'débuter','gagner': 'perdre', 'perdre': 'gagner','réussir': 'échouer', 'échouer': 'réussir','acheter': 'vendre', 'vendre': 'acheter','donner': 'prendre', 'prendre': 'donner','recevoir': 'envoyer', 'envoyer': 'recevoir','pousser': 'tirer', 'tirer': 'pousser','monter': 'descendre', 'descendre': 'monter','lever': 'baisser', 'baisser': 'lever','venir': 'partir', 'partir': 'venir','arriver': 'quitter', 'quitter': 'arriver','entrer': 'sortir', 'sortir': 'entrer','apparaître': 'disparaître', 'disparaître': 'apparaître','montrer': 'cacher', 'cacher': 'montrer','révéler': 'dissimuler', 'dissimuler': 'révéler','oublier': 'rappeler', 'rappeler': 'oublier','accepter': 'refuser', 'refuser': 'accepter','permettre': 'interdire', 'interdire': 'permettre','créer': 'détruire', 'détruire': 'créer','construire': 'démolir', 'démolir': 'construire','augmenter': 'diminuer', 'diminuer': 'augmenter','agrandir': 'réduire', 'réduire': 'agrandir','attaquer': 'défendre', 'défendre': 'attaquer','rire': 'pleurer', 'pleurer': 'rire','sourire': 'grimacer', 'grimacer': 'sourire','naître': 'mourir', 'mourir': 'naître','allumer': 'éteindre', 'éteindre': 'allumer','ajouter': 'enlever', 'enlever': 'ajouter','avancer': 'reculer', 'reculer': 'avancer','accélérer': 'ralentir', 'ralentir': 'accélérer','oui': 'non', 'non': 'oui','toujours': 'jamais', 'jamais': 'toujours','souvent': 'rarement', 'rarement': 'souvent','avant': 'après', 'après': 'avant','tôt': 'tard', 'tard': 'tôt','maintenant': 'plus tard','ici': 'là-bas', 'là-bas': 'ici','dedans': 'dehors', 'dehors': 'dedans','intérieur': 'extérieur', 'extérieur': 'intérieur','devant': 'derrière', 'derrière': 'devant','plus': 'moins', 'moins': 'plus','beaucoup': 'peu', 'peu': 'beaucoup','tout': 'rien', 'rien': 'tout','ensemble': 'séparément', 'séparément': 'ensemble','début': 'fin', 'fin': 'début','premier': 'dernier', 'dernier': 'premier','meilleur': 'pire', 'pire': 'meilleur','succès': 'échec', 'échec': 'succès','victoire': 'défaite', 'défaite': 'victoire','paix': 'guerre', 'guerre': 'paix','ami': 'ennemi', 'ennemi': 'ami','amour': 'haine', 'haine': 'amour','espoir': 'désespoir', 'désespoir': 'espoir','joie': 'tristesse', 'tristesse': 'joie','bonheur': 'malheur', 'malheur': 'bonheur','plaisir': 'douleur', 'douleur': 'plaisir','vie': 'mort','jour': 'nuit', 'nuit': 'jour','matin': 'soir', 'soir': 'matin','été': 'hiver', 'hiver': 'été','printemps': 'automne', 'automne': 'printemps','lumière': 'obscurité', 'obscurité': 'lumière','ciel': 'terre', 'terre': 'ciel','paradis': 'enfer', 'enfer': 'paradis','homme': 'femme', 'femme': 'homme','garçon': 'fille', 'fille': 'garçon','père': 'mère', 'mère': 'père','fils': 'fille','frère': 'soeur', 'soeur': 'frère','mari': 'épouse', 'épouse': 'mari','question': 'réponse', 'réponse': 'question','problème': 'solution', 'solution': 'problème','nord': 'sud', 'sud': 'nord','est': 'ouest', 'ouest': 'est','gauche': 'droite', 'droite': 'gauche','entrée': 'sortie', 'sortie': 'entrée','avantage': 'inconvénient', 'inconvénient': 'avantage','force': 'faiblesse', 'faiblesse': 'force','vérité': 'mensonge', 'mensonge': 'vérité','ordre': 'désordre', 'désordre': 'ordre','bruit': 'silence', 'silence': 'bruit','dessus': 'dessous', 'dessous': 'dessus','haut': 'bas','terre': 'mer', 'mer': 'terre','ville': 'campagne', 'campagne': 'ville','urbain': 'rural', 'rural': 'urbain','liberté': 'esclavage', 'esclavage': 'liberté','justice': 'injustice', 'injustice': 'justice','confiance': 'méfiance', 'méfiance': 'confiance','respect': 'irrespect', 'irrespect': 'respect','savoir': 'ignorance', 'ignorance': 'savoir','sagesse': 'folie', 'folie': 'sagesse','courage': 'peur', 'peur': 'courage','santé': 'maladie', 'maladie': 'santé','richesse': 'pauvreté', 'pauvreté': 'richesse','abondance': 'pénurie', 'pénurie': 'abondance','présence': 'absence','mouvement': 'immobilité', 'immobilité': 'mouvement','vitesse': 'lenteur', 'lenteur': 'vitesse','tension': 'détente', 'détente': 'tension','stress': 'calme', 'calme': 'stress','clarté': 'confusion', 'confusion': 'clarté','certitude': 'incertitude', 'incertitude': 'certitude','jeunesse': 'vieillesse', 'vieillesse': 'jeunesse','beauté': 'laideur', 'laideur': 'beauté','occupé': 'libre', 'libre': 'occupé','pointu': 'émoussé', 'émoussé': 'pointu','brillant': 'terne', 'terne': 'brillant','transparent': 'opaque', 'opaque': 'transparent','solide': 'liquide', 'liquide': 'solide','frais': 'périmé', 'périmé': 'frais','mûr': 'immature', 'immature': 'mûr','cru': 'cuit', 'cuit': 'cru','sobre': 'extravagant', 'extravagant': 'sobre','dense': 'clairsemé', 'clairsemé': 'dense','agréable': 'désagréable', 'désagréable': 'agréable','sucré': 'amer', 'amer': 'sucré','volontaire': 'obligatoire', 'obligatoire': 'volontaire','actif': 'passif', 'passif': 'actif','professionnel': 'amateur', 'amateur': 'professionnel','maximum': 'minimum', 'minimum': 'maximum','majeur': 'mineur', 'mineur': 'majeur','concave': 'convexe', 'convexe': 'concave','objectif': 'subjectif', 'subjectif': 'objectif','symétrique': 'asymétrique', 'asymétrique': 'symétrique','rationnel': 'irrationnel', 'irrationnel': 'rationnel'};
+
+// ========== ELEMENTS ==========
+const $=id=>document.getElementById(id);
+const statusDot=$('statusDot'),btnRecord=$('btnRecord'),btnPause=$('btnPause'),btnStop=$('btnStop');
+const btnAnalyzeText=$('btnAnalyzeText'),manualInput=$('manualInput'),langSelect=$('language');
+const waveformCanvas=$('waveformCanvas'),waveformPlaceholder=$('waveformPlaceholder');
+const inputSection=$('inputSection'),chartSection=$('chartSection'),resultsSection=$('resultsSection');
+const toast=$('toast'),tabMic=$('tabMic'),tabText=$('tabText'),micArea=$('micArea'),textArea=$('textArea');
+const hamburgerBtn=$('hamburgerBtn'),navLinks=$('navLinks');
+
+// ========== STATE ==========
+let isRecording=false,isPaused=false,recognition=null,micStream=null;
+let audioCtx=null,analyserNode=null,sourceNode=null,animFrameId=null;
+let transcript='',totalWords=0,detectedPairs=[],currentMinute=0;
+let currentMinuteWords=[],currentMinutePairs=0,minuteData=[];
+let pairCountsPerMinute=[0],elapsedTime=0,timerInterval=null;
+let liveChart=null,chartType='wave',lastRestartTime=0,restartAttempts=0;
+let currentSessionId=null,interimTimer=null;
+let soundEnabled=true,playedAlerts=new Set();
+let soundAudioCtx=null;
+
+const N8N_WEBHOOK_URL='https://n8n.tropus.io/webhook/asge-analyze';
+const INTERIM_INTERVAL_MS=120000;
+const ALERT_LEVELS={
+  2:{freq:[440,554],duration:0.15,name:'TWO',color:'var(--pair-a)'},
+  3:{freq:[523,659,523],duration:0.12,name:'THREE',color:'#8b5cf6'},
+  4:{freq:[659,784,880],duration:0.1,name:'FOUR',color:'var(--accent)'},
+  5:{freq:[784,988,1175,1319],duration:0.08,name:'FIVE',color:'var(--negative)'}
+};
+
+// ========== UTILITY ==========
+function escHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),4000)}
+function generateSessionId(){return 'session_'+Date.now()+'_'+Math.random().toString(36).substring(2,8)}
+function formatTime(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
+function getPairsDB(){const l=langSelect.value;if(l==='tr-TR')return TURKISH_PAIRS;if(l==='fr-FR')return FRENCH_PAIRS;return ENGLISH_PAIRS}
+
+// ========== SOUND SYSTEM ==========
+function initSoundCtx(){if(!soundAudioCtx)soundAudioCtx=new(window.AudioContext||window.webkitAudioContext)();return soundAudioCtx}
+function playAlertSound(level){
+  if(!soundEnabled)return;
+  const config=ALERT_LEVELS[level];if(!config)return;
+  const ctx=initSoundCtx();if(ctx.state==='suspended')ctx.resume();
+  const now=ctx.currentTime;
+  const types=['sine','triangle','square','sawtooth'];
+  config.freq.forEach((freq,i)=>{
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type=types[Math.min(level-2,3)];
+    osc.frequency.setValueAtTime(freq,now+i*config.duration);
+    gain.gain.setValueAtTime(0,now+i*config.duration);
+    gain.gain.linearRampToValueAtTime(0.3,now+i*config.duration+0.02);
+    gain.gain.linearRampToValueAtTime(0,now+i*config.duration+config.duration);
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.start(now+i*config.duration);osc.stop(now+i*config.duration+config.duration+0.05);
+  });
+}
+function checkAndPlayAlert(count){
+  [2,3,4,5].forEach(level=>{
+    if(count>=level&&!playedAlerts.has(level)){
+      playedAlerts.add(level);playAlertSound(level);showSoundAlert(level);
     }
-    
-    function playAlertSound(level) {
-      if (!soundEnabled) return;
-      
-      const config = ALERT_LEVELS[level];
-      if (!config) return;
-      
-      const ctx = initAudioContext();
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-      
-      const now = ctx.currentTime;
-      
-      config.freq.forEach((freq, index) => {
-        const oscillator = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-        
-        // Different waveforms for different levels
-        if (level === 2) oscillator.type = 'sine';
-        else if (level === 3) oscillator.type = 'triangle';
-        else if (level === 4) oscillator.type = 'square';
-        else oscillator.type = 'sawtooth';
-        
-        oscillator.frequency.setValueAtTime(freq, now + index * config.duration);
-        
-        // Soft attack and release
-        gainNode.gain.setValueAtTime(0, now + index * config.duration);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + index * config.duration + 0.02);
-        gainNode.gain.linearRampToValueAtTime(0, now + index * config.duration + config.duration);
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        
-        oscillator.start(now + index * config.duration);
-        oscillator.stop(now + index * config.duration + config.duration + 0.05);
-      });
+  });
+}
+function showSoundAlert(level){
+  const config=ALERT_LEVELS[level];
+  const alertDiv=document.createElement('div');
+  alertDiv.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;background:var(--accent);color:var(--bg-deep);border-radius:30px;font-weight:700;font-size:0.85rem;z-index:300;box-shadow:0 8px 30px var(--accent-glow);animation:alertPop 0.5s ease-out forwards;pointer-events:none;';
+  alertDiv.textContent='🔔 '+config.name+' PAIRS!';
+  document.body.appendChild(alertDiv);
+  setTimeout(()=>alertDiv.remove(),2000);
+}
+function resetMinuteAlerts(){
+  playedAlerts.clear();
+  [2,3,4,5].forEach(l=>{const el=$('level'+l);if(el)el.classList.remove('active')});
+}
+function updateLevelIndicators(count){
+  [2,3,4,5].forEach(l=>{const el=$('level'+l);if(el){count>=l?el.classList.add('active'):el.classList.remove('active')}});
+}
+$('soundToggle').addEventListener('click',()=>{
+  soundEnabled=!soundEnabled;
+  const btn=$('soundToggle');
+  btn.textContent=soundEnabled?'🔔 SOUND':'🔕 SOUND';
+  btn.classList.toggle('sound-on',soundEnabled);btn.classList.toggle('sound-off',!soundEnabled);
+  if(soundEnabled)initSoundCtx();
+});
+
+// ========== HAMBURGER & TABS ==========
+hamburgerBtn.addEventListener('click',()=>{const o=navLinks.classList.toggle('open');hamburgerBtn.setAttribute('aria-expanded',o)});
+tabMic.addEventListener('click',()=>{tabMic.classList.add('active');tabMic.setAttribute('aria-selected','true');tabText.classList.remove('active');tabText.setAttribute('aria-selected','false');micArea.classList.remove('hidden');textArea.classList.remove('active')});
+tabText.addEventListener('click',()=>{tabText.classList.add('active');tabText.setAttribute('aria-selected','true');tabMic.classList.remove('active');tabMic.setAttribute('aria-selected','false');textArea.classList.add('active');micArea.classList.add('hidden')});
+
+// ========== TEXT INPUT ==========
+manualInput.addEventListener('input',()=>{const w=manualInput.value.trim().split(/\s+/).filter(w=>w.length>0);$('wordDisplay').textContent=w.length;btnAnalyzeText.disabled=w.length<5});
+btnAnalyzeText.addEventListener('click',()=>{const inp=manualInput.value.trim();if(!inp||inp.split(/\s+/).length<5)return;processManualInput(inp)});
+
+// ========== LOCAL TEXT ANALYSIS ==========
+function processText(text){
+  const words=text.split(/\s+/).filter(w=>w.length>0);
+  const pairsDB=getPairsDB();const found=[];const used=new Set();
+  words.forEach(word=>{
+    const cw=word.toLowerCase().replace(/[.,!?;:'"]/g,'');
+    if(pairsDB[cw]&&!used.has(cw)){found.push({word:cw,pair:pairsDB[cw]});used.add(cw)}
+  });
+  return {wordCount:words.length,pairs:found};
+}
+
+// ========== STOP WORDS ==========
+function getStopWords(){
+  const l=langSelect.value;
+  if(l==='tr-TR')return new Set(['bir','ve','bu','da','de','için','ile','mi','mu','mı','ne','o','ya','ama','çok','daha','ben','sen','biz','siz','onlar','gibi','kadar','var','yok','olan','olarak','ki','şu','her','en','çünkü','eğer','ise','hem','öyle','böyle']);
+  if(l==='fr-FR')return new Set(['le','la','les','un','une','des','de','du','et','ou','mais','en','dans','sur','pour','avec','par','est','sont','était','a','ai','au','aux','ce','cette','ces','qui','que','ne','pas','plus','très','je','tu','il','elle','nous','vous','ils','elles','se','son','sa','ses','leur','leurs']);
+  return new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','must','shall','can','need','it','its','this','that','these','those','i','you','he','she','we','they','what','which','who','whom','so','as','if','then','than','too','very','just','also']);
+}
+
+// ========== WORD CLOUD ==========
+function updateWordCloud(){
+  const panel=$('wordcloudPanel'),container=$('wordcloudContainer'),minuteLabel=$('wordcloudMinute');
+  if(!transcript.trim()){container.innerHTML='<span class="wordcloud-empty">Start speaking...</span>';minuteLabel.textContent='0 unique words';return}
+  panel.classList.add('visible');
+  const words=transcript.toLowerCase().replace(/[.,!?;:'"()\[\]{}]/g,'').split(/\s+/).filter(w=>w.length>1);
+  const stopWords=getStopWords();const freq={};
+  words.forEach(w=>{if(!stopWords.has(w))freq[w]=(freq[w]||0)+1});
+  const unique=Object.keys(freq).length;minuteLabel.textContent=unique+' unique words';
+  if(unique===0){container.innerHTML='<span class="wordcloud-empty">Start speaking...</span>';return}
+  const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,60);
+  const maxF=sorted[0][1];const pairsDB=getPairsDB();
+  container.innerHTML=sorted.map(([w,f])=>{
+    const r=f/maxF;let sc=r<0.15?1:r<0.3?2:r<0.45?3:r<0.65?4:r<0.85?5:6;
+    const isPaired=pairsDB[w]!==undefined;const pc=isPaired?' paired-word':'';
+    const title=isPaired?w+' ↔ '+pairsDB[w]+' ('+f+'×)':f+'×';
+    return '<span class="wordcloud-word size-'+sc+pc+'" title="'+escHTML(title)+'">'+escHTML(w)+'</span>';
+  }).join('');
+}
+
+// ========== DISPLAY ==========
+function updateDisplay(){
+  $('timerDisplay').textContent=formatTime(elapsedTime);
+  $('minuteDisplay').textContent=currentMinute+1;
+  $('wordDisplay').textContent=totalWords;
+  $('pairDisplay').textContent=detectedPairs.length;
+  const ratio=(currentMinute>=0?(detectedPairs.length/(currentMinute+1)):0).toFixed(3);
+  $('ratioDisplay').textContent=ratio;
+  $('currentMinuteDisplay').textContent=currentMinutePairs;
+  $('formulaDisplay').textContent=detectedPairs.length+' / '+(currentMinute+1)+' = '+ratio;
+}
+function showDetection(word,pair){
+  const popup=$('detectionPopup');$('detectionWord').textContent=word+' ↔ '+pair;
+  popup.classList.add('show');setTimeout(()=>popup.classList.remove('show'),2000);
+}
+function updateTranscript(){
+  if(!transcript)return;
+  const panel=$('transcriptPanel');panel.classList.add('visible');
+  const pairsDB=getPairsDB();
+  panel.innerHTML=transcript.split(' ').map(w=>{
+    const cw=w.toLowerCase().replace(/[.,!?;:'"]/g,'');
+    return pairsDB[cw]?'<span class="hw">'+escHTML(w)+'</span>':escHTML(w);
+  }).join(' ');
+}
+function updatePairsList(){
+  const count={};detectedPairs.forEach(p=>{const k=p.word+' ↔ '+p.pair;count[k]=(count[k]||0)+1});
+  const sorted=Object.entries(count).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  if(sorted.length===0){$('localPairsPanel').classList.remove('visible');return}
+  $('localPairsPanel').classList.add('visible');
+  $('localPairsList').innerHTML=sorted.map(([pair,cnt])=>{
+    const [w1,w2]=pair.split(' ↔ ');
+    return '<span class="local-pair-tag"><span class="w-a">'+escHTML(w1)+'</span><span class="sep">⇌</span><span class="w-b">'+escHTML(w2)+'</span><span class="cnt">'+cnt+'×</span></span>';
+  }).join('');
+}
+
+// ========== CHART (3 types) ==========
+function initChart(){
+  const ctx=$('liveChart').getContext('2d');
+  if(liveChart)liveChart.destroy();
+  if(chartType==='wave')initWaveChart(ctx);
+  else if(chartType==='delta')initDeltaChart(ctx);
+  else initBarChart(ctx);
+}
+function initWaveChart(ctx){
+  liveChart=new Chart(ctx,{type:'line',data:{labels:['1dk'],datasets:[
+    {label:'Wave 1',data:[0],borderColor:'#5ca87c',backgroundColor:'rgba(92,168,124,0.1)',borderWidth:3,pointRadius:6,pointHoverRadius:8,tension:0.4,
+      pointBackgroundColor:function(c){return c.raw>=0?'#5ca87c':'#c45c5c'},
+      fill:{target:'origin',above:'rgba(92,168,124,0.15)',below:'rgba(196,92,92,0.15)'}},
+    {label:'Wave 2',data:[0],borderColor:'#d4943a',backgroundColor:'rgba(212,148,58,0.1)',borderWidth:3,pointRadius:6,pointHoverRadius:8,tension:0.4,
+      pointBackgroundColor:function(c){return c.raw>=0?'#d4943a':'#c45c5c'},
+      fill:{target:'origin',above:'rgba(212,148,58,0.15)',below:'rgba(196,92,92,0.15)'}}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(0,0,0,0.9)',padding:12,cornerRadius:8,callbacks:{label:function(c){return 'Pair count: '+Math.abs(c.raw)}}}},
+    scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9b978f',font:{family:"'JetBrains Mono'"}}},
+      y:{grid:{color:function(c){return c.tick.value===0?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.05)'},lineWidth:function(c){return c.tick.value===0?2:1}},
+        ticks:{color:'#9b978f',callback:function(v){return v===0?'• contact •':Math.abs(v)}},
+        title:{display:true,text:'0 = contact point | Distance = pair count',color:'#5e5b54',font:{size:10}}}}
+  }});
+}
+function initDeltaChart(ctx){
+  liveChart=new Chart(ctx,{type:'bar',data:{labels:['1dk'],datasets:[{label:'Delta (Δ)',data:[0],
+    backgroundColor:function(c){return c.raw>=0?'rgba(92,168,124,0.7)':'rgba(196,92,92,0.7)'},
+    borderColor:function(c){return c.raw>=0?'#5ca87c':'#c45c5c'},borderWidth:2,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{backgroundColor:'rgba(0,0,0,0.9)',padding:12,cornerRadius:8,callbacks:{label:function(c){const v=c.raw;return 'Δ = '+v+(v>0?' 📈 Increase':v<0?' 📉 Decrease':' ➡️ Stable')}}}},
+      scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9b978f'}},
+        y:{grid:{color:function(c){return c.tick.value===0?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.05)'},lineWidth:function(c){return c.tick.value===0?2:1}},
+          ticks:{color:'#9b978f',callback:function(v){return v===0?'— 0 —':v>0?'+'+v:v}}}}}
+  });
+}
+function initBarChart(ctx){
+  liveChart=new Chart(ctx,{type:'bar',data:{labels:['1dk'],datasets:[
+    {label:'Pair Count',data:[0],backgroundColor:'rgba(212,148,58,0.8)',borderColor:'#d4943a',borderWidth:1,borderRadius:4,yAxisID:'y'},
+    {label:'Ratio (Σ/min)',data:[0],type:'line',borderColor:'#5ca87c',backgroundColor:'rgba(92,168,124,0.1)',borderWidth:3,pointBackgroundColor:'#5ca87c',pointRadius:5,tension:0.3,yAxisID:'y1'}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{labels:{color:'#9b978f',font:{family:"'JetBrains Mono'",size:11},boxWidth:12,boxHeight:12}}},
+    scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9b978f'}},
+      y:{type:'linear',position:'left',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#d4943a'},beginAtZero:true},
+      y1:{type:'linear',position:'right',grid:{display:false},ticks:{color:'#5ca87c'},beginAtZero:true}}}
+  });
+}
+function updateChart(){
+  if(!liveChart)return;
+  pairCountsPerMinute[currentMinute]=currentMinutePairs;
+  checkAndPlayAlert(currentMinutePairs);updateLevelIndicators(currentMinutePairs);
+  if(chartType==='wave'){
+    const w1=pairCountsPerMinute.map(v=>v),w2=pairCountsPerMinute.map(v=>-v);
+    if(liveChart.data.labels.length<=currentMinute)liveChart.data.labels.push((currentMinute+1)+'m');
+    liveChart.data.datasets[0].data=w1;liveChart.data.datasets[1].data=w2;
+  }else if(chartType==='delta'){
+    const deltas=pairCountsPerMinute.map((v,i)=>i===0?v:v-pairCountsPerMinute[i-1]);
+    if(liveChart.data.labels.length<=currentMinute)liveChart.data.labels.push((currentMinute+1)+'m');
+    liveChart.data.datasets[0].data=deltas;
+  }else{
+    const ratio=currentMinute>=0?(detectedPairs.length/(currentMinute+1)):0;
+    if(liveChart.data.labels.length<=currentMinute){
+      liveChart.data.labels.push((currentMinute+1)+'m');
+      liveChart.data.datasets[0].data.push(currentMinutePairs);
+      liveChart.data.datasets[1].data.push(ratio);
+    }else{
+      liveChart.data.datasets[0].data[currentMinute]=currentMinutePairs;
+      liveChart.data.datasets[1].data[currentMinute]=ratio;
     }
-    
-    function checkAndPlayAlert(count) {
-      // Check levels 2, 3, 4, 5
-      [2, 3, 4, 5].forEach(level => {
-        if (count >= level && !playedAlerts.has(level)) {
-          playedAlerts.add(level);
-          playAlertSound(level);
-          showSoundAlert(level);
-        }
-      });
+  }
+  liveChart.update('none');
+}
+
+function rebuildChartData(){
+  if(!liveChart||pairCountsPerMinute.length===0)return;
+  const labels=pairCountsPerMinute.map((_,i)=>(i+1)+'m');
+  if(chartType==='wave'){
+    liveChart.data.labels=labels;
+    liveChart.data.datasets[0].data=pairCountsPerMinute.map(v=>v);
+    liveChart.data.datasets[1].data=pairCountsPerMinute.map(v=>-v);
+  }else if(chartType==='delta'){
+    liveChart.data.labels=labels;
+    liveChart.data.datasets[0].data=pairCountsPerMinute.map((v,i)=>i===0?0:v-pairCountsPerMinute[i-1]);
+  }else{
+    const ratios=pairCountsPerMinute.map((_,i)=>{const cum=pairCountsPerMinute.slice(0,i+1).reduce((a,b)=>a+b,0);return cum/(i+1)});
+    liveChart.data.labels=labels;
+    liveChart.data.datasets[0].data=pairCountsPerMinute;
+    liveChart.data.datasets[1].data=ratios;
+  }
+  liveChart.update();
+}
+
+// Chart type switching
+function switchChartType(type){
+  chartType=type;
+  document.querySelectorAll('.chart-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));
+  if(liveChart)liveChart.destroy();
+  initChart();
+  rebuildChartData();
+}
+$('ctWave').addEventListener('click',()=>switchChartType('wave'));
+$('ctBar').addEventListener('click',()=>switchChartType('bar'));
+$('ctDelta').addEventListener('click',()=>switchChartType('delta'));
+
+// ========== WAVEFORM ==========
+function drawWaveform(){
+  const canvas=waveformCanvas,ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.width=canvas.offsetWidth*dpr,H=canvas.height=canvas.offsetHeight*dpr;
+  ctx.clearRect(0,0,W,H);
+  if(!analyserNode||!isRecording||isPaused){cancelAnimationFrame(animFrameId);return}
+  const buf=analyserNode.frequencyBinCount,data=new Uint8Array(buf);analyserNode.getByteTimeDomainData(data);
+  ctx.lineWidth=2*dpr;ctx.strokeStyle='#d4943a';ctx.beginPath();
+  const sw=W/buf;let x=0;
+  for(let i=0;i<buf;i++){const v=data[i]/128.0,y=(v*H)/2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);x+=sw}
+  ctx.lineTo(W,H/2);ctx.stroke();
+  ctx.globalAlpha=0.15;ctx.lineWidth=6*dpr;ctx.stroke();ctx.globalAlpha=1;
+  animFrameId=requestAnimationFrame(drawWaveform);
+}
+
+// ========== SPEECH RECOGNITION ==========
+function createRecognition(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('This browser does not support speech recognition.');return null}
+  const r=new SR();r.continuous=true;r.interimResults=true;r.lang=langSelect.value;
+  r.onresult=(e)=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal){
+        transcript+=t+' ';
+        const analysis=processText(t);
+        totalWords+=analysis.wordCount;currentMinuteWords.push(t);
+        analysis.pairs.forEach(p=>{detectedPairs.push(p);currentMinutePairs++;showDetection(p.word,p.pair)});
+        updateDisplay();updatePairsList();updateChart();updateWordCloud();
+      }else{interim+=t}
     }
-    
-    function showSoundAlert(level) {
-      const config = ALERT_LEVELS[level];
-      const alertDiv = document.createElement('div');
-      alertDiv.className = 'sound-alert';
-      alertDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 12px 24px;
-        background: ${config.color};
-        color: white;
-        border-radius: 30px;
-        font-weight: 700;
-        font-size: 14px;
-        z-index: 1000;
-        animation: alertPop 0.5s ease-out forwards;
-        box-shadow: 0 4px 20px ${config.color}66;
-      `;
-      alertDiv.innerHTML = `🔔 ${config.name} PAIRS!`;
-      document.body.appendChild(alertDiv);
-      
-      setTimeout(() => alertDiv.remove(), 2000);
+    updateTranscript();
+  };
+  r.onerror=(e)=>{
+    if(e.error==='not-allowed'||e.error==='service-not-allowed'){console.error('Microphone permission denied');return}
+    if(e.error==='aborted'||e.error==='no-speech')return;
+    console.warn('Speech error:',e.error);
+  };
+  r.onend=()=>{
+    if(!isRecording||isPaused)return;
+    const now=Date.now();const timeSince=now-lastRestartTime;
+    if(timeSince<300){
+      setTimeout(()=>{if(isRecording&&!isPaused){try{r.start();lastRestartTime=Date.now()}catch(ex){}}},300-timeSince);
+      return;
     }
-    
-    function resetMinuteAlerts() {
-      playedAlerts.clear();
-      // Reset indicators
-      [2, 3, 4, 5].forEach(level => {
-        const el = document.getElementById(`level${level}`);
-        if (el) el.classList.remove('active');
-      });
+    restartAttempts++;
+    if(restartAttempts>50){restartAttempts=0;setTimeout(()=>{if(isRecording&&!isPaused){try{r.start();lastRestartTime=Date.now()}catch(ex){}}},2000);return}
+    try{r.start();lastRestartTime=now}catch(ex){setTimeout(()=>{if(isRecording&&!isPaused){try{r.start()}catch(ex2){}}},500)}
+  };
+  return r;
+}
+
+// ========== RECORDING ==========
+btnRecord.addEventListener('click',async()=>{if(isRecording&&!isPaused)return;if(isPaused){resumeRecording();return}await startRecording()});
+btnPause.addEventListener('click',()=>{if(!isRecording)return;isPaused?resumeRecording():pauseRecording()});
+btnStop.addEventListener('click',()=>{if(!isRecording)return;stopRecording()});
+
+async function startRecording(){
+  try{micStream=await navigator.mediaDevices.getUserMedia({audio:true})}catch(err){showToast('Microphone access denied.');return}
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  sourceNode=audioCtx.createMediaStreamSource(micStream);analyserNode=audioCtx.createAnalyser();analyserNode.fftSize=2048;sourceNode.connect(analyserNode);
+  isRecording=true;isPaused=false;transcript='';totalWords=0;detectedPairs=[];currentMinute=0;
+  currentMinuteWords=[];currentMinutePairs=0;minuteData=[];pairCountsPerMinute=[0];elapsedTime=0;
+  currentSessionId=generateSessionId();playedAlerts.clear();
+  recognition=createRecognition();if(recognition){try{recognition.start();lastRestartTime=Date.now();restartAttempts=0}catch(ex){}}
+  // UI
+  btnRecord.classList.add('recording');btnPause.disabled=false;btnStop.disabled=false;
+  inputSection.classList.add('recording');statusDot.className='status-dot recording';
+  langSelect.disabled=true;waveformPlaceholder.style.display='none';
+  $('transcriptPanel').classList.remove('visible');$('transcriptPanel').innerHTML='';
+  $('localPairsPanel').classList.remove('visible');$('localPairsList').innerHTML='';
+  $('wordcloudPanel').classList.remove('visible');
+  $('soundLevels').classList.remove('hidden');
+  chartSection.classList.add('visible');initChart();
+  timerInterval=setInterval(()=>{
+    elapsedTime++;
+    const newMinute=Math.floor(elapsedTime/60);
+    if(newMinute>currentMinute){
+      minuteData.push({minute:currentMinute+1,pairs:currentMinutePairs,words:currentMinuteWords.join(' ').split(/\s+/).filter(w=>w).length,text:currentMinuteWords.join(' ')});
+      pairCountsPerMinute.push(0);currentMinute=newMinute;currentMinutePairs=0;currentMinuteWords=[];
+      resetMinuteAlerts();updateChart();
     }
-    
-    function toggleSound() {
-      soundEnabled = !soundEnabled;
-      const btn = document.getElementById('soundToggle');
-      if (soundEnabled) {
-        btn.textContent = '🔔 Sound On';
-        btn.classList.remove('muted');
-        // Play test sound
-        initAudioContext();
-      } else {
-        btn.textContent = '🔕 Sound Off';
-        btn.classList.add('muted');
-      }
-    }
-    
-    function updateLevelIndicators(count) {
-      [2, 3, 4, 5].forEach(level => {
-        const el = document.getElementById(`level${level}`);
-        if (el) {
-          if (count >= level) {
-            el.classList.add('active');
-          } else {
-            el.classList.remove('active');
-          }
-        }
-      });
-    }
-
-    function getPairsDB() {
-      const lang = document.getElementById('language').value;
-      if (lang === 'tr-TR') return TURKISH_PAIRS;
-      if (lang === 'fr-FR') return FRENCH_PAIRS;
-      return ENGLISH_PAIRS;
-    }
-
-    function processText(text) {
-      const words = text.split(/\s+/).filter(w => w.length > 0);
-      const pairsDB = getPairsDB();
-      const foundPairs = [];
-      const usedWords = new Set();
-
-      words.forEach(word => {
-        const cleanWord = word.toLowerCase().replace(/[.,!?;:'"]/g, '');
-        if (pairsDB[cleanWord] && !usedWords.has(cleanWord)) {
-          foundPairs.push({
-            word: cleanWord,
-            pair: pairsDB[cleanWord]
-          });
-          usedWords.add(cleanWord);
-        }
-      });
-
-      return { wordCount: words.length, pairs: foundPairs };
-    }
-
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function updateDisplay() {
-      document.getElementById('timeDisplay').textContent = formatTime(elapsedTime);
-      document.getElementById('minuteDisplay').textContent = currentMinute + 1;
-      document.getElementById('totalWords').textContent = totalWords;
-      document.getElementById('totalPairs').textContent = detectedPairs.length;
-      
-      const ratio = currentMinute >= 0 ? (detectedPairs.length / (currentMinute + 1)).toFixed(3) : '0.000';
-      document.getElementById('totalRatio').textContent = ratio;
-      document.getElementById('ratioDisplay').textContent = ratio;
-      document.getElementById('currentMinuteDisplay').textContent = currentMinutePairs;
-      document.getElementById('formulaDisplay').textContent = `${detectedPairs.length} / ${currentMinute + 1} = ${ratio}`;
-    }
-
-    function showDetection(word, pair) {
-      const popup = document.getElementById('detectionPopup');
-      document.getElementById('detectionWord').textContent = `${word} ↔ ${pair}`;
-      popup.classList.add('show');
-      setTimeout(() => popup.classList.remove('show'), 2000);
-    }
-
-    function updateChart() {
-      if (!liveChart) return;
-      
-      // Update current minute
-      pairCountsPerMinute[currentMinute] = currentMinutePairs;
-      
-      // Sound alert check
-      checkAndPlayAlert(currentMinutePairs);
-      updateLevelIndicators(currentMinutePairs);
-      
-      if (chartType === 'wave') {
-        // Waves: open and close based on pair count
-        // 0 pairs = contact, N pairs = ±N distance
-        const wave1 = pairCountsPerMinute.map(v => v);       // Upper (positive)
-        const wave2 = pairCountsPerMinute.map(v => -v);      // Lower (negative)
-        
-        if (liveChart.data.labels.length <= currentMinute) {
-          liveChart.data.labels.push(`${currentMinute + 1}dk`);
-        }
-        liveChart.data.datasets[0].data = wave1;
-        liveChart.data.datasets[1].data = wave2;
-        
-      } else if (chartType === 'delta') {
-        // Change chart
-        const deltas = pairCountsPerMinute.map((v, i) => {
-          if (i === 0) return v;
-          return v - pairCountsPerMinute[i - 1];
-        });
-        
-        if (liveChart.data.labels.length <= currentMinute) {
-          liveChart.data.labels.push(`${currentMinute + 1}dk`);
-        }
-        liveChart.data.datasets[0].data = deltas;
-        
-      } else {
-        // Original bar chart
-        const ratio = currentMinute >= 0 ? (detectedPairs.length / (currentMinute + 1)) : 0;
-        
-        if (liveChart.data.labels.length <= currentMinute) {
-          liveChart.data.labels.push(`${currentMinute + 1}dk`);
-          liveChart.data.datasets[0].data.push(currentMinutePairs);
-          liveChart.data.datasets[1].data.push(ratio);
-        } else {
-          liveChart.data.datasets[0].data[currentMinute] = currentMinutePairs;
-          liveChart.data.datasets[1].data[currentMinute] = ratio;
-        }
-      }
-      
-      liveChart.update('none');
-    }
-
-    function updatePairsList() {
-      const pairCount = {};
-      detectedPairs.forEach(p => {
-        const key = `${p.word} ↔ ${p.pair}`;
-        pairCount[key] = (pairCount[key] || 0) + 1;
-      });
-
-      const sorted = Object.entries(pairCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 8);
-
-      const container = document.getElementById('pairsList');
-      container.innerHTML = sorted.map(([pair, count]) => `
-        <div class="pair-item">
-          <span class="pair-text">${pair}</span>
-          <span class="pair-count">${count}×</span>
-        </div>
-      `).join('');
-
-      if (sorted.length > 0) {
-        document.getElementById('pairsSection').classList.remove('hidden');
-      }
-    }
-
-    function updateTranscript() {
-      if (!transcript) return;
-      
-      const pairsDB = getPairsDB();
-      const words = transcript.split(' ');
-      const html = words.map(word => {
-        const cleanWord = word.toLowerCase().replace(/[.,!?;:'"]/g, '');
-        if (pairsDB[cleanWord]) {
-          return `<span class="highlight">${word}</span>`;
-        }
-        return word;
-      }).join(' ');
-
-      document.getElementById('transcriptContent').innerHTML = html;
-      document.getElementById('transcriptSection').classList.remove('hidden');
-    }
-
-    function updateWordCloud() {
-      const container = document.getElementById('wordcloudContainer');
-      const minuteLabel = document.getElementById('wordcloudMinute');
-      
-      if (!container) return;
-      
-      // Use full transcript (cumulative)
-      const allText = transcript;
-      if (!allText.trim()) {
-        container.innerHTML = '<span class="wordcloud-empty">Start speaking...</span>';
-        minuteLabel.textContent = 'Total: 0 words';
-        return;
-      }
-      
-      // Calculate word frequencies
-      const frequencies = calculateWordFrequencies(allText);
-      const totalUniqueWords = Object.keys(frequencies).length;
-      
-      // Update total word count
-      minuteLabel.textContent = `Total: ${totalUniqueWords} unique words`;
-      
-      if (totalUniqueWords === 0) {
-        container.innerHTML = '<span class="wordcloud-empty">Start speaking...</span>';
-        return;
-      }
-      
-      // Generate word cloud HTML
-      const html = generateWordCloudHTML(frequencies);
-      container.innerHTML = html;
-    }
-    
-    function calculateWordFrequencies(text) {
-      const words = text.toLowerCase()
-        .replace(/[.,!?;:'"()\[\]{}]/g, '')
-        .split(/\s+/)
-        .filter(w => w.length > 1); // Skip single-character words
-      
-      const frequencies = {};
-      const stopWords = getStopWords();
-      
-      words.forEach(word => {
-        // Stop words'leri atla
-        if (stopWords.has(word)) return;
-        frequencies[word] = (frequencies[word] || 0) + 1;
-      });
-      
-      return frequencies;
-    }
-    
-    function getStopWords() {
-      const lang = document.getElementById('language').value;
-      
-      // Turkish stop words
-      const turkish = new Set(['bir', 've', 'bu', 'da', 'de', 'için', 'ile', 'mi', 'mu', 'mı', 'ne', 'o', 'ya', 'ama', 'çok', 'daha', 'ben', 'sen', 'biz', 'siz', 'onlar', 'gibi', 'kadar', 'var', 'yok', 'olan', 'olarak', 'ki', 'şu', 'her', 'en', 'çünkü', 'eğer', 'ise', 'hem', 'öyle', 'böyle']);
-      
-      // İngilizce stop words
-      const english = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'it', 'its', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'we', 'they', 'what', 'which', 'who', 'whom', 'so', 'as', 'if', 'then', 'than', 'too', 'very', 'just', 'also']);
-      
-      // Fransızca stop words
-      const french = new Set(['le', 'la', 'les', 'un', 'une', 'des', 'et', 'ou', 'mais', 'donc', 'car', 'ni', 'de', 'du', 'au', 'aux', 'ce', 'cet', 'cette', 'ces', 'mon', 'ton', 'son', 'ma', 'ta', 'sa', 'mes', 'tes', 'ses', 'notre', 'votre', 'leur', 'je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'on', 'qui', 'que', 'quoi', 'dont', 'où', 'est', 'sont', 'être', 'avoir', 'fait', 'faire', 'dit', 'dire', 'plus', 'moins', 'très', 'bien', 'aussi', 'comme', 'pour', 'par', 'sur', 'sous', 'avec', 'sans', 'dans', 'en', 'si', 'ne', 'pas']);
-      
-      if (lang === 'tr-TR') return turkish;
-      if (lang === 'fr-FR') return french;
-      return english;
-    }
-    
-    function generateWordCloudHTML(frequencies) {
-      const pairsDB = getPairsDB();
-      
-      // Sort by frequency
-      const sorted = Object.entries(frequencies)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 50); // Show max 50 words (increased for cumulative)
-      
-      if (sorted.length === 0) return '<span class="wordcloud-empty">No words found</span>';
-      
-      const maxFreq = sorted[0][1];
-      const minFreq = sorted[sorted.length - 1][1];
-      
-      // Shuffle for visual variety
-      const shuffled = sorted.sort(() => Math.random() - 0.5);
-      
-      return shuffled.map(([word, freq]) => {
-        // Calculate size class (1-6)
-        let sizeClass;
-        if (maxFreq === minFreq) {
-          sizeClass = 3;
-        } else {
-          const normalized = (freq - minFreq) / (maxFreq - minFreq);
-          sizeClass = Math.ceil(normalized * 5) + 1;
-          sizeClass = Math.min(6, Math.max(1, sizeClass));
-        }
-        
-        // Check if word is a pair member
-        const isPaired = pairsDB[word] !== undefined;
-        const pairedClass = isPaired ? ' paired-word' : '';
-        const title = isPaired ? `title="${word} ↔ ${pairsDB[word]} (${freq}×)"` : `title="${freq}×"`;
-        
-        return `<span class="wordcloud-word size-${sizeClass}${pairedClass}" ${title}>${word}</span>`;
-      }).join('');
-    }
-
-    function initChart() {
-      const ctx = document.getElementById('liveChart').getContext('2d');
-      
-      if (chartType === 'wave') {
-        initWaveChart(ctx);
-      } else if (chartType === 'delta') {
-        initDeltaChart(ctx);
-      } else {
-        initBarChart(ctx);
-      }
-    }
-
-    function initWaveChart(ctx) {
-      // Sine wave chart - oscillation around 0 (dual wave)
-      liveChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['1dk'],
-          datasets: [
-            // First wave (original)
-            {
-              label: 'Wave 1',
-              data: [0],
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              borderWidth: 3,
-              pointBackgroundColor: function(context) {
-                const value = context.raw;
-                return value >= 0 ? '#10b981' : '#ef4444';
-              },
-              pointBorderColor: function(context) {
-                const value = context.raw;
-                return value >= 0 ? '#10b981' : '#ef4444';
-              },
-              pointRadius: 6,
-              pointHoverRadius: 8,
-              tension: 0.4,
-              fill: {
-                target: 'origin',
-                above: 'rgba(16, 185, 129, 0.15)',
-                below: 'rgba(239, 68, 68, 0.15)'
-              }
-            },
-            // Second wave (half period offset = negative)
-            {
-              label: 'Wave 2',
-              data: [0],
-              borderColor: '#f59e0b',
-              backgroundColor: 'rgba(245, 158, 11, 0.1)',
-              borderWidth: 3,
-              pointBackgroundColor: function(context) {
-                const value = context.raw;
-                return value >= 0 ? '#f59e0b' : '#ef4444';
-              },
-              pointBorderColor: function(context) {
-                const value = context.raw;
-                return value >= 0 ? '#f59e0b' : '#ef4444';
-              },
-              pointRadius: 6,
-              pointHoverRadius: 8,
-              tension: 0.4,
-              fill: {
-                target: 'origin',
-                above: 'rgba(245, 158, 11, 0.15)',
-                below: 'rgba(239, 68, 68, 0.15)'
-              }
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            mode: 'index',
-            intersect: false
-          },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: 'rgba(0,0,0,0.9)',
-              padding: 12,
-              cornerRadius: 8,
-              callbacks: {
-                label: function(context) {
-                  const value = Math.abs(context.raw);
-                  return `Pair count: ${value}`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { color: '#9ca3af' }
-            },
-            y: {
-              grid: { 
-                color: function(context) {
-                  if (context.tick.value === 0) {
-                    return 'rgba(255,255,255,0.3)'; // Zero line prominent
-                  }
-                  return 'rgba(255,255,255,0.05)';
-                },
-                lineWidth: function(context) {
-                  return context.tick.value === 0 ? 2 : 1;
-                }
-              },
-              ticks: { 
-                color: '#9ca3af',
-                callback: function(value) {
-                  if (value === 0) return '• contact •';
-                  return Math.abs(value);
-                }
-              },
-              title: {
-                display: true,
-                text: '0 = contact point | Distance = pair count',
-                color: '#6b7280',
-                font: { size: 10 }
-              }
-            }
-          }
-        }
-      });
-    }
-
-    function initDeltaChart(ctx) {
-      // Change (derivative) chart
-      liveChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['1dk'],
-          datasets: [{
-            label: 'Change (Δ)',
-            data: [0],
-            backgroundColor: function(context) {
-              const value = context.raw;
-              return value >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)';
-            },
-            borderColor: function(context) {
-              const value = context.raw;
-              return value >= 0 ? '#10b981' : '#ef4444';
-            },
-            borderWidth: 2,
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: 'rgba(0,0,0,0.9)',
-              padding: 12,
-              cornerRadius: 8,
-              callbacks: {
-                label: function(context) {
-                  const value = context.raw;
-                  const direction = value > 0 ? '📈 Increase' : value < 0 ? '📉 Decrease' : '➡️ Stable';
-                  return `Δ = ${value} (${direction})`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { color: '#9ca3af' }
-            },
-            y: {
-              grid: { 
-                color: function(context) {
-                  if (context.tick.value === 0) return 'rgba(255,255,255,0.3)';
-                  return 'rgba(255,255,255,0.05)';
-                },
-                lineWidth: function(context) {
-                  return context.tick.value === 0 ? 2 : 1;
-                }
-              },
-              ticks: { 
-                color: '#9ca3af',
-                callback: function(value) {
-                  if (value === 0) return '— 0 —';
-                  return value > 0 ? '+' + value : value;
-                }
-              }
-            }
-          }
-        }
-      });
-    }
-
-    function initBarChart(ctx) {
-      // Original bar chart
-      liveChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['1dk'],
-          datasets: [
-            {
-              label: 'Pair Count',
-              data: [0],
-              backgroundColor: 'rgba(251, 191, 36, 0.8)',
-              borderColor: 'rgba(251, 191, 36, 1)',
-              borderWidth: 1,
-              borderRadius: 4,
-              yAxisID: 'y'
-            },
-            {
-              label: 'Ratio (Σ/min)',
-              data: [0],
-              type: 'line',
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              borderWidth: 3,
-              pointBackgroundColor: '#10b981',
-              pointRadius: 5,
-              tension: 0.3,
-              yAxisID: 'y1'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: 'rgba(0,0,0,0.9)',
-              padding: 12,
-              cornerRadius: 8
-            }
-          },
-          scales: {
-            x: {
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { color: '#9ca3af' }
-            },
-            y: {
-              type: 'linear',
-              position: 'left',
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { color: '#fbbf24', stepSize: 1 },
-              title: { display: true, text: 'Pair Count', color: '#fbbf24' }
-            },
-            y1: {
-              type: 'linear',
-              position: 'right',
-              grid: { drawOnChartArea: false },
-              ticks: { color: '#10b981' },
-              title: { display: true, text: 'Ratio', color: '#10b981' }
-            }
-          }
-        }
-      });
-    }
-
-    // Gradient functions
-    function getGradient(ctx, chartArea) {
-      const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-      gradient.addColorStop(0, '#ef4444');
-      gradient.addColorStop(0.5, '#fbbf24');
-      gradient.addColorStop(1, '#10b981');
-      return gradient;
-    }
-
-    function getBackgroundGradient(ctx, chartArea) {
-      const centerY = (chartArea.top + chartArea.bottom) / 2;
-      const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-      gradient.addColorStop(0, 'rgba(239, 68, 68, 0.2)');
-      gradient.addColorStop(0.5, 'rgba(251, 191, 36, 0.1)');
-      gradient.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
-      return gradient;
-    }
-
-    function switchChartType(type) {
-      chartType = type;
-      
-      // Update button styles
-      document.querySelectorAll('.chart-type-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.type === type) btn.classList.add('active');
-      });
-
-      // Update legend
-      const legend = document.getElementById('chartLegend');
-      if (type === 'wave') {
-        legend.innerHTML = `
-          <div class="legend-item">
-            <div style="width: 20px; height: 4px; background: #10b981; border-radius: 2px;"></div>
-            <span style="color: #10b981;">Wave 1 (Upper)</span>
-          </div>
-          <div class="legend-item">
-            <div style="width: 20px; height: 4px; background: #f59e0b; border-radius: 2px;"></div>
-            <span style="color: #f59e0b;">Wave 2 (Lower)</span>
-          </div>
-          <div class="legend-item">
-            <span style="color: #6b7280; font-size: 11px;">0 = contact point</span>
-          </div>
-        `;
-      } else if (type === 'delta') {
-        legend.innerHTML = `
-          <div class="legend-item">
-            <div style="width: 16px; height: 12px; background: #10b981; border-radius: 2px;"></div>
-            <span style="color: #10b981;">Increase (+)</span>
-          </div>
-          <div class="legend-item">
-            <div style="width: 16px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
-            <span style="color: #ef4444;">Decrease (-)</span>
-          </div>
-        `;
-      } else {
-        legend.innerHTML = `
-          <div class="legend-item">
-            <div class="legend-bar"></div>
-            <span style="color: #fbbf24;">Pairs per Minute</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-line"></div>
-            <span style="color: #10b981;">Cumulative Ratio</span>
-          </div>
-        `;
-      }
-
-      // Recreate chart
-      if (liveChart) {
-        liveChart.destroy();
-      }
-      initChart();
-      
-      // Load existing data
-      rebuildChartData();
-    }
-
-    function rebuildChartData() {
-      if (!liveChart || pairCountsPerMinute.length === 0) return;
-
-      const labels = pairCountsPerMinute.map((_, i) => `${i + 1}dk`);
-      
-      if (chartType === 'wave') {
-        // Waves: open and close based on pair count
-        const wave1 = pairCountsPerMinute.map(v => v);       // Upper
-        const wave2 = pairCountsPerMinute.map(v => -v);      // Lower
-        
-        liveChart.data.labels = labels;
-        liveChart.data.datasets[0].data = wave1;
-        liveChart.data.datasets[1].data = wave2;
-      } else if (chartType === 'delta') {
-        // Calculate change
-        const deltas = pairCountsPerMinute.map((v, i) => {
-          if (i === 0) return 0;
-          return v - pairCountsPerMinute[i - 1];
-        });
-        
-        liveChart.data.labels = labels;
-        liveChart.data.datasets[0].data = deltas;
-      } else {
-        // Bar chart
-        const ratios = pairCountsPerMinute.map((_, i) => {
-          const cumulative = pairCountsPerMinute.slice(0, i + 1).reduce((a, b) => a + b, 0);
-          return cumulative / (i + 1);
-        });
-        
-        liveChart.data.labels = labels;
-        liveChart.data.datasets[0].data = pairCountsPerMinute;
-        liveChart.data.datasets[1].data = ratios;
-      }
-      
-      liveChart.update();
-    }
-
-    async function startRecording() {
-      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert('Your browser does not support speech recognition. Please use Chrome.');
-        return;
-      }
-
-      // Get microphone permission once and keep stream open
-      // This prevents the browser from asking for permission again on SpeechRecognition restarts
-      try {
-        if (!micStream) {
-          micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        }
-      } catch (err) {
-        alert('Microphone access denied. Please grant permission.');
-        console.error('getUserMedia error:', err);
-        return;
-      }
-
-      // Reset
-      isRecording = true;
-      isPaused = false;
-      elapsedTime = 0;
-      currentMinute = 0;
-      transcript = '';
-      totalWords = 0;
-      detectedPairs = [];
-      currentMinutePairs = 0;
-      currentMinuteWords = [];
-      restartAttempts = 0;
-      lastRestartTime = 0;
-
-      // Update UI
-      document.getElementById('startBtn').classList.add('hidden');
-      document.getElementById('manualBtn').classList.add('hidden');
-      document.getElementById('pauseBtn').classList.remove('hidden');
-      document.getElementById('stopBtn').classList.remove('hidden');
-      document.getElementById('timerSection').classList.remove('hidden');
-      document.getElementById('chartSection').classList.remove('hidden');
-      document.getElementById('wordcloudSection').classList.remove('hidden');
-      document.getElementById('manualSection').classList.remove('show');
-      document.getElementById('soundLevels').classList.remove('hidden');
-      document.getElementById('language').disabled = true;
-      document.getElementById('statusLabel').textContent = '🔴 RECORDING';
-      document.getElementById('pulseDot').style.display = 'block';
-      
-      // Reset sound alerts
-      resetMinuteAlerts();
-      
-      // Start n8n session
-      currentSessionId = generateSessionId();
-      startInterimUpdates();
-
-      // Initialize chart
-      if (liveChart) {
-        liveChart.destroy();
-      }
-      pairCountsPerMinute = [0];
-      initChart();
-
-      // Speech Recognition
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = document.getElementById('language').value;
-
-      recognition.onresult = (event) => {
-        let finalTranscript = '';
-        
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript + ' ';
-          }
-        }
-
-        if (finalTranscript) {
-          transcript += finalTranscript;
-          currentMinuteWords.push(finalTranscript);
-          
-          const analysis = processText(finalTranscript);
-          totalWords += analysis.wordCount;
-          
-          if (analysis.pairs.length > 0) {
-            analysis.pairs.forEach(p => {
-              detectedPairs.push(p);
-              showDetection(p.word, p.pair);
-            });
-            currentMinutePairs += analysis.pairs.length;
-            updateChart();
-            updatePairsList();
-          }
-          
-          updateDisplay();
-          updateTranscript();
-          updateWordCloud();
-        }
-      };
-
-      recognition.onerror = (event) => {
-        console.warn('Speech error:', event.error);
-        
-        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-          // User denied mic permission — don't loop
-          console.error('Microphone permission denied, will not retry.');
-          document.getElementById('statusLabel').textContent = '🚫 MICROPHONE PERMISSION REQUIRED';
-          return;
-        }
-        
-        if (event.error === 'aborted') {
-          // Stopped by browser — silently restart
-          return; // onend zaten tetiklenecek
-        }
-        
-        if (event.error === 'no-speech') {
-          // No speech detected — normal, will restart on onend
-          return;
-        }
-      };
-
-      recognition.onend = () => {
-        if (!isRecording || isPaused) return;
-        
-        const now = Date.now();
-        const timeSinceLastRestart = now - lastRestartTime;
-        
-        // Prevent rapid restart loop
-        if (timeSinceLastRestart < MIN_RESTART_INTERVAL) {
-          setTimeout(() => {
-            if (isRecording && !isPaused) {
-              try { 
-                recognition.start(); 
-                lastRestartTime = Date.now();
-              } catch(e) {
-                console.warn('Recognition restart failed:', e);
-              }
-            }
-          }, MIN_RESTART_INTERVAL - timeSinceLastRestart);
-          return;
-        }
-        
-        // Maximum retry check
-        restartAttempts++;
-        if (restartAttempts > MAX_RESTART_ATTEMPTS) {
-          console.warn('Too many restart attempts, pausing.');
-          restartAttempts = 0;
-          // Wait 2 seconds, then retry
-          setTimeout(() => {
-            if (isRecording && !isPaused) {
-              try { 
-                recognition.start(); 
-                lastRestartTime = Date.now();
-              } catch(e) {}
-            }
-          }, 2000);
-          return;
-        }
-        
-        try { 
-          recognition.start(); 
-          lastRestartTime = now;
-        } catch(e) {
-          console.warn('Recognition restart failed:', e);
-          // Retry with short delay
-          setTimeout(() => {
-            if (isRecording && !isPaused) {
-              try { recognition.start(); } catch(e2) {}
-            }
-          }, 500);
-        }
-      };
-
-      recognition.start();
-
-      // Timer
-      timerInterval = setInterval(() => {
-        elapsedTime++;
-        const newMinute = Math.floor(elapsedTime / 60);
-        
-        if (newMinute > currentMinute) {
-          // New minute started
-          minuteData.push({
-            minute: currentMinute + 1,
-            pairs: currentMinutePairs,
-            words: currentMinuteWords.join(' ').split(/\s+/).filter(w => w).length,
-            text: currentMinuteWords.join(' ')
-          });
-          
-          // Add new minute to pairCountsPerMinute
-          pairCountsPerMinute.push(0);
-          
-          currentMinute = newMinute;
-          currentMinutePairs = 0;
-          currentMinuteWords = [];
-          
-          // Reset sound alerts for new minute
-          resetMinuteAlerts();
-          
-          // Update chart
-          updateChart();
-        }
-        
-        updateDisplay();
-        
-        if (elapsedTime >= 3600) {
-          stopRecording();
-        }
-      }, 1000);
-    }
-
-    function pauseRecording() {
-      isPaused = true;
-      if (recognition) recognition.stop();
-      clearInterval(timerInterval);
-      
-      document.getElementById('pauseBtn').classList.add('hidden');
-      document.getElementById('resumeBtn').classList.remove('hidden');
-      document.getElementById('statusLabel').textContent = '⏸️ PAUSED';
-      document.getElementById('pulseDot').style.display = 'none';
-    }
-
-    function resumeRecording() {
-      isPaused = false;
-      if (recognition) {
-        try { 
-          recognition.start(); 
-          lastRestartTime = Date.now();
-          restartAttempts = 0;
-        } catch(e) {}
-      }
-      
-      timerInterval = setInterval(() => {
-        elapsedTime++;
-        updateDisplay();
-      }, 1000);
-      
-      document.getElementById('resumeBtn').classList.add('hidden');
-      document.getElementById('pauseBtn').classList.remove('hidden');
-      document.getElementById('statusLabel').textContent = '🔴 RECORDING';
-      document.getElementById('pulseDot').style.display = 'block';
-    }
-
-    function stopRecording() {
-      isRecording = false;
-      isPaused = false;
-      
-      if (recognition) {
-        recognition.stop();
-        recognition = null;
-      }
-      
-      // Release microphone stream
-      if (micStream) {
-        micStream.getTracks().forEach(track => track.stop());
-        micStream = null;
-      }
-      
-      clearInterval(timerInterval);
-      
-      // Save last minute
-      if (currentMinuteWords.length > 0 || currentMinutePairs > 0) {
-        minuteData.push({
-          minute: currentMinute + 1,
-          pairs: currentMinutePairs,
-          words: currentMinuteWords.join(' ').split(/\s+/).filter(w => w).length,
-          text: currentMinuteWords.join(' ')
-        });
-      }
-      
-      document.getElementById('pauseBtn').classList.add('hidden');
-      document.getElementById('resumeBtn').classList.add('hidden');
-      document.getElementById('stopBtn').classList.add('hidden');
-      document.getElementById('startBtn').classList.remove('hidden');
-      document.getElementById('manualBtn').classList.remove('hidden');
-      document.getElementById('soundLevels').classList.add('hidden');
-      document.getElementById('language').disabled = false;
-      document.getElementById('statusLabel').textContent = '✅ COMPLETED';
-      document.getElementById('pulseDot').style.display = 'none';
-      
-      // Send final result to n8n
-      stopInterimUpdates();
-      sendToN8n('final');
-    }
-
-    function toggleManual() {
-      document.getElementById('manualSection').classList.toggle('show');
-    }
-
-    function processManualInput() {
-      const input = document.getElementById('manualInput').value.trim();
-      if (!input) return;
-
-      // Reset
-      transcript = input;
-      totalWords = 0;
-      detectedPairs = [];
-      currentMinute = 0;
-      minuteData = [];
-      pairCountsPerMinute = [];
-
-      const lines = input.split('\n').filter(l => l.trim());
-      
-      // Process each line
-      lines.forEach((line, idx) => {
-        const analysis = processText(line);
-        totalWords += analysis.wordCount;
-        
-        analysis.pairs.forEach(p => detectedPairs.push(p));
-        
-        minuteData.push({
-          minute: idx + 1,
-          pairs: analysis.pairs.length,
-          words: analysis.wordCount,
-          text: line
-        });
-        
-        pairCountsPerMinute.push(analysis.pairs.length);
-      });
-
-      currentMinute = lines.length - 1;
-
-      // Initialize chart and load data
-      document.getElementById('chartSection').classList.remove('hidden');
-      if (liveChart) liveChart.destroy();
-      initChart();
-      rebuildChartData();
-      
-      updateDisplay();
-      updatePairsList();
-      updateTranscript();
-      
-      document.getElementById('manualSection').classList.remove('show');
-      
-      // Send to n8n
-      currentSessionId = generateSessionId();
-      sendToN8n('final');
-    }
-
-    // ============================================
-    // n8n BACKEND INTEGRATION
-    // ============================================
-    const N8N_WEBHOOK_URL = 'https://n8n.tropus.io/webhook/asge-analyze';
-    let currentSessionId = null;
-    let interimTimer = null;
-    const INTERIM_INTERVAL_MS = 120000; // Every 2 minutes
-
-    function generateSessionId() {
-      return `session_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-    }
-
-    async function sendToN8n(mode = 'final') {
-      const segments = [];
-      
-      minuteData.forEach(md => {
-        segments.push({
-          minute: md.minute,
-          text: md.text || '',
-          words: md.words
-        });
-      });
-      
-      if (currentMinuteWords.length > 0) {
-        segments.push({
-          minute: (currentMinute || 0) + 1,
-          text: currentMinuteWords.join(' '),
-          words: currentMinuteWords.join(' ').split(/\s+/).filter(w => w).length
-        });
-      }
-
-      if (segments.length === 0 || transcript.trim().length < 10) return;
-
-      const payload = {
-        transcript: transcript,
-        language: document.getElementById('language').value,
-        duration: elapsedTime,
-        minuteSegments: segments,
-        mode: mode,
-        sessionId: currentSessionId
-      };
-
-      // Update UI
-      const panel = document.getElementById('aiResultsPanel');
-      panel.classList.remove('hidden');
-      document.getElementById('aiLoading').style.display = 'block';
-      document.getElementById('aiPanelMode').textContent = mode === 'interim' ? '⏳ Interim' : '✅ Final';
-
-      try {
-        const response = await fetch(N8N_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const result = await response.json();
-        
-        if (result.success) {
-          displayAIResults(result, mode);
-        }
-      } catch (error) {
-        console.error('n8n connection error:', error);
-        document.getElementById('aiLoading').innerHTML = '❌ AI connection error: ' + error.message;
-      }
-    }
-
-    function startInterimUpdates() {
-      interimTimer = setInterval(() => {
-        if (isRecording && !isPaused && transcript.length > 50) {
-          sendToN8n('interim');
-        }
-      }, INTERIM_INTERVAL_MS);
-    }
-
-    function stopInterimUpdates() {
-      if (interimTimer) { clearInterval(interimTimer); interimTimer = null; }
-    }
-
-    function displayAIResults(result, mode) {
-      document.getElementById('aiLoading').style.display = 'none';
-      const container = document.getElementById('aiPanelContent');
-      
-      // Statistics
-      let html = `<div class="ai-stats-row">
-        <div class="ai-stat-box"><span class="ai-stat-label">AI Total</span><span class="ai-stat-val">${result.stats.totalPairs}</span></div>
-        <div class="ai-stat-box"><span class="ai-stat-label">Classic</span><span class="ai-stat-val">${result.stats.classicPairs}</span></div>
-        <div class="ai-stat-box"><span class="ai-stat-label">Contextual</span><span class="ai-stat-val">${result.stats.contextualPairs}</span></div>
-        <div class="ai-stat-box"><span class="ai-stat-label">Rate/min</span><span class="ai-stat-val">${result.stats.pairsPerMinute}</span></div>
-      </div>`;
-
-      // Summary
-      if (result.analysis.summary) {
-        html += `<div class="ai-summary-box">
-          <h4>📊 ${mode === 'interim' ? 'Interim Analysis' : 'Final Analysis'}</h4>
-          <p>${result.analysis.summary}</p>
-          ${result.analysis.peakMinute ? `<p style="margin-top:8px;font-size:12px;color:#818cf8;"><strong>Peak:</strong> Minute ${result.analysis.peakMinute} | <strong>Theme:</strong> ${result.analysis.dominantTheme || '-'}</p>` : ''}
-        </div>`;
-      }
-
-      // Pairs
-      if (result.pairs && result.pairs.length > 0) {
-        html += '<h4 style="color:#a5b4fc;font-size:13px;margin-bottom:8px;">🔍 AI Detected Pairs</h4>';
-        result.pairs.forEach(p => {
-          html += `<div class="ai-pair-ctx">
-            <span class="pair-words">${p.word1} ↔ ${p.word2}</span>
-            <span class="pair-type ${p.type}">${p.type === 'classic' ? 'classic' : 'contextual'}</span>
-            <span class="pair-min">min ${p.minute}</span>
-            <span class="pair-ctx">"${p.context}"</span>
-          </div>`;
-        });
-      }
-
-      // Trends
-      if (result.minuteTrends && result.minuteTrends.length > 0) {
-        html += '<h4 style="color:#a5b4fc;font-size:13px;margin:12px 0 8px;">📈 Minute Trends</h4>';
-        result.minuteTrends.forEach(t => {
-          html += `<div class="ai-trend-row intensity-${t.intensity}">
-            <span class="ai-trend-min">Min ${t.minute}</span>
-            <span class="ai-trend-count">${t.count} pairs</span>
-            <span class="ai-trend-note">${t.note}</span>
-          </div>`;
-        });
-      }
-
-      container.innerHTML = html;
-    }
-
-    // On page load
     updateDisplay();
-  </script>
+    if(elapsedTime>=3600)stopRecording();
+  },1000);
+  drawWaveform();startInterimUpdates();updateDisplay();
+}
+function pauseRecording(){
+  isPaused=true;if(recognition)try{recognition.stop()}catch(ex){}
+  clearInterval(timerInterval);cancelAnimationFrame(animFrameId);
+  btnRecord.classList.remove('recording');btnRecord.classList.add('paused');
+  btnPause.textContent='RESUME';statusDot.className='status-dot';inputSection.classList.remove('recording');
+}
+function resumeRecording(){
+  isPaused=false;if(recognition){try{recognition.start();lastRestartTime=Date.now();restartAttempts=0}catch(ex){}}
+  timerInterval=setInterval(()=>{
+    elapsedTime++;
+    const newMinute=Math.floor(elapsedTime/60);
+    if(newMinute>currentMinute){
+      minuteData.push({minute:currentMinute+1,pairs:currentMinutePairs,words:currentMinuteWords.join(' ').split(/\s+/).filter(w=>w).length,text:currentMinuteWords.join(' ')});
+      pairCountsPerMinute.push(0);currentMinute=newMinute;currentMinutePairs=0;currentMinuteWords=[];
+      resetMinuteAlerts();updateChart();
+    }
+    updateDisplay();
+    if(elapsedTime>=3600)stopRecording();
+  },1000);
+  btnRecord.classList.remove('paused');btnRecord.classList.add('recording');
+  btnPause.textContent='PAUSE';statusDot.className='status-dot recording';inputSection.classList.add('recording');drawWaveform();
+}
+function stopRecording(){
+  isRecording=false;isPaused=false;
+  if(recognition){recognition.stop();recognition=null}
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null}
+  if(audioCtx){audioCtx.close();audioCtx=null}
+  clearInterval(timerInterval);cancelAnimationFrame(animFrameId);
+  if(currentMinuteWords.length>0||currentMinutePairs>0){
+    const mw=currentMinuteWords.join(' ').split(/\s+/).filter(w=>w).length;
+    minuteData.push({minute:currentMinute+1,pairs:currentMinutePairs,words:mw,text:currentMinuteWords.join(' ')});
+  }
+  btnRecord.classList.remove('recording','paused');btnPause.disabled=true;btnPause.textContent='PAUSE';
+  btnStop.disabled=true;inputSection.classList.remove('recording');statusDot.className='status-dot processing';
+  langSelect.disabled=false;$('soundLevels').classList.add('hidden');
+  const ctx=waveformCanvas.getContext('2d');ctx.clearRect(0,0,waveformCanvas.width,waveformCanvas.height);
+  waveformPlaceholder.style.display='block';waveformPlaceholder.textContent='Processing…';
+  stopInterimUpdates();sendToN8n('final');
+}
+
+// ========== MANUAL INPUT ==========
+function processManualInput(input){
+  transcript=input;totalWords=0;detectedPairs=[];currentMinute=0;minuteData=[];pairCountsPerMinute=[];elapsedTime=0;
+  const lines=input.split('\n').filter(l=>l.trim());
+  lines.forEach((line,idx)=>{
+    const analysis=processText(line);totalWords+=analysis.wordCount;
+    analysis.pairs.forEach(p=>detectedPairs.push(p));
+    minuteData.push({minute:idx+1,pairs:analysis.pairs.length,words:analysis.wordCount,text:line});
+    pairCountsPerMinute.push(analysis.pairs.length);
+  });
+  currentMinute=lines.length-1;
+  chartSection.classList.add('visible');initChart();
+  rebuildChartData();
+  updateDisplay();updatePairsList();updateTranscript();updateWordCloud();
+  currentSessionId=generateSessionId();sendToN8n('final');
+}
+
+// ========== N8N INTEGRATION ==========
+function startInterimUpdates(){interimTimer=setInterval(()=>{if(isRecording&&!isPaused&&transcript.length>50)sendToN8n('interim')},INTERIM_INTERVAL_MS)}
+function stopInterimUpdates(){if(interimTimer){clearInterval(interimTimer);interimTimer=null}}
+
+async function sendToN8n(mode){
+  const segments=[];
+  minuteData.forEach(md=>{segments.push({minute:md.minute,text:md.text||'',words:md.words})});
+  if(currentMinuteWords.length>0)segments.push({minute:(currentMinute||0)+1,text:currentMinuteWords.join(' '),words:currentMinuteWords.join(' ').split(/\s+/).filter(w=>w).length});
+  if(segments.length===0||transcript.trim().length<10)return;
+  const payload={transcript:transcript,language:langSelect.value,duration:elapsedTime,minuteSegments:segments,mode:mode,sessionId:currentSessionId};
+  resultsSection.classList.add('visible');$('aiLoading').classList.remove('hidden');
+  $('aiStatsRow').classList.add('hidden');$('aiSummaryPanel').classList.add('hidden');
+  $('aiPairsTitle').classList.add('hidden');$('aiPairsGrid').innerHTML='';
+  $('aiTrendsTitle').classList.add('hidden');$('aiTrendsGrid').innerHTML='';
+  statusDot.className='status-dot processing';
+  $('aiPanelTitle').textContent=mode==='interim'?'⏳ Interim Analysis':'✅ Final Analysis';
+  try{
+    const response=await fetch(N8N_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const result=await response.json();if(result.success)displayAIResults(result,mode);
+  }catch(error){
+    console.error('n8n error:',error);
+    $('aiLoading').innerHTML='<div style="color:var(--negative)">❌ AI connection error: '+escHTML(error.message)+'</div>';
+    showToast('Analysis failed: '+error.message);
+  }
+}
+
+// ========== DISPLAY AI RESULTS ==========
+function displayAIResults(result,mode){
+  $('aiLoading').classList.add('hidden');
+  const sr=$('aiStatsRow');sr.classList.remove('hidden');
+  sr.innerHTML='<div class="ai-stat-box"><span class="ai-stat-label">AI Total</span><span class="ai-stat-val">'+result.stats.totalPairs+'</span></div><div class="ai-stat-box"><span class="ai-stat-label">Classic</span><span class="ai-stat-val">'+result.stats.classicPairs+'</span></div><div class="ai-stat-box"><span class="ai-stat-label">Contextual</span><span class="ai-stat-val">'+result.stats.contextualPairs+'</span></div><div class="ai-stat-box"><span class="ai-stat-label">Rate/min</span><span class="ai-stat-val">'+result.stats.pairsPerMinute+'</span></div>';
+  if(result.analysis&&result.analysis.summary){
+    $('aiSummaryPanel').classList.remove('hidden');
+    let h='<p>'+escHTML(result.analysis.summary)+'</p>';
+    if(result.analysis.peakMinute)h+='<p style="margin-top:8px;font-size:0.8rem"><strong>Peak:</strong> Minute '+result.analysis.peakMinute+(result.analysis.dominantTheme?' · <strong>Theme:</strong> '+escHTML(result.analysis.dominantTheme):'')+'</p>';
+    $('aiSummaryText').innerHTML=h;
+  }
+  if(result.pairs&&result.pairs.length>0){
+    $('aiPairsTitle').classList.remove('hidden');
+    const g=$('aiPairsGrid');g.innerHTML='';
+    result.pairs.forEach((p,i)=>{
+      const c=document.createElement('article');c.className='pair-card';c.style.animationDelay=(i*60)+'ms';
+      c.innerHTML='<span class="pair-word word-a">'+escHTML(p.word1)+'</span><span class="pair-connector" aria-hidden="true">⇌</span><span class="pair-word word-b">'+escHTML(p.word2)+'</span><div class="pair-meta"><span class="pair-type '+(p.type||'classic')+'">'+(p.type==='classic'?'classic':'contextual')+'</span><span class="pair-minute">dk '+p.minute+'</span><span class="pair-context">'+escHTML(p.context||'')+'</span></div>';
+      g.appendChild(c);
+    });
+  }
+  if(result.minuteTrends&&result.minuteTrends.length>0){
+    $('aiTrendsTitle').classList.remove('hidden');
+    const tg=$('aiTrendsGrid');tg.innerHTML='';
+    result.minuteTrends.forEach(t=>{
+      const r=document.createElement('div');r.className='trend-row intensity-'+(t.intensity||'low');
+      r.innerHTML='<span class="trend-min">Min '+t.minute+'</span><span class="trend-count">'+t.count+' pairs</span><span class="trend-note">'+escHTML(t.note||'')+'</span>';
+      tg.appendChild(r);
+    });
+  }
+  resultsSection.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ========== INIT ==========
+updateDisplay();statusDot.className='status-dot ready';
+})();
+</script>
 </body>
 </html>
