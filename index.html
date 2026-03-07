@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,7 +66,6 @@ body{font-family:var(--font-mono);background:var(--bg-deep);color:var(--text-pri
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--radius-sm)}
 
-/* ===== HEADER / NAV ===== */
 header{position:sticky;top:0;z-index:100;background:var(--bg-deep);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .nav-inner{max-width:1400px;margin:0 auto;padding:var(--space-md) var(--space-lg);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md)}
 .logo{font-family:var(--font-display);font-weight:700;font-size:1.5rem;letter-spacing:-0.03em;color:var(--accent);display:flex;align-items:center;gap:var(--space-sm)}
@@ -92,7 +90,6 @@ header{position:sticky;top:0;z-index:100;background:var(--bg-deep);border-bottom
 
 main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 
-/* ===== HERO ===== */
 .hero{padding:var(--space-3xl) 0 var(--space-2xl);display:grid;grid-template-columns:1fr;gap:var(--space-xl)}
 @media(min-width:768px){.hero{grid-template-columns:1.2fr 1fr;align-items:start}}
 .hero-text{max-width:60ch}
@@ -101,24 +98,20 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .hero-text h1 .highlight::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:3px;background:var(--accent);opacity:0.4;border-radius:2px}
 .hero-text p{color:var(--text-secondary);font-size:0.95rem;max-width:55ch;margin-bottom:var(--space-xl)}
 
-/* ===== INPUT SECTION ===== */
 .input-section{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl);position:relative;overflow:hidden}
 .input-section::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-dim),var(--accent),var(--accent-dim));opacity:0;transition:opacity var(--transition-med)}
 .input-section.recording::before{opacity:1;animation:pulse-bar 2s ease-in-out infinite}
 @keyframes pulse-bar{0%,100%{opacity:0.4}50%{opacity:1}}
 
-/* TABS */
 .input-tabs{display:flex;gap:var(--space-xs);margin-bottom:var(--space-lg)}
 .tab-btn{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-mono);font-size:0.8rem;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);cursor:pointer;min-height:44px;transition:background var(--transition-fast),color var(--transition-fast),border-color var(--transition-fast)}
 .tab-btn:hover{border-color:var(--accent);color:var(--text-primary)}
 .tab-btn.active{background:var(--accent);color:var(--bg-deep);border-color:var(--accent);font-weight:600}
 
-/* WAVEFORM */
 .waveform-container{height:120px;background:var(--bg-deep);border-radius:var(--radius);margin-bottom:var(--space-lg);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .waveform-canvas{width:100%;height:100%;display:block}
 .waveform-placeholder{color:var(--text-muted);font-size:0.8rem;position:absolute;pointer-events:none}
 
-/* RECORD CONTROLS */
 .record-controls{display:flex;align-items:center;gap:var(--space-md);flex-wrap:wrap}
 .btn-record{width:64px;height:64px;border-radius:50%;border:3px solid var(--accent);background:transparent;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;transition:background var(--transition-fast),box-shadow var(--transition-fast),transform var(--transition-fast)}
 .btn-record:hover{background:var(--accent-glow);transform:scale(1.05)}
@@ -135,7 +128,6 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .btn-secondary.sound-on{border-color:var(--accent-dim);color:var(--accent)}
 .btn-secondary.sound-off{opacity:0.4}
 
-/* TEXT INPUT */
 .text-input-area{display:none}
 .text-input-area.active{display:block}
 .mic-input-area.hidden{display:none}
@@ -146,7 +138,6 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .btn-analyze:hover{background:var(--accent-bright);transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
 .btn-analyze:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
 
-/* COUNTERS */
 .counters{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-md);margin-top:var(--space-lg)}
 .counter-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-md);text-align:left;transition:border-color var(--transition-fast)}
 .counter-card:hover{border-color:var(--accent-dim)}
@@ -154,26 +145,21 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .counter-value{font-size:1.6rem;font-weight:700;color:var(--accent);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
 .counter-value.pairs{color:var(--pair-a)}
 
-/* SOUND LEVELS */
 .sound-levels{display:flex;gap:var(--space-sm);margin-top:var(--space-md);flex-wrap:wrap}
 .sound-level-indicator{padding:4px 12px;border-radius:var(--radius-sm);font-size:0.65rem;font-weight:600;opacity:0.3;transition:all 0.4s cubic-bezier(.34,1.56,.64,1);letter-spacing:0.5px;border:1px solid transparent}
 .sound-level-indicator.active{opacity:1;transform:scale(1.1);box-shadow:0 2px 12px currentColor}
 
-/* DETECTION POPUP */
 .detection-popup{position:fixed;top:20px;left:50%;transform:translateX(-50%) scale(0.8);padding:12px 24px;background:var(--accent);color:var(--bg-deep);border-radius:30px;z-index:200;opacity:0;pointer-events:none;transition:all 0.4s cubic-bezier(.34,1.56,.64,1);font-weight:700;font-size:0.85rem;box-shadow:0 8px 30px var(--accent-glow)}
 .detection-popup.show{opacity:1;transform:translateX(-50%) scale(1)}
 @keyframes alertPop{0%{transform:translateX(-50%) scale(0.5);opacity:0}50%{transform:translateX(-50%) scale(1.1);opacity:1}70%{transform:translateX(-50%) scale(0.95)}100%{transform:translateX(-50%) scale(1);opacity:0}}
 
-/* FORMULA BOX */
 .formula-box{display:inline-block;padding:6px 14px;background:var(--bg-deep);border-radius:30px;font-size:0.75rem;border:1px solid var(--border);margin-top:var(--space-sm);color:var(--text-muted)}
 .formula-box code{font-family:var(--font-mono);color:var(--accent);background:var(--accent-glow);padding:2px 8px;border-radius:4px;font-size:0.7rem}
 
-/* TRANSCRIPT PANEL */
 .transcript-panel{background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-md);margin-top:var(--space-lg);max-height:200px;overflow-y:auto;font-size:0.8rem;color:var(--text-secondary);line-height:1.7;display:none}
 .transcript-panel.visible{display:block}
 .transcript-panel .hw{background:rgba(107,163,214,0.15);padding:2px 6px;border-radius:4px;color:var(--pair-a);font-weight:600;border:1px solid rgba(107,163,214,0.15)}
 
-/* LOCAL PAIRS */
 .local-pairs-panel{margin-top:var(--space-md);display:none}
 .local-pairs-panel.visible{display:block}
 .local-pairs-header{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--space-sm)}
@@ -184,7 +170,6 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .local-pair-tag .sep{color:var(--text-muted)}
 .local-pair-tag .cnt{font-size:0.6rem;background:var(--accent-glow);color:var(--accent);padding:1px 6px;border-radius:10px;margin-left:2px}
 
-/* WORD CLOUD */
 .wordcloud-panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl);margin-top:var(--space-lg);display:none}
 .wordcloud-panel.visible{display:block}
 .wordcloud-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md)}
@@ -203,10 +188,8 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .wordcloud-word.size-6{font-size:1.3rem;opacity:1;font-weight:700}
 .wordcloud-empty{color:var(--text-muted);font-size:0.8rem;font-style:italic}
 
-/* DIAGONAL DIVIDER */
 .diagonal-divider{height:80px;background:linear-gradient(175deg,var(--bg-deep) 49%,var(--bg-surface) 51%);margin:0 calc(-1 * var(--space-lg))}
 
-/* ===== CHART SECTION ===== */
 .chart-section{padding:var(--space-2xl) 0 var(--space-xl);display:none}
 .chart-section.visible{display:block}
 .section-title{font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:var(--space-xl);position:relative;padding-left:var(--space-lg)}
@@ -220,7 +203,6 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .chart-type-btn.active{background:var(--accent-glow);border-color:var(--accent-dim);color:var(--accent)}
 .chart-canvas-wrap{width:100%;height:300px;position:relative}
 
-/* ===== AI RESULTS ===== */
 .results-section{padding:var(--space-xl) 0 var(--space-2xl);display:none}
 .results-section.visible{display:block}
 .ai-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-md);margin-bottom:var(--space-xl)}
@@ -244,7 +226,6 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .pair-context{font-size:0.7rem;color:var(--text-muted);max-width:22ch}
 .pair-minute{font-size:0.65rem;color:var(--text-muted)}
 
-/* AI SUMMARY */
 .ai-panel{background:linear-gradient(135deg,var(--bg-surface),var(--bg-elevated));border:1px solid var(--accent-dim);border-radius:var(--radius-lg);padding:var(--space-xl);position:relative;overflow:hidden;margin-bottom:var(--space-xl)}
 .ai-panel::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,var(--accent-glow),transparent 70%);pointer-events:none}
 .ai-panel-header{display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-lg)}
@@ -254,7 +235,6 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .ai-summary-text p{margin-bottom:var(--space-md)}
 .ai-summary-text strong{color:var(--text-primary)}
 
-/* TRENDS */
 .trends-grid{display:grid;grid-template-columns:1fr;gap:var(--space-sm);margin-bottom:var(--space-xl)}
 .trend-row{display:flex;align-items:center;gap:var(--space-md);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-sm) var(--space-md);font-size:0.8rem;transition:border-color var(--transition-fast)}
 .trend-row:hover{border-color:var(--accent-dim)}
@@ -265,7 +245,6 @@ main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
 .trend-count{color:var(--accent);font-weight:700;min-width:56px}
 .trend-note{color:var(--text-secondary);font-size:0.75rem}
 
-/* LOADING / STATUS / TOAST / FOOTER */
 .loading-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(14,15,19,0.85);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-lg)}
 .loading-overlay.active{display:flex}
 .loading-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
@@ -283,7 +262,6 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
 .toast{position:fixed;bottom:var(--space-xl);right:var(--space-xl);background:var(--bg-elevated);border:1px solid var(--border);border-left:3px solid var(--negative);color:var(--text-primary);font-size:0.8rem;padding:var(--space-md) var(--space-lg);border-radius:var(--radius-sm);z-index:300;transform:translateX(120%);transition:transform var(--transition-med);max-width:360px}
 .toast.show{transform:translateX(0)}
 
-/* RESPONSIVE */
 @media(max-width:600px){
   .counters{grid-template-columns:repeat(2,1fr)}
   .ai-stats-row{grid-template-columns:repeat(2,1fr)}
@@ -320,7 +298,6 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
   </nav>
 </header>
 
-<!-- DETECTION POPUP -->
 <div class="detection-popup" id="detectionPopup">NEW PAIR: <span id="detectionWord"></span></div>
 
 <main>
@@ -336,7 +313,6 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="text" id="tabText">⌨ Paste Text</button>
       </div>
 
-      <!-- MIC -->
       <div class="mic-input-area" id="micArea">
         <div class="waveform-container">
           <canvas class="waveform-canvas" id="waveformCanvas" role="img" aria-label="Ses dalga formu"></canvas>
@@ -348,7 +324,6 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
           <button class="btn-secondary" id="btnStop" disabled>STOP & ANALYZE</button>
           <button class="btn-secondary sound-on" id="soundToggle">🔔 SOUND</button>
         </div>
-        <!-- SOUND LEVELS -->
         <div class="sound-levels hidden" id="soundLevels">
           <div class="sound-level-indicator" id="level2" style="background:rgba(107,163,214,0.3);color:var(--pair-a)">2 PAIRS</div>
           <div class="sound-level-indicator" id="level3" style="background:rgba(139,92,246,0.3);color:#8b5cf6">3 PAIRS</div>
@@ -357,14 +332,12 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
         </div>
       </div>
 
-      <!-- TEXT -->
       <div class="text-input-area" id="textArea">
         <label for="manualInput" class="visually-hidden">Text to analyze</label>
         <textarea class="text-area" id="manualInput" placeholder="Paste or type your text here. Each line = 1 minute. The engine works best with 50+ words."></textarea>
         <button class="btn-analyze" id="btnAnalyzeText" disabled>Analyze Text</button>
       </div>
 
-      <!-- COUNTERS -->
       <div class="counters">
         <div class="counter-card"><div class="counter-label">Duration</div><div class="counter-value" id="timerDisplay">00:00</div></div>
         <div class="counter-card"><div class="counter-label">Minute</div><div class="counter-value" id="minuteDisplay">1</div></div>
@@ -381,14 +354,8 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
         <span>Formula: </span><code id="formulaDisplay">0 / 1 = 0.000</code>
       </div>
 
-      <!-- TRANSCRIPT -->
       <div class="transcript-panel" id="transcriptPanel"></div>
-      <!-- LOCAL PAIRS -->
-      <div class="local-pairs-panel" id="localPairsPanel">
-        <div class="local-pairs-header">Detected Pairs</div>
-        <div id="localPairsList"></div>
-      </div>
-      <!-- WORD CLOUD -->
+      <!-- LOCAL PAIRS REMOVED -->
       <div class="wordcloud-panel" id="wordcloudPanel">
         <div class="wordcloud-header">
           <div class="wordcloud-title">Word Frequency Map</div>
@@ -401,7 +368,6 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
 
   <div class="diagonal-divider" aria-hidden="true"></div>
 
-  <!-- CHART -->
   <section class="chart-section" id="chartSection">
     <h2 class="section-title">Minute-by-Minute Trend</h2>
     <div class="chart-container">
@@ -419,7 +385,6 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
 
   <div class="diagonal-divider" aria-hidden="true" style="background:linear-gradient(175deg,var(--bg-surface) 49%,var(--bg-deep) 51%)"></div>
 
-  <!-- AI RESULTS -->
   <section class="results-section" id="resultsSection">
     <div id="aiLoading" class="hidden" style="text-align:center;padding:var(--space-xl);color:var(--text-secondary)">
       <div class="loading-spinner" style="margin:0 auto var(--space-md)"></div>
@@ -433,10 +398,7 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
       </div>
       <div class="ai-summary-text" id="aiSummaryText"><p>Analysis results will appear here after processing.</p></div>
     </div>
-    <h2 class="section-title hidden" id="aiPairsTitle">Detected Ambivalent Pairs</h2>
-    <div class="pairs-grid" id="aiPairsGrid"></div>
-    <h2 class="section-title hidden" id="aiTrendsTitle">Minute Trends</h2>
-    <div class="trends-grid" id="aiTrendsGrid"></div>
+    <!-- PAIRS AND TRENDS SECTIONS REMOVED -->
   </section>
 </main>
 
@@ -454,14 +416,12 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
 (function(){
 'use strict';
 
-// ========== FULL ANTONYM DICTIONARIES (from v5-luxury) ==========
 const TURKISH_PAIRS={'iyi': 'kötü', 'kötü': 'iyi','güzel': 'çirkin', 'çirkin': 'güzel','büyük': 'küçük', 'küçük': 'büyük','uzun': 'kısa', 'kısa': 'uzun','hızlı': 'yavaş', 'yavaş': 'hızlı','sıcak': 'soğuk', 'soğuk': 'sıcak','yeni': 'eski', 'eski': 'yeni','genç': 'yaşlı', 'yaşlı': 'genç','zengin': 'fakir', 'fakir': 'zengin','kolay': 'zor', 'zor': 'kolay','doğru': 'yanlış', 'yanlış': 'doğru','açık': 'kapalı', 'kapalı': 'açık','dolu': 'boş', 'boş': 'dolu','mutlu': 'mutsuz', 'mutsuz': 'mutlu','güçlü': 'zayıf', 'zayıf': 'güçlü','parlak': 'karanlık', 'karanlık': 'parlak','temiz': 'kirli', 'kirli': 'temiz','yumuşak': 'sert', 'sert': 'yumuşak','ağır': 'hafif', 'hafif': 'ağır','dar': 'geniş', 'geniş': 'dar','yüksek': 'alçak', 'alçak': 'yüksek','kalın': 'ince', 'ince': 'kalın','yakın': 'uzak', 'uzak': 'yakın','derin': 'sığ', 'sığ': 'derin','tatlı': 'acı', 'acı': 'tatlı','kuru': 'ıslak', 'ıslak': 'kuru','sağlıklı': 'hasta', 'hasta': 'sağlıklı','dürüst': 'yalancı', 'yalancı': 'dürüst','cesur': 'korkak', 'korkak': 'cesur','akıllı': 'aptal', 'aptal': 'akıllı','tembel': 'çalışkan', 'çalışkan': 'tembel','sakin': 'hareketli', 'hareketli': 'sakin','sessiz': 'gürültülü', 'gürültülü': 'sessiz','düz': 'eğri', 'eğri': 'düz','sivri': 'küt', 'küt': 'sivri','sıkı': 'gevşek', 'gevşek': 'sıkı','canlı': 'ölü', 'ölü': 'canlı','özgür': 'tutsak', 'tutsak': 'özgür','haklı': 'haksız', 'haksız': 'haklı','zararlı': 'yararlı', 'yararlı': 'zararlı','olumlu': 'olumsuz', 'olumsuz': 'olumlu','kalıcı': 'geçici', 'geçici': 'kalıcı','özel': 'genel', 'genel': 'özel','somut': 'soyut', 'soyut': 'somut','basit': 'karmaşık', 'karmaşık': 'basit','normal': 'anormal', 'anormal': 'normal','modern': 'geleneksel', 'geleneksel': 'modern','doğal': 'yapay', 'yapay': 'doğal','gerçek': 'sahte', 'sahte': 'gerçek','resmi': 'gayriresmi', 'gayriresmi': 'resmi','şanslı': 'şanssız', 'şanssız': 'şanslı','nazik': 'kaba', 'kaba': 'nazik','kibar': 'terbiyesiz', 'terbiyesiz': 'kibar','cömert': 'cimri', 'cimri': 'cömert','sabırlı': 'sabırsız', 'sabırsız': 'sabırlı','dikkatli': 'dikkatsiz', 'dikkatsiz': 'dikkatli','düzenli': 'düzensiz', 'düzensiz': 'düzenli','mantıklı': 'mantıksız', 'mantıksız': 'mantıklı','mümkün': 'imkansız', 'imkansız': 'mümkün','görünür': 'görünmez', 'görünmez': 'görünür','gelmek': 'gitmek', 'gitmek': 'gelmek','almak': 'vermek', 'vermek': 'almak','açmak': 'kapatmak', 'kapatmak': 'açmak','başlamak': 'bitmek', 'bitmek': 'başlamak','doğmak': 'ölmek', 'ölmek': 'doğmak','gülmek': 'ağlamak', 'ağlamak': 'gülmek','sevmek': 'nefret etmek', 'nefret etmek': 'sevmek','kazanmak': 'kaybetmek', 'kaybetmek': 'kazanmak','hatırlamak': 'unutmak', 'unutmak': 'hatırlamak','kabul etmek': 'reddetmek', 'reddetmek': 'kabul etmek','övmek': 'yermek', 'yermek': 'övmek','binmek': 'inmek', 'inmek': 'binmek','kalkmak': 'oturmak', 'oturmak': 'kalkmak','uyumak': 'uyanmak', 'uyanmak': 'uyumak','satmak': 'satın almak', 'satın almak': 'satmak','çıkmak': 'girmek', 'girmek': 'çıkmak','artmak': 'azalmak', 'azalmak': 'artmak','yükselmek': 'düşmek', 'düşmek': 'yükselmek','toplamak': 'dağıtmak', 'dağıtmak': 'toplamak','yapmak': 'bozmak', 'bozmak': 'yapmak','kurmak': 'yıkmak', 'yıkmak': 'kurmak','bulmak': 'kaybetmek','göstermek': 'gizlemek', 'gizlemek': 'göstermek','izin vermek': 'yasaklamak', 'yasaklamak': 'izin vermek','ithal etmek': 'ihraç etmek', 'ihraç etmek': 'ithal etmek','sormak': 'cevaplamak', 'cevaplamak': 'sormak','suçlamak': 'savunmak', 'savunmak': 'suçlamak','övmek': 'eleştirmek', 'eleştirmek': 'övmek','yakmak': 'söndürmek', 'söndürmek': 'yakmak','birleştirmek': 'ayırmak', 'ayırmak': 'birleştirmek','çoğalmak': 'azalmak','hızlanmak': 'yavaşlamak', 'yavaşlamak': 'hızlanmak','erken': 'geç', 'geç': 'erken','yukarı': 'aşağı', 'aşağı': 'yukarı','önce': 'sonra', 'sonra': 'önce','ileri': 'geri', 'geri': 'ileri','içeri': 'dışarı', 'dışarı': 'içeri','burada': 'orada', 'orada': 'burada','hep': 'hiç', 'hiç': 'hep','çok': 'az', 'az': 'çok','sık': 'nadir', 'nadir': 'sık','beraber': 'ayrı', 'ayrı': 'beraber','evet': 'hayır', 'hayır': 'evet','var': 'yok', 'yok': 'var','gündüz': 'gece', 'gece': 'gündüz','yaz': 'kış', 'kış': 'yaz','sabah': 'akşam', 'akşam': 'sabah','ilk': 'son', 'son': 'ilk','aç': 'tok', 'tok': 'aç','ucuz': 'pahalı', 'pahalı': 'ucuz','barış': 'savaş', 'savaş': 'barış','dost': 'düşman', 'düşman': 'dost','aşk': 'nefret', 'nefret': 'aşk','umut': 'umutsuzluk', 'umutsuzluk': 'umut','başarı': 'başarısızlık', 'başarısızlık': 'başarı','artı': 'eksi', 'eksi': 'artı','kadın': 'erkek', 'erkek': 'kadın','anne': 'baba', 'baba': 'anne','oğul': 'kız', 'kız': 'oğul','cennet': 'cehennem', 'cehennem': 'cennet','giriş': 'çıkış', 'çıkış': 'giriş','soru': 'cevap', 'cevap': 'soru','problem': 'çözüm', 'çözüm': 'problem','kuzey': 'güney', 'güney': 'kuzey','doğu': 'batı', 'batı': 'doğu','sol': 'sağ', 'sağ': 'sol','avantaj': 'dezavantaj', 'dezavantaj': 'avantaj','güç': 'zayıflık', 'zayıflık': 'güç','gerçek': 'yalan', 'yalan': 'gerçek','düzen': 'kaos', 'kaos': 'düzen','ses': 'sessizlik', 'sessizlik': 'ses','zafer': 'yenilgi', 'yenilgi': 'zafer','sevinç': 'üzüntü', 'üzüntü': 'sevinç','zevk': 'acı','hayat': 'ölüm', 'ölüm': 'hayat','baş': 'son','ön': 'arka', 'arka': 'ön','üst': 'alt', 'alt': 'üst','iç': 'dış', 'dış': 'iç','ağaç': 'orman','deniz': 'kara', 'kara': 'deniz','dağ': 'ova', 'ova': 'dağ','şehir': 'köy', 'köy': 'şehir','zenginlik': 'fakirlik', 'fakirlik': 'zenginlik','özgürlük': 'esaret', 'esaret': 'özgürlük','adalet': 'adaletsizlik', 'adaletsizlik': 'adalet','güven': 'güvensizlik', 'güvensizlik': 'güven','saygı': 'saygısızlık', 'saygısızlık': 'saygı','sevgi': 'kin', 'kin': 'sevgi','neşe': 'keder', 'keder': 'neşe','korku': 'cesaret', 'cesaret': 'korku','güven': 'şüphe', 'şüphe': 'güven','bilgi': 'cehalet', 'cehalet': 'bilgi','akıl': 'delilik', 'delilik': 'akıl','sağlık': 'hastalık', 'hastalık': 'sağlık','bolluk': 'kıtlık', 'kıtlık': 'bolluk','bereket': 'kuraklık', 'kuraklık': 'bereket','varlık': 'yokluk', 'yokluk': 'varlık','hareket': 'durgunluk', 'durgunluk': 'hareket','hız': 'yavaşlık', 'yavaşlık': 'hız','sertlik': 'yumuşaklık', 'yumuşaklık': 'sertlik','sorumluluk': 'sorumsuzluk', 'sorumsuzluk': 'sorumluluk','ciddiyet': 'şaka', 'şaka': 'ciddiyet','gerginlik': 'rahatlık', 'rahatlık': 'gerginlik','stres': 'huzur', 'huzur': 'stres','meşgul': 'boş','dik': 'yatık', 'yatık': 'dik','keskin': 'kör', 'kör': 'keskin','parlak': 'mat', 'mat': 'parlak','şeffaf': 'opak', 'opak': 'şeffaf','katı': 'sıvı', 'sıvı': 'katı','taze': 'bayat', 'bayat': 'taze','olgun': 'ham', 'ham': 'olgun','ham': 'pişmiş', 'pişmiş': 'ham','sade': 'süslü', 'süslü': 'sade','minimalist': 'maksimalist', 'maksimalist': 'minimalist','yoğun': 'seyrek', 'seyrek': 'yoğun','hoş': 'nahoş', 'nahoş': 'hoş','tatlı': 'ekşi', 'ekşi': 'tatlı','gönüllü': 'zorunlu', 'zorunlu': 'gönüllü','aktif': 'pasif', 'pasif': 'aktif','profesyonel': 'amatör', 'amatör': 'profesyonel','maksimum': 'minimum', 'minimum': 'maksimum','majör': 'minör', 'minör': 'majör','pozitif': 'negatif', 'negatif': 'pozitif','konkav': 'konveks', 'konveks': 'konkav','içbükey': 'dışbükey', 'dışbükey': 'içbükey','objektif': 'subjektif', 'subjektif': 'objektif','simetrik': 'asimetrik', 'asimetrik': 'simetrik','rasyonel': 'irrasyonel', 'irrasyonel': 'rasyonel','yerli': 'yabancı','ulusal': 'uluslararası', 'uluslararası': 'ulusal','bireysel': 'toplumsal', 'toplumsal': 'bireysel','teorik': 'pratik', 'pratik': 'teorik','soyut': 'somut','dikey': 'yatay', 'yatay': 'dikey','merkezi': 'yerel', 'yerel': 'merkezi','evrensel': 'yerel','itici': 'çekici', 'çekici': 'itici','karamsar': 'iyimser', 'iyimser': 'karamsar'};
 
 const ENGLISH_PAIRS={'good': 'bad', 'bad': 'good','big': 'small', 'small': 'big','large': 'tiny', 'tiny': 'large','hot': 'cold', 'cold': 'hot','warm': 'cool', 'cool': 'warm','fast': 'slow', 'slow': 'fast','quick': 'sluggish', 'sluggish': 'quick','happy': 'sad', 'sad': 'happy','joyful': 'miserable', 'miserable': 'joyful','old': 'new', 'new': 'old','young': 'elderly', 'elderly': 'young','ancient': 'modern', 'modern': 'ancient','rich': 'poor', 'poor': 'rich','wealthy': 'broke', 'broke': 'wealthy','easy': 'hard', 'hard': 'easy','simple': 'complex', 'complex': 'simple','true': 'false', 'false': 'true','right': 'wrong', 'wrong': 'right','correct': 'incorrect', 'incorrect': 'correct','strong': 'weak', 'weak': 'strong','powerful': 'powerless', 'powerless': 'powerful','light': 'dark', 'dark': 'light','bright': 'dim', 'dim': 'bright','heavy': 'lightweight', 'lightweight': 'heavy','thick': 'thin', 'thin': 'thick','wide': 'narrow', 'narrow': 'wide','deep': 'shallow', 'shallow': 'deep','high': 'low', 'low': 'high','tall': 'short', 'short': 'tall','long': 'brief', 'brief': 'long','near': 'far', 'far': 'near','close': 'distant', 'distant': 'close','clean': 'dirty', 'dirty': 'clean','pure': 'impure', 'impure': 'pure','safe': 'dangerous', 'dangerous': 'safe','secure': 'insecure', 'insecure': 'secure','beautiful': 'ugly', 'ugly': 'beautiful','pretty': 'hideous', 'hideous': 'pretty','smart': 'stupid', 'stupid': 'smart','clever': 'foolish', 'foolish': 'clever','brave': 'cowardly', 'cowardly': 'brave','loud': 'quiet', 'quiet': 'loud','noisy': 'silent', 'silent': 'noisy','soft': 'rough', 'rough': 'soft','smooth': 'bumpy', 'bumpy': 'smooth','wet': 'dry', 'dry': 'wet','full': 'empty', 'empty': 'full','alive': 'dead', 'dead': 'alive','awake': 'asleep', 'asleep': 'awake','healthy': 'sick', 'sick': 'healthy','honest': 'dishonest', 'dishonest': 'honest','kind': 'cruel', 'cruel': 'kind','generous': 'selfish', 'selfish': 'generous','polite': 'rude', 'rude': 'polite','patient': 'impatient', 'impatient': 'patient','lucky': 'unlucky', 'unlucky': 'lucky','possible': 'impossible', 'impossible': 'possible','visible': 'invisible', 'invisible': 'visible','legal': 'illegal', 'illegal': 'legal','normal': 'abnormal', 'abnormal': 'normal','regular': 'irregular', 'irregular': 'regular','positive': 'negative', 'negative': 'positive','optimistic': 'pessimistic', 'pessimistic': 'optimistic','permanent': 'temporary', 'temporary': 'permanent','public': 'private', 'private': 'public','natural': 'artificial', 'artificial': 'natural','real': 'fake', 'fake': 'real','guilty': 'innocent', 'innocent': 'guilty','famous': 'unknown', 'unknown': 'famous','cheap': 'expensive', 'expensive': 'cheap','love': 'hate', 'hate': 'love','like': 'dislike', 'dislike': 'like','open': 'close', 'close': 'open','start': 'stop', 'stop': 'start','begin': 'end', 'end': 'begin','win': 'lose', 'lose': 'win','succeed': 'fail', 'fail': 'succeed','buy': 'sell', 'sell': 'buy','give': 'take', 'take': 'give','send': 'receive', 'receive': 'send','push': 'pull', 'pull': 'push','rise': 'fall', 'fall': 'rise','raise': 'lower', 'lower': 'raise','come': 'go', 'go': 'come','arrive': 'leave', 'leave': 'arrive','enter': 'exit', 'exit': 'enter','appear': 'disappear', 'disappear': 'appear','show': 'hide', 'hide': 'show','reveal': 'conceal', 'conceal': 'reveal','remember': 'forget', 'forget': 'remember','accept': 'reject', 'reject': 'accept','agree': 'disagree', 'disagree': 'agree','allow': 'forbid', 'forbid': 'allow','permit': 'prohibit', 'prohibit': 'permit','create': 'destroy', 'destroy': 'create','build': 'demolish', 'demolish': 'build','increase': 'decrease', 'decrease': 'increase','expand': 'shrink', 'shrink': 'expand','attack': 'defend', 'defend': 'attack','laugh': 'cry', 'cry': 'laugh','smile': 'frown', 'frown': 'smile','up': 'down', 'down': 'up','yes': 'no', 'no': 'yes','always': 'never', 'never': 'always','often': 'rarely', 'rarely': 'often','before': 'after', 'after': 'before','early': 'late', 'late': 'early','now': 'later', 'later': 'now','here': 'there', 'there': 'here','inside': 'outside', 'outside': 'inside','forward': 'backward', 'backward': 'forward','more': 'less', 'less': 'more','many': 'few', 'few': 'many','much': 'little', 'little': 'much','together': 'apart', 'apart': 'together','first': 'last', 'last': 'first','best': 'worst', 'worst': 'best','success': 'failure', 'failure': 'success','victory': 'defeat', 'defeat': 'victory','peace': 'war', 'war': 'peace','friend': 'enemy', 'enemy': 'friend','ally': 'opponent', 'opponent': 'ally','hope': 'despair', 'despair': 'hope','joy': 'sorrow', 'sorrow': 'joy','pleasure': 'pain', 'pain': 'pleasure','life': 'death', 'death': 'life','birth': 'demise', 'demise': 'birth','day': 'night', 'night': 'day','morning': 'evening', 'evening': 'morning','summer': 'winter', 'winter': 'summer','sunrise': 'sunset', 'sunset': 'sunrise','heaven': 'hell', 'hell': 'heaven','man': 'woman', 'woman': 'man','boy': 'girl', 'girl': 'boy','father': 'mother', 'mother': 'father','son': 'daughter', 'daughter': 'son','husband': 'wife', 'wife': 'husband','question': 'answer', 'answer': 'question','problem': 'solution', 'solution': 'problem','entrance': 'exit','north': 'south', 'south': 'north','east': 'west', 'west': 'east','left': 'right','strength': 'weakness', 'weakness': 'strength','truth': 'lie', 'lie': 'truth','order': 'chaos', 'chaos': 'order','noise': 'silence', 'silence': 'noise','advantage': 'disadvantage', 'disadvantage': 'advantage','top': 'bottom', 'bottom': 'top','front': 'back', 'back': 'front','above': 'below', 'below': 'above','over': 'under', 'under': 'over','land': 'sea', 'sea': 'land','city': 'village', 'village': 'city','urban': 'rural', 'rural': 'urban','freedom': 'slavery', 'slavery': 'freedom','justice': 'injustice', 'injustice': 'justice','trust': 'distrust', 'distrust': 'trust','respect': 'disrespect', 'disrespect': 'respect','knowledge': 'ignorance', 'ignorance': 'knowledge','wisdom': 'folly', 'folly': 'wisdom','courage': 'fear', 'fear': 'courage','confidence': 'doubt', 'doubt': 'confidence','health': 'illness', 'illness': 'health','wealth': 'poverty', 'poverty': 'wealth','abundance': 'scarcity', 'scarcity': 'abundance','presence': 'absence', 'absence': 'presence','movement': 'stillness', 'stillness': 'movement','speed': 'slowness', 'slowness': 'speed','tension': 'relaxation', 'relaxation': 'tension','stress': 'calm', 'calm': 'stress','clarity': 'confusion', 'confusion': 'clarity','certainty': 'uncertainty', 'uncertainty': 'certainty','busy': 'idle', 'idle': 'busy','sharp': 'blunt', 'blunt': 'sharp','shiny': 'dull', 'dull': 'shiny','transparent': 'opaque', 'opaque': 'transparent','solid': 'liquid', 'liquid': 'solid','fresh': 'stale', 'stale': 'fresh','ripe': 'unripe', 'unripe': 'ripe','raw': 'cooked', 'cooked': 'raw','plain': 'fancy', 'fancy': 'plain','dense': 'sparse', 'sparse': 'dense','pleasant': 'unpleasant', 'unpleasant': 'pleasant','sweet': 'sour', 'sour': 'sweet','voluntary': 'mandatory', 'mandatory': 'voluntary','active': 'passive', 'passive': 'active','professional': 'amateur', 'amateur': 'professional','maximum': 'minimum', 'minimum': 'maximum','major': 'minor', 'minor': 'major','concave': 'convex', 'convex': 'concave','objective': 'subjective', 'subjective': 'objective','symmetric': 'asymmetric', 'asymmetric': 'symmetric','rational': 'irrational', 'irrational': 'rational','domestic': 'foreign', 'foreign': 'domestic','individual': 'collective', 'collective': 'individual','theoretical': 'practical', 'practical': 'theoretical','vertical': 'horizontal', 'horizontal': 'vertical','central': 'local', 'local': 'central','attractive': 'repulsive', 'repulsive': 'attractive'};
 
 const FRENCH_PAIRS={'bon': 'mauvais', 'mauvais': 'bon','bonne': 'mauvaise', 'mauvaise': 'bonne','bien': 'mal', 'mal': 'bien','grand': 'petit', 'petit': 'grand','grande': 'petite', 'petite': 'grande','gros': 'mince', 'mince': 'gros','chaud': 'froid', 'froid': 'chaud','chaude': 'froide', 'froide': 'chaude','rapide': 'lent', 'lent': 'rapide','vite': 'lentement', 'lentement': 'vite','heureux': 'malheureux', 'malheureux': 'heureux','heureuse': 'malheureuse', 'malheureuse': 'heureuse','content': 'mécontent', 'mécontent': 'content','joyeux': 'triste', 'triste': 'joyeux','vieux': 'jeune', 'jeune': 'vieux','ancien': 'nouveau', 'nouveau': 'ancien','ancienne': 'nouvelle', 'nouvelle': 'ancienne','riche': 'pauvre', 'pauvre': 'riche','facile': 'difficile', 'difficile': 'facile','simple': 'compliqué', 'compliqué': 'simple','vrai': 'faux', 'faux': 'vrai','correct': 'incorrect', 'incorrect': 'correct','fort': 'faible', 'faible': 'fort','puissant': 'impuissant', 'impuissant': 'puissant','clair': 'sombre', 'sombre': 'clair','lumineux': 'obscur', 'obscur': 'lumineux','lourd': 'léger', 'léger': 'lourd','épais': 'mince','large': 'étroit', 'étroit': 'large','profond': 'superficiel', 'superficiel': 'profond','haut': 'bas', 'bas': 'haut','long': 'court', 'court': 'long','proche': 'loin', 'loin': 'proche','propre': 'sale', 'sale': 'propre','pur': 'impur', 'impur': 'pur','sûr': 'dangereux', 'dangereux': 'sûr','beau': 'laid', 'laid': 'beau','belle': 'laide', 'laide': 'belle','joli': 'moche', 'moche': 'joli','intelligent': 'stupide', 'stupide': 'intelligent','sage': 'fou', 'fou': 'sage','courageux': 'lâche', 'lâche': 'courageux','brave': 'peureux', 'peureux': 'brave','bruyant': 'silencieux', 'silencieux': 'bruyant','doux': 'dur', 'dur': 'doux','mouillé': 'sec', 'sec': 'mouillé','plein': 'vide', 'vide': 'plein','vivant': 'mort', 'mort': 'vivant','éveillé': 'endormi', 'endormi': 'éveillé','sain': 'malade', 'malade': 'sain','honnête': 'malhonnête', 'malhonnête': 'honnête','gentil': 'méchant', 'méchant': 'gentil','généreux': 'avare', 'avare': 'généreux','poli': 'impoli', 'impoli': 'poli','patient': 'impatient', 'impatient': 'patient','possible': 'impossible', 'impossible': 'possible','visible': 'invisible', 'invisible': 'visible','légal': 'illégal', 'illégal': 'légal','normal': 'anormal', 'anormal': 'normal','positif': 'négatif', 'négatif': 'positif','optimiste': 'pessimiste', 'pessimiste': 'optimiste','permanent': 'temporaire', 'temporaire': 'permanent','public': 'privé', 'privé': 'public','naturel': 'artificiel', 'artificiel': 'naturel','réel': 'imaginaire', 'imaginaire': 'réel','utile': 'inutile', 'inutile': 'utile','présent': 'absent', 'absent': 'présent','coupable': 'innocent', 'innocent': 'coupable','célèbre': 'inconnu', 'inconnu': 'célèbre','cher': 'bon marché', 'bon marché': 'cher','aimer': 'détester', 'détester': 'aimer','adorer': 'haïr', 'haïr': 'adorer','ouvrir': 'fermer', 'fermer': 'ouvrir','commencer': 'finir', 'finir': 'commencer','débuter': 'terminer', 'terminer': 'débuter','gagner': 'perdre', 'perdre': 'gagner','réussir': 'échouer', 'échouer': 'réussir','acheter': 'vendre', 'vendre': 'acheter','donner': 'prendre', 'prendre': 'donner','recevoir': 'envoyer', 'envoyer': 'recevoir','pousser': 'tirer', 'tirer': 'pousser','monter': 'descendre', 'descendre': 'monter','lever': 'baisser', 'baisser': 'lever','venir': 'partir', 'partir': 'venir','arriver': 'quitter', 'quitter': 'arriver','entrer': 'sortir', 'sortir': 'entrer','apparaître': 'disparaître', 'disparaître': 'apparaître','montrer': 'cacher', 'cacher': 'montrer','révéler': 'dissimuler', 'dissimuler': 'révéler','oublier': 'rappeler', 'rappeler': 'oublier','accepter': 'refuser', 'refuser': 'accepter','permettre': 'interdire', 'interdire': 'permettre','créer': 'détruire', 'détruire': 'créer','construire': 'démolir', 'démolir': 'construire','augmenter': 'diminuer', 'diminuer': 'augmenter','agrandir': 'réduire', 'réduire': 'agrandir','attaquer': 'défendre', 'défendre': 'attaquer','rire': 'pleurer', 'pleurer': 'rire','sourire': 'grimacer', 'grimacer': 'sourire','naître': 'mourir', 'mourir': 'naître','allumer': 'éteindre', 'éteindre': 'allumer','ajouter': 'enlever', 'enlever': 'ajouter','avancer': 'reculer', 'reculer': 'avancer','accélérer': 'ralentir', 'ralentir': 'accélérer','oui': 'non', 'non': 'oui','toujours': 'jamais', 'jamais': 'toujours','souvent': 'rarement', 'rarement': 'souvent','avant': 'après', 'après': 'avant','tôt': 'tard', 'tard': 'tôt','maintenant': 'plus tard','ici': 'là-bas', 'là-bas': 'ici','dedans': 'dehors', 'dehors': 'dedans','intérieur': 'extérieur', 'extérieur': 'intérieur','devant': 'derrière', 'derrière': 'devant','plus': 'moins', 'moins': 'plus','beaucoup': 'peu', 'peu': 'beaucoup','tout': 'rien', 'rien': 'tout','ensemble': 'séparément', 'séparément': 'ensemble','début': 'fin', 'fin': 'début','premier': 'dernier', 'dernier': 'premier','meilleur': 'pire', 'pire': 'meilleur','succès': 'échec', 'échec': 'succès','victoire': 'défaite', 'défaite': 'victoire','paix': 'guerre', 'guerre': 'paix','ami': 'ennemi', 'ennemi': 'ami','amour': 'haine', 'haine': 'amour','espoir': 'désespoir', 'désespoir': 'espoir','joie': 'tristesse', 'tristesse': 'joie','bonheur': 'malheur', 'malheur': 'bonheur','plaisir': 'douleur', 'douleur': 'plaisir','vie': 'mort','jour': 'nuit', 'nuit': 'jour','matin': 'soir', 'soir': 'matin','été': 'hiver', 'hiver': 'été','printemps': 'automne', 'automne': 'printemps','lumière': 'obscurité', 'obscurité': 'lumière','ciel': 'terre', 'terre': 'ciel','paradis': 'enfer', 'enfer': 'paradis','homme': 'femme', 'femme': 'homme','garçon': 'fille', 'fille': 'garçon','père': 'mère', 'mère': 'père','fils': 'fille','frère': 'soeur', 'soeur': 'frère','mari': 'épouse', 'épouse': 'mari','question': 'réponse', 'réponse': 'question','problème': 'solution', 'solution': 'problème','nord': 'sud', 'sud': 'nord','est': 'ouest', 'ouest': 'est','gauche': 'droite', 'droite': 'gauche','entrée': 'sortie', 'sortie': 'entrée','avantage': 'inconvénient', 'inconvénient': 'avantage','force': 'faiblesse', 'faiblesse': 'force','vérité': 'mensonge', 'mensonge': 'vérité','ordre': 'désordre', 'désordre': 'ordre','bruit': 'silence', 'silence': 'bruit','dessus': 'dessous', 'dessous': 'dessus','haut': 'bas','terre': 'mer', 'mer': 'terre','ville': 'campagne', 'campagne': 'ville','urbain': 'rural', 'rural': 'urbain','liberté': 'esclavage', 'esclavage': 'liberté','justice': 'injustice', 'injustice': 'justice','confiance': 'méfiance', 'méfiance': 'confiance','respect': 'irrespect', 'irrespect': 'respect','savoir': 'ignorance', 'ignorance': 'savoir','sagesse': 'folie', 'folie': 'sagesse','courage': 'peur', 'peur': 'courage','santé': 'maladie', 'maladie': 'santé','richesse': 'pauvreté', 'pauvreté': 'richesse','abondance': 'pénurie', 'pénurie': 'abondance','présence': 'absence','mouvement': 'immobilité', 'immobilité': 'mouvement','vitesse': 'lenteur', 'lenteur': 'vitesse','tension': 'détente', 'détente': 'tension','stress': 'calme', 'calme': 'stress','clarté': 'confusion', 'confusion': 'clarté','certitude': 'incertitude', 'incertitude': 'certitude','jeunesse': 'vieillesse', 'vieillesse': 'jeunesse','beauté': 'laideur', 'laideur': 'beauté','occupé': 'libre', 'libre': 'occupé','pointu': 'émoussé', 'émoussé': 'pointu','brillant': 'terne', 'terne': 'brillant','transparent': 'opaque', 'opaque': 'transparent','solide': 'liquide', 'liquide': 'solide','frais': 'périmé', 'périmé': 'frais','mûr': 'immature', 'immature': 'mûr','cru': 'cuit', 'cuit': 'cru','sobre': 'extravagant', 'extravagant': 'sobre','dense': 'clairsemé', 'clairsemé': 'dense','agréable': 'désagréable', 'désagréable': 'agréable','sucré': 'amer', 'amer': 'sucré','volontaire': 'obligatoire', 'obligatoire': 'volontaire','actif': 'passif', 'passif': 'actif','professionnel': 'amateur', 'amateur': 'professionnel','maximum': 'minimum', 'minimum': 'maximum','majeur': 'mineur', 'mineur': 'majeur','concave': 'convexe', 'convexe': 'concave','objectif': 'subjectif', 'subjectif': 'objectif','symétrique': 'asymétrique', 'asymétrique': 'symétrique','rationnel': 'irrationnel', 'irrationnel': 'rationnel'};
 
-// ========== ELEMENTS ==========
 const $=id=>document.getElementById(id);
 const statusDot=$('statusDot'),btnRecord=$('btnRecord'),btnPause=$('btnPause'),btnStop=$('btnStop');
 const btnAnalyzeText=$('btnAnalyzeText'),manualInput=$('manualInput'),langSelect=$('language');
@@ -470,7 +430,6 @@ const inputSection=$('inputSection'),chartSection=$('chartSection'),resultsSecti
 const toast=$('toast'),tabMic=$('tabMic'),tabText=$('tabText'),micArea=$('micArea'),textArea=$('textArea');
 const hamburgerBtn=$('hamburgerBtn'),navLinks=$('navLinks');
 
-// ========== STATE ==========
 let isRecording=false,isPaused=false,recognition=null,micStream=null;
 let audioCtx=null,analyserNode=null,sourceNode=null,animFrameId=null;
 let transcript='',totalWords=0,detectedPairs=[],currentMinute=0;
@@ -490,14 +449,12 @@ const ALERT_LEVELS={
   5:{freq:[784,988,1175,1319],duration:0.08,name:'FIVE',color:'var(--negative)'}
 };
 
-// ========== UTILITY ==========
 function escHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),4000)}
 function generateSessionId(){return 'session_'+Date.now()+'_'+Math.random().toString(36).substring(2,8)}
 function formatTime(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
 function getPairsDB(){const l=langSelect.value;if(l==='tr-TR')return TURKISH_PAIRS;if(l==='fr-FR')return FRENCH_PAIRS;return ENGLISH_PAIRS}
 
-// ========== SOUND SYSTEM ==========
 function initSoundCtx(){if(!soundAudioCtx)soundAudioCtx=new(window.AudioContext||window.webkitAudioContext)();return soundAudioCtx}
 function playAlertSound(level){
   if(!soundEnabled)return;
@@ -546,16 +503,13 @@ $('soundToggle').addEventListener('click',()=>{
   if(soundEnabled)initSoundCtx();
 });
 
-// ========== HAMBURGER & TABS ==========
 hamburgerBtn.addEventListener('click',()=>{const o=navLinks.classList.toggle('open');hamburgerBtn.setAttribute('aria-expanded',o)});
 tabMic.addEventListener('click',()=>{tabMic.classList.add('active');tabMic.setAttribute('aria-selected','true');tabText.classList.remove('active');tabText.setAttribute('aria-selected','false');micArea.classList.remove('hidden');textArea.classList.remove('active')});
 tabText.addEventListener('click',()=>{tabText.classList.add('active');tabText.setAttribute('aria-selected','true');tabMic.classList.remove('active');tabMic.setAttribute('aria-selected','false');textArea.classList.add('active');micArea.classList.add('hidden')});
 
-// ========== TEXT INPUT ==========
 manualInput.addEventListener('input',()=>{const w=manualInput.value.trim().split(/\s+/).filter(w=>w.length>0);$('wordDisplay').textContent=w.length;btnAnalyzeText.disabled=w.length<5});
 btnAnalyzeText.addEventListener('click',()=>{const inp=manualInput.value.trim();if(!inp||inp.split(/\s+/).length<5)return;processManualInput(inp)});
 
-// ========== LOCAL TEXT ANALYSIS ==========
 function processText(text){
   const words=text.split(/\s+/).filter(w=>w.length>0);
   const pairsDB=getPairsDB();const found=[];const used=new Set();
@@ -566,7 +520,6 @@ function processText(text){
   return {wordCount:words.length,pairs:found};
 }
 
-// ========== STOP WORDS ==========
 function getStopWords(){
   const l=langSelect.value;
   if(l==='tr-TR')return new Set(['bir','ve','bu','da','de','için','ile','mi','mu','mı','ne','o','ya','ama','çok','daha','ben','sen','biz','siz','onlar','gibi','kadar','var','yok','olan','olarak','ki','şu','her','en','çünkü','eğer','ise','hem','öyle','böyle']);
@@ -574,7 +527,6 @@ function getStopWords(){
   return new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','must','shall','can','need','it','its','this','that','these','those','i','you','he','she','we','they','what','which','who','whom','so','as','if','then','than','too','very','just','also']);
 }
 
-// ========== WORD CLOUD ==========
 function updateWordCloud(){
   const panel=$('wordcloudPanel'),container=$('wordcloudContainer'),minuteLabel=$('wordcloudMinute');
   if(!transcript.trim()){container.innerHTML='<span class="wordcloud-empty">Start speaking...</span>';minuteLabel.textContent='0 unique words';return}
@@ -594,7 +546,6 @@ function updateWordCloud(){
   }).join('');
 }
 
-// ========== DISPLAY ==========
 function updateDisplay(){
   $('timerDisplay').textContent=formatTime(elapsedTime);
   $('minuteDisplay').textContent=currentMinute+1;
@@ -618,18 +569,7 @@ function updateTranscript(){
     return pairsDB[cw]?'<span class="hw">'+escHTML(w)+'</span>':escHTML(w);
   }).join(' ');
 }
-function updatePairsList(){
-  const count={};detectedPairs.forEach(p=>{const k=p.word+' ↔ '+p.pair;count[k]=(count[k]||0)+1});
-  const sorted=Object.entries(count).sort((a,b)=>b[1]-a[1]).slice(0,12);
-  if(sorted.length===0){$('localPairsPanel').classList.remove('visible');return}
-  $('localPairsPanel').classList.add('visible');
-  $('localPairsList').innerHTML=sorted.map(([pair,cnt])=>{
-    const [w1,w2]=pair.split(' ↔ ');
-    return '<span class="local-pair-tag"><span class="w-a">'+escHTML(w1)+'</span><span class="sep">⇌</span><span class="w-b">'+escHTML(w2)+'</span><span class="cnt">'+cnt+'×</span></span>';
-  }).join('');
-}
 
-// ========== CHART (3 types) ==========
 function initChart(){
   const ctx=$('liveChart').getContext('2d');
   if(liveChart)liveChart.destroy();
@@ -720,7 +660,6 @@ function rebuildChartData(){
   liveChart.update();
 }
 
-// Chart type switching
 function switchChartType(type){
   chartType=type;
   document.querySelectorAll('.chart-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));
@@ -732,7 +671,6 @@ $('ctWave').addEventListener('click',()=>switchChartType('wave'));
 $('ctBar').addEventListener('click',()=>switchChartType('bar'));
 $('ctDelta').addEventListener('click',()=>switchChartType('delta'));
 
-// ========== WAVEFORM ==========
 function drawWaveform(){
   const canvas=waveformCanvas,ctx=canvas.getContext('2d');
   const dpr=window.devicePixelRatio||1;
@@ -748,7 +686,6 @@ function drawWaveform(){
   animFrameId=requestAnimationFrame(drawWaveform);
 }
 
-// ========== SPEECH RECOGNITION ==========
 function createRecognition(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){showToast('This browser does not support speech recognition.');return null}
@@ -762,7 +699,7 @@ function createRecognition(){
         const analysis=processText(t);
         totalWords+=analysis.wordCount;currentMinuteWords.push(t);
         analysis.pairs.forEach(p=>{detectedPairs.push(p);currentMinutePairs++;showDetection(p.word,p.pair)});
-        updateDisplay();updatePairsList();updateChart();updateWordCloud();
+        updateDisplay();updateChart();updateWordCloud();
       }else{interim+=t}
     }
     updateTranscript();
@@ -786,7 +723,6 @@ function createRecognition(){
   return r;
 }
 
-// ========== RECORDING ==========
 btnRecord.addEventListener('click',async()=>{if(isRecording&&!isPaused)return;if(isPaused){resumeRecording();return}await startRecording()});
 btnPause.addEventListener('click',()=>{if(!isRecording)return;isPaused?resumeRecording():pauseRecording()});
 btnStop.addEventListener('click',()=>{if(!isRecording)return;stopRecording()});
@@ -799,12 +735,10 @@ async function startRecording(){
   currentMinuteWords=[];currentMinutePairs=0;minuteData=[];pairCountsPerMinute=[0];elapsedTime=0;
   currentSessionId=generateSessionId();playedAlerts.clear();
   recognition=createRecognition();if(recognition){try{recognition.start();lastRestartTime=Date.now();restartAttempts=0}catch(ex){}}
-  // UI
   btnRecord.classList.add('recording');btnPause.disabled=false;btnStop.disabled=false;
   inputSection.classList.add('recording');statusDot.className='status-dot recording';
   langSelect.disabled=true;waveformPlaceholder.style.display='none';
   $('transcriptPanel').classList.remove('visible');$('transcriptPanel').innerHTML='';
-  $('localPairsPanel').classList.remove('visible');$('localPairsList').innerHTML='';
   $('wordcloudPanel').classList.remove('visible');
   $('soundLevels').classList.remove('hidden');
   chartSection.classList.add('visible');initChart();
@@ -861,7 +795,6 @@ function stopRecording(){
   stopInterimUpdates();sendToN8n('final');
 }
 
-// ========== MANUAL INPUT ==========
 function processManualInput(input){
   transcript=input;totalWords=0;detectedPairs=[];currentMinute=0;minuteData=[];pairCountsPerMinute=[];elapsedTime=0;
   const lines=input.split('\n').filter(l=>l.trim());
@@ -874,11 +807,10 @@ function processManualInput(input){
   currentMinute=lines.length-1;
   chartSection.classList.add('visible');initChart();
   rebuildChartData();
-  updateDisplay();updatePairsList();updateTranscript();updateWordCloud();
+  updateDisplay();updateTranscript();updateWordCloud();
   currentSessionId=generateSessionId();sendToN8n('final');
 }
 
-// ========== N8N INTEGRATION ==========
 function startInterimUpdates(){interimTimer=setInterval(()=>{if(isRecording&&!isPaused&&transcript.length>50)sendToN8n('interim')},INTERIM_INTERVAL_MS)}
 function stopInterimUpdates(){if(interimTimer){clearInterval(interimTimer);interimTimer=null}}
 
@@ -890,8 +822,6 @@ async function sendToN8n(mode){
   const payload={transcript:transcript,language:langSelect.value,duration:elapsedTime,minuteSegments:segments,mode:mode,sessionId:currentSessionId};
   resultsSection.classList.add('visible');$('aiLoading').classList.remove('hidden');
   $('aiStatsRow').classList.add('hidden');$('aiSummaryPanel').classList.add('hidden');
-  $('aiPairsTitle').classList.add('hidden');$('aiPairsGrid').innerHTML='';
-  $('aiTrendsTitle').classList.add('hidden');$('aiTrendsGrid').innerHTML='';
   statusDot.className='status-dot processing';
   $('aiPanelTitle').textContent=mode==='interim'?'⏳ Interim Analysis':'✅ Final Analysis';
   try{
@@ -905,7 +835,6 @@ async function sendToN8n(mode){
   }
 }
 
-// ========== DISPLAY AI RESULTS ==========
 function displayAIResults(result,mode){
   $('aiLoading').classList.add('hidden');
   const sr=$('aiStatsRow');sr.classList.remove('hidden');
@@ -916,28 +845,9 @@ function displayAIResults(result,mode){
     if(result.analysis.peakMinute)h+='<p style="margin-top:8px;font-size:0.8rem"><strong>Peak:</strong> Minute '+result.analysis.peakMinute+(result.analysis.dominantTheme?' · <strong>Theme:</strong> '+escHTML(result.analysis.dominantTheme):'')+'</p>';
     $('aiSummaryText').innerHTML=h;
   }
-  if(result.pairs&&result.pairs.length>0){
-    $('aiPairsTitle').classList.remove('hidden');
-    const g=$('aiPairsGrid');g.innerHTML='';
-    result.pairs.forEach((p,i)=>{
-      const c=document.createElement('article');c.className='pair-card';c.style.animationDelay=(i*60)+'ms';
-      c.innerHTML='<span class="pair-word word-a">'+escHTML(p.word1)+'</span><span class="pair-connector" aria-hidden="true">⇌</span><span class="pair-word word-b">'+escHTML(p.word2)+'</span><div class="pair-meta"><span class="pair-type '+(p.type||'classic')+'">'+(p.type==='classic'?'classic':'contextual')+'</span><span class="pair-minute">dk '+p.minute+'</span><span class="pair-context">'+escHTML(p.context||'')+'</span></div>';
-      g.appendChild(c);
-    });
-  }
-  if(result.minuteTrends&&result.minuteTrends.length>0){
-    $('aiTrendsTitle').classList.remove('hidden');
-    const tg=$('aiTrendsGrid');tg.innerHTML='';
-    result.minuteTrends.forEach(t=>{
-      const r=document.createElement('div');r.className='trend-row intensity-'+(t.intensity||'low');
-      r.innerHTML='<span class="trend-min">Min '+t.minute+'</span><span class="trend-count">'+t.count+' pairs</span><span class="trend-note">'+escHTML(t.note||'')+'</span>';
-      tg.appendChild(r);
-    });
-  }
   resultsSection.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// ========== INIT ==========
 updateDisplay();statusDot.className='status-dot ready';
 })();
 </script>
