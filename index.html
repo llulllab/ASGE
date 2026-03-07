@@ -288,9 +288,9 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
       <div class="nav-controls">
         <label for="language" class="visually-hidden">Language</label>
         <select class="lang-select" id="language" aria-label="Select language">
-          <option value="tr-TR" selected>TR</option>
+          <option value="fr-FR" selected>FR</option>
           <option value="en-US">EN</option>
-          <option value="fr-FR">FR</option>
+          <option value="tr-TR">TR</option>
         </select>
         <span class="status-dot" id="statusDot" title="Status: Ready"></span>
       </div>
@@ -298,7 +298,7 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
   </nav>
 </header>
 
-<div class="detection-popup" id="detectionPopup">NEW PAIR: <span id="detectionWord"></span></div>
+<div class="detection-popup" id="detectionPopup">PAIR DETECTED <span id="detectionWord"></span></div>
 
 <main>
   <section class="hero" id="input">
@@ -402,9 +402,8 @@ footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg
   </section>
 </main>
 
-<footer><div class="footer-inner">
-  <span class="footer-text">ASGE v6.0 — Ambivalence-Centered Semantic Geometry Engine</span>
-  <span class="footer-text">Built for linguistic exploration • Chrome recommended • TR + EN + FR</span>
+<footer><div class="footer-inner" style="justify-content:center">
+  <span class="footer-text">© 2026 <a href="https://llulllab.com" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none">Llull Lab</a></span>
 </div></footer>
 
 <div class="loading-overlay" id="loadingOverlay" role="alert" aria-live="polite">
@@ -557,7 +556,7 @@ function updateDisplay(){
   $('formulaDisplay').textContent=detectedPairs.length+' / '+(currentMinute+1)+' = '+ratio;
 }
 function showDetection(word,pair){
-  const popup=$('detectionPopup');$('detectionWord').textContent=word+' ↔ '+pair;
+  const popup=$('detectionPopup');$('detectionWord').textContent='';
   popup.classList.add('show');setTimeout(()=>popup.classList.remove('show'),2000);
 }
 function updateTranscript(){
