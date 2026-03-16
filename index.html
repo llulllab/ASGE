@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASGE — Ambivalence-Centered Semantic Geometry Engine</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg-deep:#0e0f13;
+  --bg-surface:#16171d;
+  --bg-elevated:#1e2028;
+  --bg-card:#252730;
+  --text-primary:#e8e4df;
+  --text-secondary:#9b978f;
+  --text-muted:#5e5b54;
+  --accent:#d4943a;
+  --accent-glow:#d4943a44;
+  --accent-bright:#f0b255;
+  --accent-dim:#8b6225;
+  --negative:#c45c5c;
+  --positive:#5ca87c;
+  --pair-a:#6ba3d6;
+  --pair-b:#d67e6b;
+  --border:#2a2c35;
+  --radius:12px;
+  --radius-sm:8px;
+  --radius-lg:20px;
+  --space-xs:4px;
+  --space-sm:8px;
+  --space-md:16px;
+  --space-lg:24px;
+  --space-xl:40px;
+  --space-2xl:64px;
+  --space-3xl:100px;
+  --font-display:'Source Serif 4', Georgia, serif;
+  --font-mono:'JetBrains Mono', 'Courier New', monospace;
+  --transition-fast:150ms cubic-bezier(.4,0,.2,1);
+  --transition-med:250ms cubic-bezier(.4,0,.2,1);
+  --transition-slow:400ms cubic-bezier(.4,0,.2,1);
+}
+
+@media(prefers-color-scheme:light){
+  :root{
+    --bg-deep:#f4f1ec;--bg-surface:#eae7e1;--bg-elevated:#dfdcd5;
+    --bg-card:#e0ddd6;--text-primary:#1a1915;--text-secondary:#5e5b54;
+    --text-muted:#9b978f;--accent:#b07820;--accent-glow:#b0782033;
+    --accent-bright:#c88a2a;--accent-dim:#7a5418;--border:#c5c2bb;
+    --pair-a:#3a7bb8;--pair-b:#b85a47;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+}
+
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font-mono);background:var(--bg-deep);color:var(--text-primary);line-height:1.6;min-height:100vh;overflow-x:hidden}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg-deep)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--radius-sm)}
+
+header{position:sticky;top:0;z-index:100;background:var(--bg-deep);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav-inner{max-width:1400px;margin:0 auto;padding:var(--space-md) var(--space-lg);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md)}
+.logo{font-family:var(--font-display);font-weight:700;font-size:1.5rem;letter-spacing:-0.03em;color:var(--accent);display:flex;align-items:center;gap:var(--space-sm)}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
+.logo-sub{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-left:var(--space-xs)}
+.nav-controls{display:flex;align-items:center;gap:var(--space-md)}
+.lang-select{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-primary);font-family:var(--font-mono);font-size:0.8rem;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);cursor:pointer;min-height:44px;min-width:44px;transition:border-color var(--transition-fast)}
+.lang-select:hover{border-color:var(--accent)}
+.lang-select option{background:var(--bg-surface);color:var(--text-primary)}
+.hamburger{display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;padding:var(--space-sm);min-height:44px;min-width:44px;align-items:center;justify-content:center}
+.hamburger svg{width:24px;height:24px}
+.nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-surface);border-bottom:1px solid var(--border);padding:var(--space-lg);flex-direction:column;gap:var(--space-md)}
+.nav-links.open{display:flex}
+.hamburger{display:flex}
+@media(min-width:768px){
+  .hamburger{display:none}
+  .nav-links{display:flex;position:static;background:transparent;border-bottom:none;padding:0;flex-direction:row;align-items:center;gap:var(--space-lg)}
+  .nav-links.open{display:flex}
+}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:0.8rem;letter-spacing:0.04em;text-transform:uppercase;transition:color var(--transition-fast);min-height:44px;display:flex;align-items:center}
+.nav-links a:hover{color:var(--accent)}
+
+main{max-width:1400px;margin:0 auto;padding:0 var(--space-lg)}
+
+.hero{padding:var(--space-3xl) 0 var(--space-2xl);display:grid;grid-template-columns:1fr;gap:var(--space-xl)}
+@media(min-width:768px){.hero{grid-template-columns:1.2fr 1fr;align-items:start}}
+.hero-text{max-width:60ch}
+.hero-text h1{font-family:var(--font-display);font-size:clamp(2.2rem,5vw,4rem);font-weight:700;letter-spacing:-0.03em;line-height:1.1;margin-bottom:var(--space-lg)}
+.hero-text h1 .highlight{color:var(--accent);position:relative}
+.hero-text h1 .highlight::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:3px;background:var(--accent);opacity:0.4;border-radius:2px}
+.hero-text p{color:var(--text-secondary);font-size:0.95rem;max-width:55ch;margin-bottom:var(--space-xl)}
+
+.input-section{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl);position:relative;overflow:hidden}
+.input-section::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-dim),var(--accent),var(--accent-dim));opacity:0;transition:opacity var(--transition-med)}
+.input-section.recording::before{opacity:1;animation:pulse-bar 2s ease-in-out infinite}
+@keyframes pulse-bar{0%,100%{opacity:0.4}50%{opacity:1}}
+
+.input-tabs{display:flex;gap:var(--space-xs);margin-bottom:var(--space-lg)}
+.tab-btn{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-mono);font-size:0.8rem;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);cursor:pointer;min-height:44px;transition:background var(--transition-fast),color var(--transition-fast),border-color var(--transition-fast)}
+.tab-btn:hover{border-color:var(--accent);color:var(--text-primary)}
+.tab-btn.active{background:var(--accent);color:var(--bg-deep);border-color:var(--accent);font-weight:600}
+
+.waveform-container{height:120px;background:var(--bg-deep);border-radius:var(--radius);margin-bottom:var(--space-lg);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.waveform-canvas{width:100%;height:100%;display:block}
+.waveform-placeholder{color:var(--text-muted);font-size:0.8rem;position:absolute;pointer-events:none}
+
+.record-controls{display:flex;align-items:center;gap:var(--space-md);flex-wrap:wrap}
+.btn-record{width:64px;height:64px;border-radius:50%;border:3px solid var(--accent);background:transparent;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;transition:background var(--transition-fast),box-shadow var(--transition-fast),transform var(--transition-fast)}
+.btn-record:hover{background:var(--accent-glow);transform:scale(1.05)}
+.btn-record::after{content:'';width:24px;height:24px;background:var(--accent);border-radius:50%;transition:border-radius var(--transition-fast),width var(--transition-fast),height var(--transition-fast),background var(--transition-fast)}
+.btn-record.recording{border-color:var(--negative);box-shadow:0 0 30px rgba(196,92,92,0.3);animation:rec-pulse 1.5s ease-in-out infinite}
+.btn-record.recording::after{background:var(--negative);border-radius:4px;width:20px;height:20px}
+.btn-record.paused{border-color:var(--accent-bright)}
+.btn-record.paused::after{background:var(--accent-bright);border-radius:3px;width:20px;height:20px}
+@keyframes rec-pulse{0%,100%{box-shadow:0 0 20px rgba(196,92,92,0.2)}50%{box-shadow:0 0 40px rgba(196,92,92,0.5)}}
+
+.btn-secondary{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-mono);font-size:0.75rem;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);cursor:pointer;min-height:44px;transition:border-color var(--transition-fast),color var(--transition-fast);text-transform:uppercase;letter-spacing:0.06em}
+.btn-secondary:hover{border-color:var(--accent);color:var(--text-primary)}
+.btn-secondary:disabled{opacity:0.3;cursor:not-allowed}
+.btn-secondary.sound-on{border-color:var(--accent-dim);color:var(--accent)}
+.btn-secondary.sound-off{opacity:0.4}
+
+.text-input-area{display:none}
+.text-input-area.active{display:block}
+.mic-input-area.hidden{display:none}
+.text-area{width:100%;min-height:180px;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-family:var(--font-mono);font-size:0.9rem;padding:var(--space-md);resize:vertical;line-height:1.6;transition:border-color var(--transition-fast)}
+.text-area:focus{border-color:var(--accent);outline:none}
+.text-area::placeholder{color:var(--text-muted)}
+.btn-analyze{margin-top:var(--space-md);background:var(--accent);color:var(--bg-deep);border:none;font-family:var(--font-mono);font-size:0.85rem;font-weight:700;padding:var(--space-md) var(--space-xl);border-radius:var(--radius-sm);cursor:pointer;min-height:48px;letter-spacing:0.04em;text-transform:uppercase;transition:background var(--transition-fast),transform var(--transition-fast),box-shadow var(--transition-fast)}
+.btn-analyze:hover{background:var(--accent-bright);transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
+.btn-analyze:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+.counters{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-md);margin-top:var(--space-lg)}
+.counter-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-md);text-align:left;transition:border-color var(--transition-fast)}
+.counter-card:hover{border-color:var(--accent-dim)}
+.counter-label{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--space-xs)}
+.counter-value{font-size:1.6rem;font-weight:700;color:var(--accent);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+.counter-value.pairs{color:var(--pair-a)}
+
+.sound-levels{display:flex;gap:var(--space-sm);margin-top:var(--space-md);flex-wrap:wrap}
+.sound-level-indicator{padding:4px 12px;border-radius:var(--radius-sm);font-size:0.65rem;font-weight:600;opacity:0.3;transition:all 0.4s cubic-bezier(.34,1.56,.64,1);letter-spacing:0.5px;border:1px solid transparent}
+.sound-level-indicator.active{opacity:1;transform:scale(1.1);box-shadow:0 2px 12px currentColor}
+
+.detection-popup{position:fixed;top:20px;left:50%;transform:translateX(-50%) scale(0.8);padding:12px 24px;background:var(--accent);color:var(--bg-deep);border-radius:30px;z-index:200;opacity:0;pointer-events:none;transition:all 0.4s cubic-bezier(.34,1.56,.64,1);font-weight:700;font-size:0.85rem;box-shadow:0 8px 30px var(--accent-glow)}
+.detection-popup.show{opacity:1;transform:translateX(-50%) scale(1)}
+@keyframes alertPop{0%{transform:translateX(-50%) scale(0.5);opacity:0}50%{transform:translateX(-50%) scale(1.1);opacity:1}70%{transform:translateX(-50%) scale(0.95)}100%{transform:translateX(-50%) scale(1);opacity:0}}
+
+.formula-box{display:inline-block;padding:6px 14px;background:var(--bg-deep);border-radius:30px;font-size:0.75rem;border:1px solid var(--border);margin-top:var(--space-sm);color:var(--text-muted)}
+.formula-box code{font-family:var(--font-mono);color:var(--accent);background:var(--accent-glow);padding:2px 8px;border-radius:4px;font-size:0.7rem}
+
+.transcript-panel{background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-md);margin-top:var(--space-lg);max-height:200px;overflow-y:auto;font-size:0.8rem;color:var(--text-secondary);line-height:1.7;display:none}
+.transcript-panel.visible{display:block}
+.transcript-panel .hw{background:rgba(107,163,214,0.15);padding:2px 6px;border-radius:4px;color:var(--pair-a);font-weight:600;border:1px solid rgba(107,163,214,0.15)}
+
+.local-pairs-panel{margin-top:var(--space-md);display:none}
+.local-pairs-panel.visible{display:block}
+.local-pairs-header{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--space-sm)}
+.local-pair-tag{display:inline-flex;align-items:center;gap:4px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 10px;font-size:0.75rem;margin:3px;transition:border-color var(--transition-fast)}
+.local-pair-tag:hover{border-color:var(--accent-dim)}
+.local-pair-tag .w-a{color:var(--pair-a);font-weight:600}
+.local-pair-tag .w-b{color:var(--pair-b);font-weight:600}
+.local-pair-tag .sep{color:var(--text-muted)}
+.local-pair-tag .cnt{font-size:0.6rem;background:var(--accent-glow);color:var(--accent);padding:1px 6px;border-radius:10px;margin-left:2px}
+
+.wordcloud-panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl);margin-top:var(--space-lg);display:none}
+.wordcloud-panel.visible{display:block}
+.wordcloud-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md)}
+.wordcloud-title{font-size:0.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+.wordcloud-minute{font-size:0.65rem;color:var(--text-muted);background:var(--accent-glow);padding:4px 12px;border-radius:20px}
+.wordcloud-container{min-height:120px;max-height:260px;padding:var(--space-md);background:var(--bg-deep);border-radius:var(--radius);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;overflow-y:auto;border:1px solid var(--border)}
+.wordcloud-word{display:inline-block;padding:3px 10px;border-radius:6px;background:var(--accent-glow);color:var(--accent-bright);transition:all 0.3s;cursor:default;white-space:nowrap;border:1px solid transparent}
+.wordcloud-word:hover{transform:scale(1.12);background:rgba(212,148,58,0.2);border-color:var(--accent-dim)}
+.wordcloud-word.paired-word{background:rgba(107,163,214,0.12);color:var(--pair-a);border:1px solid rgba(107,163,214,0.15)}
+.wordcloud-word.paired-word:hover{background:rgba(107,163,214,0.2);border-color:rgba(107,163,214,0.3)}
+.wordcloud-word.size-1{font-size:0.65rem;opacity:0.5}
+.wordcloud-word.size-2{font-size:0.75rem;opacity:0.6}
+.wordcloud-word.size-3{font-size:0.85rem;opacity:0.75}
+.wordcloud-word.size-4{font-size:1rem;opacity:0.85;font-weight:500}
+.wordcloud-word.size-5{font-size:1.15rem;opacity:0.95;font-weight:600}
+.wordcloud-word.size-6{font-size:1.3rem;opacity:1;font-weight:700}
+.wordcloud-empty{color:var(--text-muted);font-size:0.8rem;font-style:italic}
+
+.diagonal-divider{height:80px;background:linear-gradient(175deg,var(--bg-deep) 49%,var(--bg-surface) 51%);margin:0 calc(-1 * var(--space-lg))}
+
+.chart-section{padding:var(--space-2xl) 0 var(--space-xl);display:none}
+.chart-section.visible{display:block}
+.section-title{font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:var(--space-xl);position:relative;padding-left:var(--space-lg)}
+.section-title::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:4px;background:var(--accent);border-radius:2px}
+.chart-container{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl);margin-bottom:var(--space-xl);position:relative}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-lg);flex-wrap:wrap;gap:var(--space-sm)}
+.chart-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em}
+.chart-type-btns{display:flex;gap:var(--space-xs);flex-wrap:wrap}
+.chart-type-btn{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted);font-family:var(--font-mono);font-size:0.7rem;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:all var(--transition-fast)}
+.chart-type-btn:hover{border-color:var(--accent);color:var(--text-primary)}
+.chart-type-btn.active{background:var(--accent-glow);border-color:var(--accent-dim);color:var(--accent)}
+.chart-canvas-wrap{width:100%;height:300px;position:relative}
+
+.results-section{padding:var(--space-xl) 0 var(--space-2xl);display:none}
+.results-section.visible{display:block}
+.ai-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-md);margin-bottom:var(--space-xl)}
+.ai-stat-box{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-lg);display:flex;flex-direction:column;gap:var(--space-xs);transition:border-color var(--transition-fast)}
+.ai-stat-box:hover{border-color:var(--accent-dim)}
+.ai-stat-label{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em}
+.ai-stat-val{font-size:2rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
+.pairs-grid{display:grid;grid-template-columns:1fr;gap:var(--space-md);margin-bottom:var(--space-xl)}
+@media(min-width:768px){.pairs-grid{grid-template-columns:repeat(2,1fr)}}
+.pair-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-lg);display:flex;align-items:center;gap:var(--space-md);transition:transform var(--transition-med),box-shadow var(--transition-med),border-color var(--transition-fast);cursor:default;animation:pair-enter 0.4s ease-out both}
+.pair-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.3);border-color:var(--accent-dim)}
+@keyframes pair-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.pair-word{font-family:var(--font-display);font-size:1.1rem;font-weight:700;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-sm);letter-spacing:-0.01em}
+.pair-word.word-a{background:rgba(107,163,214,0.15);color:var(--pair-a);border:1px solid rgba(107,163,214,0.25)}
+.pair-word.word-b{background:rgba(214,126,107,0.15);color:var(--pair-b);border:1px solid rgba(214,126,107,0.25)}
+.pair-connector{color:var(--text-muted);font-size:1.2rem;flex-shrink:0}
+.pair-meta{margin-left:auto;text-align:right;display:flex;flex-direction:column;gap:2px}
+.pair-type{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;padding:2px 6px;border-radius:4px;font-weight:600}
+.pair-type.classic{background:rgba(107,163,214,0.15);color:var(--pair-a)}
+.pair-type.contextual{background:rgba(214,126,107,0.15);color:var(--pair-b)}
+.pair-context{font-size:0.7rem;color:var(--text-muted);max-width:22ch}
+.pair-minute{font-size:0.65rem;color:var(--text-muted)}
+
+.ai-panel{background:linear-gradient(135deg,var(--bg-surface),var(--bg-elevated));border:1px solid var(--accent-dim);border-radius:var(--radius-lg);padding:var(--space-xl);position:relative;overflow:hidden;margin-bottom:var(--space-xl)}
+.ai-panel::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,var(--accent-glow),transparent 70%);pointer-events:none}
+.ai-panel-header{display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-lg)}
+.ai-badge{background:var(--accent);color:var(--bg-deep);font-size:0.6rem;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:0.1em;text-transform:uppercase}
+.ai-panel-title{font-family:var(--font-display);font-size:1.2rem;font-weight:600}
+.ai-summary-text{color:var(--text-secondary);font-size:0.9rem;line-height:1.7;max-width:70ch}
+.ai-summary-text p{margin-bottom:var(--space-md)}
+.ai-summary-text strong{color:var(--text-primary)}
+
+.trends-grid{display:grid;grid-template-columns:1fr;gap:var(--space-sm);margin-bottom:var(--space-xl)}
+.trend-row{display:flex;align-items:center;gap:var(--space-md);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--space-sm) var(--space-md);font-size:0.8rem;transition:border-color var(--transition-fast)}
+.trend-row:hover{border-color:var(--accent-dim)}
+.trend-row.intensity-high{border-left:3px solid var(--negative)}
+.trend-row.intensity-medium{border-left:3px solid var(--accent)}
+.trend-row.intensity-low{border-left:3px solid var(--positive)}
+.trend-min{color:var(--text-muted);font-size:0.7rem;min-width:48px}
+.trend-count{color:var(--accent);font-weight:700;min-width:56px}
+.trend-note{color:var(--text-secondary);font-size:0.75rem}
+
+.loading-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(14,15,19,0.85);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-lg)}
+.loading-overlay.active{display:flex}
+.loading-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:var(--text-secondary);font-size:0.85rem;animation:loading-pulse 1.5s ease-in-out infinite}
+@keyframes loading-pulse{0%,100%{opacity:0.5}50%{opacity:1}}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--text-muted);transition:background var(--transition-fast)}
+.status-dot.ready{background:var(--positive)}
+.status-dot.recording{background:var(--negative);animation:blink 1s ease-in-out infinite}
+.status-dot.processing{background:var(--accent);animation:blink 0.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-lg);margin-top:var(--space-3xl)}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-md)}
+.footer-text{font-size:0.7rem;color:var(--text-muted);letter-spacing:0.04em}
+.toast{position:fixed;bottom:var(--space-xl);right:var(--space-xl);background:var(--bg-elevated);border:1px solid var(--border);border-left:3px solid var(--negative);color:var(--text-primary);font-size:0.8rem;padding:var(--space-md) var(--space-lg);border-radius:var(--radius-sm);z-index:300;transform:translateX(120%);transition:transform var(--transition-med);max-width:360px}
+.toast.show{transform:translateX(0)}
+
+@media(max-width:600px){
+  .counters{grid-template-columns:repeat(2,1fr)}
+  .ai-stats-row{grid-template-columns:repeat(2,1fr)}
+  .counter-value{font-size:1.4rem}
+  .hero{padding:var(--space-2xl) 0 var(--space-xl)}
+  .input-section{padding:var(--space-lg)}
+  .record-controls{justify-content:center}
+}
+/* ─── GATE OVERLAY ─── */
+.input-wrapper{position:relative;min-height:280px}
+.input-wrapper.locked .input-section{filter:blur(6px);pointer-events:none;user-select:none;opacity:0.45}
+.gate-overlay{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:var(--space-lg)}
+.gate-overlay.hidden{display:none}
+.gate-box{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-xl) var(--space-xl) var(--space-lg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);width:100%;max-width:440px}
+.gate-tabs-row{display:flex;gap:0;margin-bottom:var(--space-xl);border-bottom:1px solid var(--border)}
+.gate-tab{flex:1;background:none;border:none;padding:var(--space-md) var(--space-sm);font-family:var(--font-mono);font-size:0.78rem;font-weight:600;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--transition-fast),border-color var(--transition-fast);min-height:44px}
+.gate-tab:hover{color:var(--text-secondary)}
+.gate-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.gate-panel{display:none}
+.gate-panel.active{display:block}
+.gate-input{width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-md) var(--space-lg);font-family:var(--font-mono);font-size:0.9rem;color:var(--text-primary);transition:border-color var(--transition-fast)}
+.gate-input::placeholder{color:var(--text-muted)}
+.gate-input:focus{outline:none;border-color:var(--accent)}
+.gate-input.code-input{text-align:center;font-size:1.05rem;letter-spacing:0.08em;text-transform:uppercase}
+.gate-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-sm);width:100%;margin-top:var(--space-lg);background:var(--accent);color:var(--bg-deep);font-family:var(--font-mono);font-weight:700;font-size:0.85rem;border:none;border-radius:var(--radius-sm);padding:var(--space-md) var(--space-xl);cursor:pointer;min-height:48px;letter-spacing:0.04em;text-transform:uppercase;transition:background var(--transition-fast),transform var(--transition-fast)}
+.gate-btn:hover{background:var(--accent-bright);transform:translateY(-2px)}
+.gate-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.gate-btn.secondary{background:var(--bg-elevated);color:var(--accent);border:1px solid var(--accent-dim)}
+.gate-btn.secondary:hover{background:var(--accent-glow)}
+.gate-msg{margin-top:var(--space-md);padding:var(--space-md);border-radius:var(--radius-sm);font-size:0.8rem;text-align:center;display:none}
+.gate-msg.success{display:block;background:rgba(92,168,124,0.15);color:var(--positive);border:1px solid rgba(92,168,124,0.25)}
+.gate-msg.error{display:block;background:rgba(196,92,92,0.15);color:var(--negative);border:1px solid rgba(196,92,92,0.25)}
+.gate-hint{font-size:0.7rem;color:var(--text-muted);margin-top:var(--space-md);text-align:center;line-height:1.5}
+.gate-btn .gate-spinner{width:18px;height:18px;border:2.5px solid rgba(14,15,19,0.2);border-top-color:var(--bg-deep);border-radius:50%;animation:spin 0.7s linear infinite;display:none}
+.gate-btn.secondary .gate-spinner{border-color:rgba(212,148,58,0.2);border-top-color:var(--accent)}
+.gate-btn.loading .gate-spinner{display:block}
+.gate-btn.loading .gate-btn-text{display:none}
+.usage-badge{display:inline-flex;align-items:center;gap:var(--space-sm);background:var(--accent-glow);border:1px solid var(--accent-dim);border-radius:20px;padding:4px var(--space-md);font-size:0.7rem;font-weight:500;color:var(--accent);white-space:nowrap}
+.usage-badge.hidden{display:none}
+.usage-badge .usage-dot{width:6px;height:6px;border-radius:50%;background:var(--positive);flex-shrink:0}
+.usage-badge.warning{color:var(--accent-bright);border-color:var(--accent-dim)}
+.usage-badge.warning .usage-dot{background:var(--accent-bright)}
+.usage-badge.depleted{color:var(--negative);background:rgba(196,92,92,0.1);border-color:rgba(196,92,92,0.2)}
+.usage-badge.depleted .usage-dot{background:var(--negative)}
+.exhausted-overlay{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:var(--space-lg)}
+.exhausted-overlay.hidden{display:none}
+.exhausted-box{background:var(--bg-surface);border:1px solid rgba(196,92,92,0.2);border-radius:var(--radius-lg);padding:var(--space-xl);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);width:100%;max-width:400px;text-align:center}
+.exhausted-icon{font-size:2rem;margin-bottom:var(--space-md)}
+.exhausted-box h3{font-family:var(--font-display);font-weight:600;font-size:1.1rem;margin-bottom:var(--space-sm)}
+.exhausted-box p{font-size:0.8rem;color:var(--text-secondary);margin-bottom:var(--space-lg);line-height:1.6}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-inner" role="navigation" aria-label="Main navigation">
+    <div class="logo"><span class="logo-dot" aria-hidden="true"></span>ASGE<span class="logo-sub">Semantic Geometry Engine</span></div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false" id="hamburgerBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#input">Analyze</a>
+      <a href="#chartSection">Chart</a>
+      <a href="#resultsSection">Results</a>
+      <div class="nav-controls">
+        <label for="language" class="visually-hidden">Language</label>
+        <select class="lang-select" id="language" aria-label="Select language">
+          <option value="en-US" selected>EN</option>
+          <option value="fr-FR">FR</option>
+          <option value="tr-TR">TR</option>
+        </select>
+        <span class="status-dot" id="statusDot" title="Status: Ready"></span>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="detection-popup" id="detectionPopup">PAIR DETECTED <span id="detectionWord"></span></div>
+
+<main>
+  <section class="hero" id="input">
+    <div class="hero-text">
+      <h1>Uncover the <span class="highlight">Ambivalent forces</span> hidden in speech</h1>
+      <p>ASGE detects ambivalent semantic pairs — contradictions, tensions, and polarities buried in natural language. Speak or paste text, and let the geometry engine map the conflict landscape of your discourse.</p>
+      <div style="margin-top:var(--space-lg);padding:var(--space-md) var(--space-lg);background:var(--bg-elevated);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);font-size:0.8rem;line-height:1.8">
+        <div style="color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-size:0.65rem;margin-bottom:var(--space-xs)">Function</div>
+        <div style="color:var(--text-primary);margin-bottom:var(--space-md)">Early detection and mapping of ambivalent semantic structures</div>
+        <div style="color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-size:0.65rem;margin-bottom:var(--space-xs)">Potential Use Cases</div>
+        <div style="color:var(--text-secondary);display:flex;flex-wrap:wrap;gap:var(--space-sm)">
+          <span style="background:var(--accent-glow);color:var(--accent-bright);padding:2px 10px;border-radius:20px;font-size:0.7rem">Computational Psychology</span>
+          <span style="background:var(--accent-glow);color:var(--accent-bright);padding:2px 10px;border-radius:20px;font-size:0.7rem">Computational Political Science</span>
+          <span style="background:var(--accent-glow);color:var(--accent-bright);padding:2px 10px;border-radius:20px;font-size:0.7rem">Communication Sciences</span>
+          <span style="background:var(--accent-glow);color:var(--accent-bright);padding:2px 10px;border-radius:20px;font-size:0.7rem">Human Resources</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-wrapper locked" id="inputWrapper">
+
+      <!-- GATE OVERLAY -->
+      <div class="gate-overlay" id="gateOverlay">
+        <div class="gate-box">
+          <div class="gate-tabs-row">
+            <button class="gate-tab active" data-panel="code" type="button">I have an invite code</button>
+            <button class="gate-tab" data-panel="request" type="button">Request access</button>
+          </div>
+          <div class="gate-panel active" id="panelCode">
+            <input class="gate-input code-input" id="inviteCodeInput" type="text" placeholder="ASGE-XXXX-XXXX" maxlength="15" autocomplete="off" spellcheck="false" aria-label="Invite code">
+            <button class="gate-btn" id="btnValidateCode" type="button"><span class="gate-btn-text">Validate Code</span><span class="gate-spinner" aria-hidden="true"></span></button>
+            <div class="gate-msg" id="codeFeedback"></div>
+          </div>
+          <div class="gate-panel" id="panelRequest">
+            <input class="gate-input" id="requestEmailInput" type="email" placeholder="your@email.com" autocomplete="email" aria-label="Email address">
+            <button class="gate-btn secondary" id="btnRequestAccess" type="button"><span class="gate-btn-text">Send Request</span><span class="gate-spinner" aria-hidden="true"></span></button>
+            <div class="gate-msg" id="requestFeedback"></div>
+            <p class="gate-hint">We'll review your request and send an invite code to your email.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXHAUSTED OVERLAY -->
+      <div class="exhausted-overlay hidden" id="exhaustedOverlay">
+        <div class="exhausted-box">
+          <div class="exhausted-icon" aria-hidden="true">⏳</div>
+          <h3>No analyses left</h3>
+          <p>You've used all your available analyses. Request a new invite code to continue.</p>
+          <input class="gate-input" id="exhaustedEmailInput" type="email" placeholder="your@email.com" autocomplete="email" aria-label="Email address for new access request" style="margin-bottom:0">
+          <button class="gate-btn secondary" id="btnExhaustedRequest" type="button"><span class="gate-btn-text">Request New Access</span><span class="gate-spinner" aria-hidden="true"></span></button>
+          <div class="gate-msg" id="exhaustedFeedback"></div>
+        </div>
+      </div>
+
+      <!-- ORIGINAL INPUT SECTION -->
+      <div class="input-section" id="inputSection">
+      <div class="input-tabs" role="tablist">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="mic" id="tabMic">⦿ Microphone</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="text" id="tabText">⌨ Paste Text</button>
+      </div>
+
+      <div class="mic-input-area" id="micArea">
+        <div class="waveform-container">
+          <canvas class="waveform-canvas" id="waveformCanvas" role="img" aria-label="Audio waveform"></canvas>
+          <span class="waveform-placeholder" id="waveformPlaceholder">Press record to begin capture</span>
+        </div>
+        <div class="record-controls">
+          <button class="btn-record" id="btnRecord" aria-label="Start recording" title="Record"></button>
+          <button class="btn-secondary" id="btnPause" disabled>PAUSE</button>
+          <button class="btn-secondary" id="btnStop" disabled>STOP & ANALYZE</button>
+          <button class="btn-secondary sound-on" id="soundToggle">🔔 SOUND</button>
+        </div>
+        <div class="sound-levels hidden" id="soundLevels">
+          <div class="sound-level-indicator" id="level2" style="background:rgba(107,163,214,0.3);color:var(--pair-a)">2 PAIRS</div>
+          <div class="sound-level-indicator" id="level3" style="background:rgba(139,92,246,0.3);color:#8b5cf6">3 PAIRS</div>
+          <div class="sound-level-indicator" id="level4" style="background:rgba(212,148,58,0.3);color:var(--accent)">4 PAIRS</div>
+          <div class="sound-level-indicator" id="level5" style="background:rgba(196,92,92,0.3);color:var(--negative)">5 PAIRS</div>
+        </div>
+      </div>
+
+      <div class="text-input-area" id="textArea">
+        <label for="manualInput" class="visually-hidden">Text to analyze</label>
+        <textarea class="text-area" id="manualInput" placeholder="Paste or type your text here. Each line = 1 minute. The engine works best with 50+ words."></textarea>
+        <button class="btn-analyze" id="btnAnalyzeText" disabled>Analyze Text</button>
+      </div>
+
+      <div class="counters">
+        <div class="counter-card"><div class="counter-label">Duration</div><div class="counter-value" id="timerDisplay">00:00</div></div>
+        <div class="counter-card"><div class="counter-label">Minute</div><div class="counter-value" id="minuteDisplay">1</div></div>
+        <div class="counter-card"><div class="counter-label">Words</div><div class="counter-value" id="wordDisplay">0</div></div>
+        <div class="counter-card"><div class="counter-label">Pairs</div><div class="counter-value pairs" id="pairDisplay">0</div></div>
+      </div>
+      <div class="counters" style="grid-template-columns:repeat(3,1fr);margin-top:var(--space-sm)">
+        <div class="counter-card"><div class="counter-label">Total Ratio</div><div class="counter-value" id="ratioDisplay" style="color:var(--positive)">0.000</div></div>
+        <div class="counter-card"><div class="counter-label">This Minute</div><div class="counter-value" id="currentMinuteDisplay" style="color:var(--accent-bright)">0</div></div>
+        <div class="counter-card"><div class="counter-label">Formula</div><div class="counter-value" style="font-size:0.9rem;color:var(--text-secondary)">Σ(pairs) / min</div></div>
+      </div>
+
+      <div class="formula-box">
+        <span>Formula: </span><code id="formulaDisplay">0 / 1 = 0.000</code>
+      </div>
+
+      <div class="transcript-panel" id="transcriptPanel"></div>
+      <!-- LOCAL PAIRS REMOVED -->
+      <div class="wordcloud-panel" id="wordcloudPanel">
+        <div class="wordcloud-header">
+          <div class="wordcloud-title">Word Frequency Map</div>
+          <div class="wordcloud-minute" id="wordcloudMinute">0 unique words</div>
+        </div>
+        <div class="wordcloud-container" id="wordcloudContainer"><span class="wordcloud-empty">Start speaking...</span></div>
+      </div>
+    </div>
+
+      <!-- USAGE BADGE -->
+      <span class="usage-badge hidden" id="usageBadge" aria-live="polite" style="margin-top:var(--space-md)">
+        <span class="usage-dot" aria-hidden="true"></span>
+        <span id="usageText"></span>
+      </span>
+
+    </div>
+  </section>
+
+  <div class="diagonal-divider" aria-hidden="true"></div>
+
+  <section class="chart-section" id="chartSection">
+    <h2 class="section-title">Minute-by-Minute Trend</h2>
+    <div class="chart-container">
+      <div class="chart-header">
+        <span class="chart-label">Ambivalent Pair Density</span>
+        <div class="chart-type-btns">
+          <button class="chart-type-btn active" data-type="wave" id="ctWave">〰️ Wave</button>
+          <button class="chart-type-btn" data-type="bar" id="ctBar">📊 Bar</button>
+          <button class="chart-type-btn" data-type="delta" id="ctDelta">📈 Δ Delta</button>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="liveChart"></canvas></div>
+    </div>
+  </section>
+
+  <div class="diagonal-divider" aria-hidden="true" style="background:linear-gradient(175deg,var(--bg-surface) 49%,var(--bg-deep) 51%)"></div>
+
+  <section class="results-section" id="resultsSection">
+    <div id="aiLoading" class="hidden" style="text-align:center;padding:var(--space-xl);color:var(--text-secondary)">
+      <div class="loading-spinner" style="margin:0 auto var(--space-md)"></div>
+      <div>Mapping semantic geometry…</div>
+    </div>
+    <div id="aiStatsRow" class="ai-stats-row hidden"></div>
+    <div id="aiSummaryPanel" class="ai-panel hidden">
+      <div class="ai-panel-header">
+        <span class="ai-badge">AI</span>
+        <span class="ai-panel-title" id="aiPanelTitle">Semantic Conflict Summary</span>
+      </div>
+      <div class="ai-summary-text" id="aiSummaryText"><p>Analysis results will appear here after processing.</p></div>
+    </div>
+    <!-- PAIRS AND TRENDS SECTIONS REMOVED -->
+  </section>
+</main>
+
+<footer><div class="footer-inner" style="justify-content:center">
+  <span class="footer-text">© 2026 <a href="https://llulllab.com" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none">Llull Lab</a></span>
+</div></footer>
+
+<div class="loading-overlay" id="loadingOverlay" role="alert" aria-live="polite">
+  <div class="loading-spinner"></div><div class="loading-text">Mapping semantic geometry…</div>
+</div>
+<div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+<script>
+(function(){
+'use strict';
+
+const TURKISH_PAIRS={'iyi': 'kötü', 'kötü': 'iyi','güzel': 'çirkin', 'çirkin': 'güzel','büyük': 'küçük', 'küçük': 'büyük','uzun': 'kısa', 'kısa': 'uzun','hızlı': 'yavaş', 'yavaş': 'hızlı','sıcak': 'soğuk', 'soğuk': 'sıcak','yeni': 'eski', 'eski': 'yeni','genç': 'yaşlı', 'yaşlı': 'genç','zengin': 'fakir', 'fakir': 'zengin','kolay': 'zor', 'zor': 'kolay','doğru': 'yanlış', 'yanlış': 'doğru','açık': 'kapalı', 'kapalı': 'açık','dolu': 'boş', 'boş': 'dolu','mutlu': 'mutsuz', 'mutsuz': 'mutlu','güçlü': 'zayıf', 'zayıf': 'güçlü','parlak': 'karanlık', 'karanlık': 'parlak','temiz': 'kirli', 'kirli': 'temiz','yumuşak': 'sert', 'sert': 'yumuşak','ağır': 'hafif', 'hafif': 'ağır','dar': 'geniş', 'geniş': 'dar','yüksek': 'alçak', 'alçak': 'yüksek','kalın': 'ince', 'ince': 'kalın','yakın': 'uzak', 'uzak': 'yakın','derin': 'sığ', 'sığ': 'derin','tatlı': 'acı', 'acı': 'tatlı','kuru': 'ıslak', 'ıslak': 'kuru','sağlıklı': 'hasta', 'hasta': 'sağlıklı','dürüst': 'yalancı', 'yalancı': 'dürüst','cesur': 'korkak', 'korkak': 'cesur','akıllı': 'aptal', 'aptal': 'akıllı','tembel': 'çalışkan', 'çalışkan': 'tembel','sakin': 'hareketli', 'hareketli': 'sakin','sessiz': 'gürültülü', 'gürültülü': 'sessiz','düz': 'eğri', 'eğri': 'düz','sivri': 'küt', 'küt': 'sivri','sıkı': 'gevşek', 'gevşek': 'sıkı','canlı': 'ölü', 'ölü': 'canlı','özgür': 'tutsak', 'tutsak': 'özgür','haklı': 'haksız', 'haksız': 'haklı','zararlı': 'yararlı', 'yararlı': 'zararlı','olumlu': 'olumsuz', 'olumsuz': 'olumlu','kalıcı': 'geçici', 'geçici': 'kalıcı','özel': 'genel', 'genel': 'özel','somut': 'soyut', 'soyut': 'somut','basit': 'karmaşık', 'karmaşık': 'basit','normal': 'anormal', 'anormal': 'normal','modern': 'geleneksel', 'geleneksel': 'modern','doğal': 'yapay', 'yapay': 'doğal','gerçek': 'sahte', 'sahte': 'gerçek','resmi': 'gayriresmi', 'gayriresmi': 'resmi','şanslı': 'şanssız', 'şanssız': 'şanslı','nazik': 'kaba', 'kaba': 'nazik','kibar': 'terbiyesiz', 'terbiyesiz': 'kibar','cömert': 'cimri', 'cimri': 'cömert','sabırlı': 'sabırsız', 'sabırsız': 'sabırlı','dikkatli': 'dikkatsiz', 'dikkatsiz': 'dikkatli','düzenli': 'düzensiz', 'düzensiz': 'düzenli','mantıklı': 'mantıksız', 'mantıksız': 'mantıklı','mümkün': 'imkansız', 'imkansız': 'mümkün','görünür': 'görünmez', 'görünmez': 'görünür','gelmek': 'gitmek', 'gitmek': 'gelmek','almak': 'vermek', 'vermek': 'almak','açmak': 'kapatmak', 'kapatmak': 'açmak','başlamak': 'bitmek', 'bitmek': 'başlamak','doğmak': 'ölmek', 'ölmek': 'doğmak','gülmek': 'ağlamak', 'ağlamak': 'gülmek','sevmek': 'nefret etmek', 'nefret etmek': 'sevmek','kazanmak': 'kaybetmek', 'kaybetmek': 'kazanmak','hatırlamak': 'unutmak', 'unutmak': 'hatırlamak','kabul etmek': 'reddetmek', 'reddetmek': 'kabul etmek','övmek': 'yermek', 'yermek': 'övmek','binmek': 'inmek', 'inmek': 'binmek','kalkmak': 'oturmak', 'oturmak': 'kalkmak','uyumak': 'uyanmak', 'uyanmak': 'uyumak','satmak': 'satın almak', 'satın almak': 'satmak','çıkmak': 'girmek', 'girmek': 'çıkmak','artmak': 'azalmak', 'azalmak': 'artmak','yükselmek': 'düşmek', 'düşmek': 'yükselmek','toplamak': 'dağıtmak', 'dağıtmak': 'toplamak','yapmak': 'bozmak', 'bozmak': 'yapmak','kurmak': 'yıkmak', 'yıkmak': 'kurmak','bulmak': 'kaybetmek','göstermek': 'gizlemek', 'gizlemek': 'göstermek','izin vermek': 'yasaklamak', 'yasaklamak': 'izin vermek','ithal etmek': 'ihraç etmek', 'ihraç etmek': 'ithal etmek','sormak': 'cevaplamak', 'cevaplamak': 'sormak','suçlamak': 'savunmak', 'savunmak': 'suçlamak','övmek': 'eleştirmek', 'eleştirmek': 'övmek','yakmak': 'söndürmek', 'söndürmek': 'yakmak','birleştirmek': 'ayırmak', 'ayırmak': 'birleştirmek','çoğalmak': 'azalmak','hızlanmak': 'yavaşlamak', 'yavaşlamak': 'hızlanmak','erken': 'geç', 'geç': 'erken','yukarı': 'aşağı', 'aşağı': 'yukarı','önce': 'sonra', 'sonra': 'önce','ileri': 'geri', 'geri': 'ileri','içeri': 'dışarı', 'dışarı': 'içeri','burada': 'orada', 'orada': 'burada','hep': 'hiç', 'hiç': 'hep','çok': 'az', 'az': 'çok','sık': 'nadir', 'nadir': 'sık','beraber': 'ayrı', 'ayrı': 'beraber','evet': 'hayır', 'hayır': 'evet','var': 'yok', 'yok': 'var','gündüz': 'gece', 'gece': 'gündüz','yaz': 'kış', 'kış': 'yaz','sabah': 'akşam', 'akşam': 'sabah','ilk': 'son', 'son': 'ilk','aç': 'tok', 'tok': 'aç','ucuz': 'pahalı', 'pahalı': 'ucuz','barış': 'savaş', 'savaş': 'barış','dost': 'düşman', 'düşman': 'dost','aşk': 'nefret', 'nefret': 'aşk','umut': 'umutsuzluk', 'umutsuzluk': 'umut','başarı': 'başarısızlık', 'başarısızlık': 'başarı','artı': 'eksi', 'eksi': 'artı','kadın': 'erkek', 'erkek': 'kadın','anne': 'baba', 'baba': 'anne','oğul': 'kız', 'kız': 'oğul','cennet': 'cehennem', 'cehennem': 'cennet','giriş': 'çıkış', 'çıkış': 'giriş','soru': 'cevap', 'cevap': 'soru','problem': 'çözüm', 'çözüm': 'problem','kuzey': 'güney', 'güney': 'kuzey','doğu': 'batı', 'batı': 'doğu','sol': 'sağ', 'sağ': 'sol','avantaj': 'dezavantaj', 'dezavantaj': 'avantaj','güç': 'zayıflık', 'zayıflık': 'güç','gerçek': 'yalan', 'yalan': 'gerçek','düzen': 'kaos', 'kaos': 'düzen','ses': 'sessizlik', 'sessizlik': 'ses','zafer': 'yenilgi', 'yenilgi': 'zafer','sevinç': 'üzüntü', 'üzüntü': 'sevinç','zevk': 'acı','hayat': 'ölüm', 'ölüm': 'hayat','baş': 'son','ön': 'arka', 'arka': 'ön','üst': 'alt', 'alt': 'üst','iç': 'dış', 'dış': 'iç','ağaç': 'orman','deniz': 'kara', 'kara': 'deniz','dağ': 'ova', 'ova': 'dağ','şehir': 'köy', 'köy': 'şehir','zenginlik': 'fakirlik', 'fakirlik': 'zenginlik','özgürlük': 'esaret', 'esaret': 'özgürlük','adalet': 'adaletsizlik', 'adaletsizlik': 'adalet','güven': 'güvensizlik', 'güvensizlik': 'güven','saygı': 'saygısızlık', 'saygısızlık': 'saygı','sevgi': 'kin', 'kin': 'sevgi','neşe': 'keder', 'keder': 'neşe','korku': 'cesaret', 'cesaret': 'korku','güven': 'şüphe', 'şüphe': 'güven','bilgi': 'cehalet', 'cehalet': 'bilgi','akıl': 'delilik', 'delilik': 'akıl','sağlık': 'hastalık', 'hastalık': 'sağlık','bolluk': 'kıtlık', 'kıtlık': 'bolluk','bereket': 'kuraklık', 'kuraklık': 'bereket','varlık': 'yokluk', 'yokluk': 'varlık','hareket': 'durgunluk', 'durgunluk': 'hareket','hız': 'yavaşlık', 'yavaşlık': 'hız','sertlik': 'yumuşaklık', 'yumuşaklık': 'sertlik','sorumluluk': 'sorumsuzluk', 'sorumsuzluk': 'sorumluluk','ciddiyet': 'şaka', 'şaka': 'ciddiyet','gerginlik': 'rahatlık', 'rahatlık': 'gerginlik','stres': 'huzur', 'huzur': 'stres','meşgul': 'boş','dik': 'yatık', 'yatık': 'dik','keskin': 'kör', 'kör': 'keskin','parlak': 'mat', 'mat': 'parlak','şeffaf': 'opak', 'opak': 'şeffaf','katı': 'sıvı', 'sıvı': 'katı','taze': 'bayat', 'bayat': 'taze','olgun': 'ham', 'ham': 'olgun','ham': 'pişmiş', 'pişmiş': 'ham','sade': 'süslü', 'süslü': 'sade','minimalist': 'maksimalist', 'maksimalist': 'minimalist','yoğun': 'seyrek', 'seyrek': 'yoğun','hoş': 'nahoş', 'nahoş': 'hoş','tatlı': 'ekşi', 'ekşi': 'tatlı','gönüllü': 'zorunlu', 'zorunlu': 'gönüllü','aktif': 'pasif', 'pasif': 'aktif','profesyonel': 'amatör', 'amatör': 'profesyonel','maksimum': 'minimum', 'minimum': 'maksimum','majör': 'minör', 'minör': 'majör','pozitif': 'negatif', 'negatif': 'pozitif','konkav': 'konveks', 'konveks': 'konkav','içbükey': 'dışbükey', 'dışbükey': 'içbükey','objektif': 'subjektif', 'subjektif': 'objektif','simetrik': 'asimetrik', 'asimetrik': 'simetrik','rasyonel': 'irrasyonel', 'irrasyonel': 'rasyonel','yerli': 'yabancı','ulusal': 'uluslararası', 'uluslararası': 'ulusal','bireysel': 'toplumsal', 'toplumsal': 'bireysel','teorik': 'pratik', 'pratik': 'teorik','soyut': 'somut','dikey': 'yatay', 'yatay': 'dikey','merkezi': 'yerel', 'yerel': 'merkezi','evrensel': 'yerel','itici': 'çekici', 'çekici': 'itici','karamsar': 'iyimser', 'iyimser': 'karamsar'};
+
+const ENGLISH_PAIRS={'good': 'bad', 'bad': 'good','big': 'small', 'small': 'big','large': 'tiny', 'tiny': 'large','hot': 'cold', 'cold': 'hot','warm': 'cool', 'cool': 'warm','fast': 'slow', 'slow': 'fast','quick': 'sluggish', 'sluggish': 'quick','happy': 'sad', 'sad': 'happy','joyful': 'miserable', 'miserable': 'joyful','old': 'new', 'new': 'old','young': 'elderly', 'elderly': 'young','ancient': 'modern', 'modern': 'ancient','rich': 'poor', 'poor': 'rich','wealthy': 'broke', 'broke': 'wealthy','easy': 'hard', 'hard': 'easy','simple': 'complex', 'complex': 'simple','true': 'false', 'false': 'true','right': 'wrong', 'wrong': 'right','correct': 'incorrect', 'incorrect': 'correct','strong': 'weak', 'weak': 'strong','powerful': 'powerless', 'powerless': 'powerful','light': 'dark', 'dark': 'light','bright': 'dim', 'dim': 'bright','heavy': 'lightweight', 'lightweight': 'heavy','thick': 'thin', 'thin': 'thick','wide': 'narrow', 'narrow': 'wide','deep': 'shallow', 'shallow': 'deep','high': 'low', 'low': 'high','tall': 'short', 'short': 'tall','long': 'brief', 'brief': 'long','near': 'far', 'far': 'near','close': 'distant', 'distant': 'close','clean': 'dirty', 'dirty': 'clean','pure': 'impure', 'impure': 'pure','safe': 'dangerous', 'dangerous': 'safe','secure': 'insecure', 'insecure': 'secure','beautiful': 'ugly', 'ugly': 'beautiful','pretty': 'hideous', 'hideous': 'pretty','smart': 'stupid', 'stupid': 'smart','clever': 'foolish', 'foolish': 'clever','brave': 'cowardly', 'cowardly': 'brave','loud': 'quiet', 'quiet': 'loud','noisy': 'silent', 'silent': 'noisy','soft': 'rough', 'rough': 'soft','smooth': 'bumpy', 'bumpy': 'smooth','wet': 'dry', 'dry': 'wet','full': 'empty', 'empty': 'full','alive': 'dead', 'dead': 'alive','awake': 'asleep', 'asleep': 'awake','healthy': 'sick', 'sick': 'healthy','honest': 'dishonest', 'dishonest': 'honest','kind': 'cruel', 'cruel': 'kind','generous': 'selfish', 'selfish': 'generous','polite': 'rude', 'rude': 'polite','patient': 'impatient', 'impatient': 'patient','lucky': 'unlucky', 'unlucky': 'lucky','possible': 'impossible', 'impossible': 'possible','visible': 'invisible', 'invisible': 'visible','legal': 'illegal', 'illegal': 'legal','normal': 'abnormal', 'abnormal': 'normal','regular': 'irregular', 'irregular': 'regular','positive': 'negative', 'negative': 'positive','optimistic': 'pessimistic', 'pessimistic': 'optimistic','permanent': 'temporary', 'temporary': 'permanent','public': 'private', 'private': 'public','natural': 'artificial', 'artificial': 'natural','real': 'fake', 'fake': 'real','guilty': 'innocent', 'innocent': 'guilty','famous': 'unknown', 'unknown': 'famous','cheap': 'expensive', 'expensive': 'cheap','love': 'hate', 'hate': 'love','like': 'dislike', 'dislike': 'like','open': 'close', 'close': 'open','start': 'stop', 'stop': 'start','begin': 'end', 'end': 'begin','win': 'lose', 'lose': 'win','succeed': 'fail', 'fail': 'succeed','buy': 'sell', 'sell': 'buy','give': 'take', 'take': 'give','send': 'receive', 'receive': 'send','push': 'pull', 'pull': 'push','rise': 'fall', 'fall': 'rise','raise': 'lower', 'lower': 'raise','come': 'go', 'go': 'come','arrive': 'leave', 'leave': 'arrive','enter': 'exit', 'exit': 'enter','appear': 'disappear', 'disappear': 'appear','show': 'hide', 'hide': 'show','reveal': 'conceal', 'conceal': 'reveal','remember': 'forget', 'forget': 'remember','accept': 'reject', 'reject': 'accept','agree': 'disagree', 'disagree': 'agree','allow': 'forbid', 'forbid': 'allow','permit': 'prohibit', 'prohibit': 'permit','create': 'destroy', 'destroy': 'create','build': 'demolish', 'demolish': 'build','increase': 'decrease', 'decrease': 'increase','expand': 'shrink', 'shrink': 'expand','attack': 'defend', 'defend': 'attack','laugh': 'cry', 'cry': 'laugh','smile': 'frown', 'frown': 'smile','up': 'down', 'down': 'up','yes': 'no', 'no': 'yes','always': 'never', 'never': 'always','often': 'rarely', 'rarely': 'often','before': 'after', 'after': 'before','early': 'late', 'late': 'early','now': 'later', 'later': 'now','here': 'there', 'there': 'here','inside': 'outside', 'outside': 'inside','forward': 'backward', 'backward': 'forward','more': 'less', 'less': 'more','many': 'few', 'few': 'many','much': 'little', 'little': 'much','together': 'apart', 'apart': 'together','first': 'last', 'last': 'first','best': 'worst', 'worst': 'best','success': 'failure', 'failure': 'success','victory': 'defeat', 'defeat': 'victory','peace': 'war', 'war': 'peace','friend': 'enemy', 'enemy': 'friend','ally': 'opponent', 'opponent': 'ally','hope': 'despair', 'despair': 'hope','joy': 'sorrow', 'sorrow': 'joy','pleasure': 'pain', 'pain': 'pleasure','life': 'death', 'death': 'life','birth': 'demise', 'demise': 'birth','day': 'night', 'night': 'day','morning': 'evening', 'evening': 'morning','summer': 'winter', 'winter': 'summer','sunrise': 'sunset', 'sunset': 'sunrise','heaven': 'hell', 'hell': 'heaven','man': 'woman', 'woman': 'man','boy': 'girl', 'girl': 'boy','father': 'mother', 'mother': 'father','son': 'daughter', 'daughter': 'son','husband': 'wife', 'wife': 'husband','question': 'answer', 'answer': 'question','problem': 'solution', 'solution': 'problem','entrance': 'exit','north': 'south', 'south': 'north','east': 'west', 'west': 'east','left': 'right','strength': 'weakness', 'weakness': 'strength','truth': 'lie', 'lie': 'truth','order': 'chaos', 'chaos': 'order','noise': 'silence', 'silence': 'noise','advantage': 'disadvantage', 'disadvantage': 'advantage','top': 'bottom', 'bottom': 'top','front': 'back', 'back': 'front','above': 'below', 'below': 'above','over': 'under', 'under': 'over','land': 'sea', 'sea': 'land','city': 'village', 'village': 'city','urban': 'rural', 'rural': 'urban','freedom': 'slavery', 'slavery': 'freedom','justice': 'injustice', 'injustice': 'justice','trust': 'distrust', 'distrust': 'trust','respect': 'disrespect', 'disrespect': 'respect','knowledge': 'ignorance', 'ignorance': 'knowledge','wisdom': 'folly', 'folly': 'wisdom','courage': 'fear', 'fear': 'courage','confidence': 'doubt', 'doubt': 'confidence','health': 'illness', 'illness': 'health','wealth': 'poverty', 'poverty': 'wealth','abundance': 'scarcity', 'scarcity': 'abundance','presence': 'absence', 'absence': 'presence','movement': 'stillness', 'stillness': 'movement','speed': 'slowness', 'slowness': 'speed','tension': 'relaxation', 'relaxation': 'tension','stress': 'calm', 'calm': 'stress','clarity': 'confusion', 'confusion': 'clarity','certainty': 'uncertainty', 'uncertainty': 'certainty','busy': 'idle', 'idle': 'busy','sharp': 'blunt', 'blunt': 'sharp','shiny': 'dull', 'dull': 'shiny','transparent': 'opaque', 'opaque': 'transparent','solid': 'liquid', 'liquid': 'solid','fresh': 'stale', 'stale': 'fresh','ripe': 'unripe', 'unripe': 'ripe','raw': 'cooked', 'cooked': 'raw','plain': 'fancy', 'fancy': 'plain','dense': 'sparse', 'sparse': 'dense','pleasant': 'unpleasant', 'unpleasant': 'pleasant','sweet': 'sour', 'sour': 'sweet','voluntary': 'mandatory', 'mandatory': 'voluntary','active': 'passive', 'passive': 'active','professional': 'amateur', 'amateur': 'professional','maximum': 'minimum', 'minimum': 'maximum','major': 'minor', 'minor': 'major','concave': 'convex', 'convex': 'concave','objective': 'subjective', 'subjective': 'objective','symmetric': 'asymmetric', 'asymmetric': 'symmetric','rational': 'irrational', 'irrational': 'rational','domestic': 'foreign', 'foreign': 'domestic','individual': 'collective', 'collective': 'individual','theoretical': 'practical', 'practical': 'theoretical','vertical': 'horizontal', 'horizontal': 'vertical','central': 'local', 'local': 'central','attractive': 'repulsive', 'repulsive': 'attractive'};
+
+const FRENCH_PAIRS={'bon': 'mauvais', 'mauvais': 'bon','bonne': 'mauvaise', 'mauvaise': 'bonne','bien': 'mal', 'mal': 'bien','grand': 'petit', 'petit': 'grand','grande': 'petite', 'petite': 'grande','gros': 'mince', 'mince': 'gros','chaud': 'froid', 'froid': 'chaud','chaude': 'froide', 'froide': 'chaude','rapide': 'lent', 'lent': 'rapide','vite': 'lentement', 'lentement': 'vite','heureux': 'malheureux', 'malheureux': 'heureux','heureuse': 'malheureuse', 'malheureuse': 'heureuse','content': 'mécontent', 'mécontent': 'content','joyeux': 'triste', 'triste': 'joyeux','vieux': 'jeune', 'jeune': 'vieux','ancien': 'nouveau', 'nouveau': 'ancien','ancienne': 'nouvelle', 'nouvelle': 'ancienne','riche': 'pauvre', 'pauvre': 'riche','facile': 'difficile', 'difficile': 'facile','simple': 'compliqué', 'compliqué': 'simple','vrai': 'faux', 'faux': 'vrai','correct': 'incorrect', 'incorrect': 'correct','fort': 'faible', 'faible': 'fort','puissant': 'impuissant', 'impuissant': 'puissant','clair': 'sombre', 'sombre': 'clair','lumineux': 'obscur', 'obscur': 'lumineux','lourd': 'léger', 'léger': 'lourd','épais': 'mince','large': 'étroit', 'étroit': 'large','profond': 'superficiel', 'superficiel': 'profond','haut': 'bas', 'bas': 'haut','long': 'court', 'court': 'long','proche': 'loin', 'loin': 'proche','propre': 'sale', 'sale': 'propre','pur': 'impur', 'impur': 'pur','sûr': 'dangereux', 'dangereux': 'sûr','beau': 'laid', 'laid': 'beau','belle': 'laide', 'laide': 'belle','joli': 'moche', 'moche': 'joli','intelligent': 'stupide', 'stupide': 'intelligent','sage': 'fou', 'fou': 'sage','courageux': 'lâche', 'lâche': 'courageux','brave': 'peureux', 'peureux': 'brave','bruyant': 'silencieux', 'silencieux': 'bruyant','doux': 'dur', 'dur': 'doux','mouillé': 'sec', 'sec': 'mouillé','plein': 'vide', 'vide': 'plein','vivant': 'mort', 'mort': 'vivant','éveillé': 'endormi', 'endormi': 'éveillé','sain': 'malade', 'malade': 'sain','honnête': 'malhonnête', 'malhonnête': 'honnête','gentil': 'méchant', 'méchant': 'gentil','généreux': 'avare', 'avare': 'généreux','poli': 'impoli', 'impoli': 'poli','patient': 'impatient', 'impatient': 'patient','possible': 'impossible', 'impossible': 'possible','visible': 'invisible', 'invisible': 'visible','légal': 'illégal', 'illégal': 'légal','normal': 'anormal', 'anormal': 'normal','positif': 'négatif', 'négatif': 'positif','optimiste': 'pessimiste', 'pessimiste': 'optimiste','permanent': 'temporaire', 'temporaire': 'permanent','public': 'privé', 'privé': 'public','naturel': 'artificiel', 'artificiel': 'naturel','réel': 'imaginaire', 'imaginaire': 'réel','utile': 'inutile', 'inutile': 'utile','présent': 'absent', 'absent': 'présent','coupable': 'innocent', 'innocent': 'coupable','célèbre': 'inconnu', 'inconnu': 'célèbre','cher': 'bon marché', 'bon marché': 'cher','aimer': 'détester', 'détester': 'aimer','adorer': 'haïr', 'haïr': 'adorer','ouvrir': 'fermer', 'fermer': 'ouvrir','commencer': 'finir', 'finir': 'commencer','débuter': 'terminer', 'terminer': 'débuter','gagner': 'perdre', 'perdre': 'gagner','réussir': 'échouer', 'échouer': 'réussir','acheter': 'vendre', 'vendre': 'acheter','donner': 'prendre', 'prendre': 'donner','recevoir': 'envoyer', 'envoyer': 'recevoir','pousser': 'tirer', 'tirer': 'pousser','monter': 'descendre', 'descendre': 'monter','lever': 'baisser', 'baisser': 'lever','venir': 'partir', 'partir': 'venir','arriver': 'quitter', 'quitter': 'arriver','entrer': 'sortir', 'sortir': 'entrer','apparaître': 'disparaître', 'disparaître': 'apparaître','montrer': 'cacher', 'cacher': 'montrer','révéler': 'dissimuler', 'dissimuler': 'révéler','oublier': 'rappeler', 'rappeler': 'oublier','accepter': 'refuser', 'refuser': 'accepter','permettre': 'interdire', 'interdire': 'permettre','créer': 'détruire', 'détruire': 'créer','construire': 'démolir', 'démolir': 'construire','augmenter': 'diminuer', 'diminuer': 'augmenter','agrandir': 'réduire', 'réduire': 'agrandir','attaquer': 'défendre', 'défendre': 'attaquer','rire': 'pleurer', 'pleurer': 'rire','sourire': 'grimacer', 'grimacer': 'sourire','naître': 'mourir', 'mourir': 'naître','allumer': 'éteindre', 'éteindre': 'allumer','ajouter': 'enlever', 'enlever': 'ajouter','avancer': 'reculer', 'reculer': 'avancer','accélérer': 'ralentir', 'ralentir': 'accélérer','oui': 'non', 'non': 'oui','toujours': 'jamais', 'jamais': 'toujours','souvent': 'rarement', 'rarement': 'souvent','avant': 'après', 'après': 'avant','tôt': 'tard', 'tard': 'tôt','maintenant': 'plus tard','ici': 'là-bas', 'là-bas': 'ici','dedans': 'dehors', 'dehors': 'dedans','intérieur': 'extérieur', 'extérieur': 'intérieur','devant': 'derrière', 'derrière': 'devant','plus': 'moins', 'moins': 'plus','beaucoup': 'peu', 'peu': 'beaucoup','tout': 'rien', 'rien': 'tout','ensemble': 'séparément', 'séparément': 'ensemble','début': 'fin', 'fin': 'début','premier': 'dernier', 'dernier': 'premier','meilleur': 'pire', 'pire': 'meilleur','succès': 'échec', 'échec': 'succès','victoire': 'défaite', 'défaite': 'victoire','paix': 'guerre', 'guerre': 'paix','ami': 'ennemi', 'ennemi': 'ami','amour': 'haine', 'haine': 'amour','espoir': 'désespoir', 'désespoir': 'espoir','joie': 'tristesse', 'tristesse': 'joie','bonheur': 'malheur', 'malheur': 'bonheur','plaisir': 'douleur', 'douleur': 'plaisir','vie': 'mort','jour': 'nuit', 'nuit': 'jour','matin': 'soir', 'soir': 'matin','été': 'hiver', 'hiver': 'été','printemps': 'automne', 'automne': 'printemps','lumière': 'obscurité', 'obscurité': 'lumière','ciel': 'terre', 'terre': 'ciel','paradis': 'enfer', 'enfer': 'paradis','homme': 'femme', 'femme': 'homme','garçon': 'fille', 'fille': 'garçon','père': 'mère', 'mère': 'père','fils': 'fille','frère': 'soeur', 'soeur': 'frère','mari': 'épouse', 'épouse': 'mari','question': 'réponse', 'réponse': 'question','problème': 'solution', 'solution': 'problème','nord': 'sud', 'sud': 'nord','est': 'ouest', 'ouest': 'est','gauche': 'droite', 'droite': 'gauche','entrée': 'sortie', 'sortie': 'entrée','avantage': 'inconvénient', 'inconvénient': 'avantage','force': 'faiblesse', 'faiblesse': 'force','vérité': 'mensonge', 'mensonge': 'vérité','ordre': 'désordre', 'désordre': 'ordre','bruit': 'silence', 'silence': 'bruit','dessus': 'dessous', 'dessous': 'dessus','haut': 'bas','terre': 'mer', 'mer': 'terre','ville': 'campagne', 'campagne': 'ville','urbain': 'rural', 'rural': 'urbain','liberté': 'esclavage', 'esclavage': 'liberté','justice': 'injustice', 'injustice': 'justice','confiance': 'méfiance', 'méfiance': 'confiance','respect': 'irrespect', 'irrespect': 'respect','savoir': 'ignorance', 'ignorance': 'savoir','sagesse': 'folie', 'folie': 'sagesse','courage': 'peur', 'peur': 'courage','santé': 'maladie', 'maladie': 'santé','richesse': 'pauvreté', 'pauvreté': 'richesse','abondance': 'pénurie', 'pénurie': 'abondance','présence': 'absence','mouvement': 'immobilité', 'immobilité': 'mouvement','vitesse': 'lenteur', 'lenteur': 'vitesse','tension': 'détente', 'détente': 'tension','stress': 'calme', 'calme': 'stress','clarté': 'confusion', 'confusion': 'clarté','certitude': 'incertitude', 'incertitude': 'certitude','jeunesse': 'vieillesse', 'vieillesse': 'jeunesse','beauté': 'laideur', 'laideur': 'beauté','occupé': 'libre', 'libre': 'occupé','pointu': 'émoussé', 'émoussé': 'pointu','brillant': 'terne', 'terne': 'brillant','transparent': 'opaque', 'opaque': 'transparent','solide': 'liquide', 'liquide': 'solide','frais': 'périmé', 'périmé': 'frais','mûr': 'immature', 'immature': 'mûr','cru': 'cuit', 'cuit': 'cru','sobre': 'extravagant', 'extravagant': 'sobre','dense': 'clairsemé', 'clairsemé': 'dense','agréable': 'désagréable', 'désagréable': 'agréable','sucré': 'amer', 'amer': 'sucré','volontaire': 'obligatoire', 'obligatoire': 'volontaire','actif': 'passif', 'passif': 'actif','professionnel': 'amateur', 'amateur': 'professionnel','maximum': 'minimum', 'minimum': 'maximum','majeur': 'mineur', 'mineur': 'majeur','concave': 'convexe', 'convexe': 'concave','objectif': 'subjectif', 'subjectif': 'objectif','symétrique': 'asymétrique', 'asymétrique': 'symétrique','rationnel': 'irrationnel', 'irrationnel': 'rationnel'};
+
+const $=id=>document.getElementById(id);
+const statusDot=$('statusDot'),btnRecord=$('btnRecord'),btnPause=$('btnPause'),btnStop=$('btnStop');
+const btnAnalyzeText=$('btnAnalyzeText'),manualInput=$('manualInput'),langSelect=$('language');
+const waveformCanvas=$('waveformCanvas'),waveformPlaceholder=$('waveformPlaceholder');
+const inputSection=$('inputSection'),chartSection=$('chartSection'),resultsSection=$('resultsSection');
+const toast=$('toast'),tabMic=$('tabMic'),tabText=$('tabText'),micArea=$('micArea'),textArea=$('textArea');
+const hamburgerBtn=$('hamburgerBtn'),navLinks=$('navLinks');
+
+let isRecording=false,isPaused=false,recognition=null,micStream=null;
+let audioCtx=null,analyserNode=null,sourceNode=null,animFrameId=null;
+let transcript='',totalWords=0,detectedPairs=[],currentMinute=0;
+let currentMinuteWords=[],currentMinutePairs=0,minuteData=[];
+let pairCountsPerMinute=[0],elapsedTime=0,timerInterval=null;
+let liveChart=null,chartType='wave',lastRestartTime=0,restartAttempts=0;
+let currentSessionId=null,interimTimer=null;
+let soundEnabled=true,playedAlerts=new Set();
+let soundAudioCtx=null;
+
+const ASGE_API_BASE='https://n8n.tropus.io/webhook';
+const ENDPOINTS={
+  analyze:ASGE_API_BASE+'/asge-analyze',
+  validate:ASGE_API_BASE+'/invite-validate',
+  request:ASGE_API_BASE+'/asge-access-request'
+};
+
+// ─── GATE SYSTEM ───
+const inputWrapper=document.getElementById('inputWrapper');
+const gateOverlay=document.getElementById('gateOverlay');
+const exhaustedOverlay=document.getElementById('exhaustedOverlay');
+const gateTabBtns=document.querySelectorAll('.gate-tab');
+const gatePanelEls=document.querySelectorAll('.gate-panel');
+const inviteCodeInput=document.getElementById('inviteCodeInput');
+const btnValidateCode=document.getElementById('btnValidateCode');
+const codeFeedback=document.getElementById('codeFeedback');
+const requestEmailInput=document.getElementById('requestEmailInput');
+const btnRequestAccess=document.getElementById('btnRequestAccess');
+const requestFeedback=document.getElementById('requestFeedback');
+const exhaustedEmailInput=document.getElementById('exhaustedEmailInput');
+const btnExhaustedRequest=document.getElementById('btnExhaustedRequest');
+const exhaustedFeedback=document.getElementById('exhaustedFeedback');
+const usageBadge=document.getElementById('usageBadge');
+const usageText=document.getElementById('usageText');
+
+let sessionToken=null;
+let remainingUses=0;
+let lastMaxUses=0;
+
+function saveToken(t){sessionToken=t;try{localStorage.setItem('asge_token',t)}catch(e){}}
+function loadToken(){try{return localStorage.getItem('asge_token')}catch(e){return null}}
+function clearToken(){sessionToken=null;try{localStorage.removeItem('asge_token')}catch(e){}}
+
+function unlockInput(remaining,maxUses){
+  remainingUses=remaining;
+  inputWrapper.classList.remove('locked');
+  gateOverlay.classList.add('hidden');
+  exhaustedOverlay.classList.add('hidden');
+  updateUsageBadge(remaining,maxUses);
+}
+function lockInput(){
+  inputWrapper.classList.add('locked');
+  gateOverlay.classList.remove('hidden');
+  exhaustedOverlay.classList.add('hidden');
+  usageBadge.classList.add('hidden');
+  resetGateFeedback();
+}
+function showExhausted(){
+  inputWrapper.classList.add('locked');
+  gateOverlay.classList.add('hidden');
+  exhaustedOverlay.classList.remove('hidden');
+  usageBadge.classList.add('hidden');
+  clearToken();
+}
+function updateUsageBadge(remaining,maxUses){
+  if(typeof remaining!=='number')return;
+  if(maxUses!=null)lastMaxUses=maxUses;
+  const display=lastMaxUses||'?';
+  usageText.textContent=remaining+' / '+display+' analyses left';
+  usageBadge.classList.remove('hidden','warning','depleted');
+  if(remaining<=0)usageBadge.classList.add('depleted');
+  else if(remaining===1)usageBadge.classList.add('warning');
+}
+function resetGateFeedback(){
+  [codeFeedback,requestFeedback,exhaustedFeedback].forEach(el=>{el.className='gate-msg';el.textContent=''});
+}
+function showGateFeedback(el,msg,type){el.className='gate-msg '+type;el.textContent=msg}
+function setGateLoading(btn,loading){
+  if(loading){btn.classList.add('loading');btn.disabled=true}
+  else{btn.classList.remove('loading');btn.disabled=false}
+}
+
+// Gate tabs
+gateTabBtns.forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    const panel=tab.dataset.panel;
+    gateTabBtns.forEach(t=>t.classList.remove('active'));
+    gatePanelEls.forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(panel==='code'?'panelCode':'panelRequest').classList.add('active');
+    resetGateFeedback();
+  });
+});
+
+// Validate invite code
+btnValidateCode.addEventListener('click',async()=>{
+  const code=inviteCodeInput.value.trim().toUpperCase();
+  if(!code){showGateFeedback(codeFeedback,'Please enter your invite code.','error');inviteCodeInput.focus();return}
+  setGateLoading(btnValidateCode,true);resetGateFeedback();
+  try{
+    const res=await fetch(ENDPOINTS.validate,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({invite_code:code})});
+    const data=await res.json();
+    if(res.ok&&data.token){saveToken(data.token);showGateFeedback(codeFeedback,'Access granted!','success');setTimeout(()=>unlockInput(data.remaining_uses,data.max_uses),600)}
+    else{showGateFeedback(codeFeedback,data.message||'Invalid invite code.','error')}
+  }catch(err){showGateFeedback(codeFeedback,'Connection error. Please try again.','error')}
+  finally{setGateLoading(btnValidateCode,false)}
+});
+inviteCodeInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();btnValidateCode.click()}});
+
+// Access request
+async function handleAccessRequest(emailInput,btn,feedbackEl){
+  const email=emailInput.value.trim();
+  if(!email||!email.includes('@')||!email.includes('.')){showGateFeedback(feedbackEl,'Please enter a valid email address.','error');emailInput.focus();return}
+  setGateLoading(btn,true);
+  try{
+    const res=await fetch(ENDPOINTS.request,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})});
+    const data=await res.json();
+    if(res.ok){showGateFeedback(feedbackEl,'Request received! Check your email for an invite code.','success');emailInput.value=''}
+    else{showGateFeedback(feedbackEl,data.message||'Something went wrong.','error')}
+  }catch(err){showGateFeedback(feedbackEl,'Connection error. Please try again.','error')}
+  finally{setGateLoading(btn,false)}
+}
+btnRequestAccess.addEventListener('click',()=>handleAccessRequest(requestEmailInput,btnRequestAccess,requestFeedback));
+requestEmailInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();btnRequestAccess.click()}});
+btnExhaustedRequest.addEventListener('click',()=>handleAccessRequest(exhaustedEmailInput,btnExhaustedRequest,exhaustedFeedback));
+exhaustedEmailInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();btnExhaustedRequest.click()}});
+
+// Session check on load
+async function checkSession(){
+  const token=loadToken();
+  if(!token){lockInput();return}
+  sessionToken=token;
+  try{
+    const res=await fetch(ENDPOINTS.validate,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token})});
+    const data=await res.json();
+    if(res.ok&&typeof data.remaining_uses==='number'&&data.remaining_uses>0){unlockInput(data.remaining_uses,data.max_uses)}
+    else if(res.ok&&typeof data.remaining_uses==='number'&&data.remaining_uses<=0){showExhausted()}
+    else{clearToken();lockInput()}
+  }catch(err){clearToken();lockInput()}
+}
+checkSession();
+
+async function refreshUsage(){
+  if(!sessionToken)return;
+  try{
+    const res=await fetch(ENDPOINTS.validate,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:sessionToken})});
+    const data=await res.json();
+    if(res.ok){remainingUses=data.remaining_uses;updateUsageBadge(data.remaining_uses,data.max_uses);if(data.remaining_uses<=0)showExhausted()}
+  }catch(e){}
+}
+const INTERIM_INTERVAL_MS=120000;
+const ALERT_LEVELS={
+  2:{freq:[440,554],duration:0.15,name:'TWO',color:'var(--pair-a)'},
+  3:{freq:[523,659,523],duration:0.12,name:'THREE',color:'#8b5cf6'},
+  4:{freq:[659,784,880],duration:0.1,name:'FOUR',color:'var(--accent)'},
+  5:{freq:[784,988,1175,1319],duration:0.08,name:'FIVE',color:'var(--negative)'}
+};
+
+function escHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),4000)}
+function generateSessionId(){return 'session_'+Date.now()+'_'+Math.random().toString(36).substring(2,8)}
+function formatTime(s){const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
+function getPairsDB(){const l=langSelect.value;if(l==='tr-TR')return TURKISH_PAIRS;if(l==='fr-FR')return FRENCH_PAIRS;return ENGLISH_PAIRS}
+
+function initSoundCtx(){if(!soundAudioCtx)soundAudioCtx=new(window.AudioContext||window.webkitAudioContext)();return soundAudioCtx}
+function playAlertSound(level){
+  if(!soundEnabled)return;
+  const config=ALERT_LEVELS[level];if(!config)return;
+  const ctx=initSoundCtx();if(ctx.state==='suspended')ctx.resume();
+  const now=ctx.currentTime;
+  const types=['sine','triangle','square','sawtooth'];
+  config.freq.forEach((freq,i)=>{
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type=types[Math.min(level-2,3)];
+    osc.frequency.setValueAtTime(freq,now+i*config.duration);
+    gain.gain.setValueAtTime(0,now+i*config.duration);
+    gain.gain.linearRampToValueAtTime(0.3,now+i*config.duration+0.02);
+    gain.gain.linearRampToValueAtTime(0,now+i*config.duration+config.duration);
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.start(now+i*config.duration);osc.stop(now+i*config.duration+config.duration+0.05);
+  });
+}
+function checkAndPlayAlert(count){
+  [2,3,4,5].forEach(level=>{
+    if(count>=level&&!playedAlerts.has(level)){
+      playedAlerts.add(level);playAlertSound(level);showSoundAlert(level);
+    }
+  });
+}
+function showSoundAlert(level){
+  const config=ALERT_LEVELS[level];
+  const alertDiv=document.createElement('div');
+  alertDiv.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;background:var(--accent);color:var(--bg-deep);border-radius:30px;font-weight:700;font-size:0.85rem;z-index:300;box-shadow:0 8px 30px var(--accent-glow);animation:alertPop 0.5s ease-out forwards;pointer-events:none;';
+  alertDiv.textContent='🔔 '+config.name+' PAIRS!';
+  document.body.appendChild(alertDiv);
+  setTimeout(()=>alertDiv.remove(),2000);
+}
+function resetMinuteAlerts(){
+  playedAlerts.clear();
+  [2,3,4,5].forEach(l=>{const el=$('level'+l);if(el)el.classList.remove('active')});
+}
+function updateLevelIndicators(count){
+  [2,3,4,5].forEach(l=>{const el=$('level'+l);if(el){count>=l?el.classList.add('active'):el.classList.remove('active')}});
+}
+$('soundToggle').addEventListener('click',()=>{
+  soundEnabled=!soundEnabled;
+  const btn=$('soundToggle');
+  btn.textContent=soundEnabled?'🔔 SOUND':'🔕 SOUND';
+  btn.classList.toggle('sound-on',soundEnabled);btn.classList.toggle('sound-off',!soundEnabled);
+  if(soundEnabled)initSoundCtx();
+});
+
+hamburgerBtn.addEventListener('click',()=>{const o=navLinks.classList.toggle('open');hamburgerBtn.setAttribute('aria-expanded',o)});
+tabMic.addEventListener('click',()=>{tabMic.classList.add('active');tabMic.setAttribute('aria-selected','true');tabText.classList.remove('active');tabText.setAttribute('aria-selected','false');micArea.classList.remove('hidden');textArea.classList.remove('active')});
+tabText.addEventListener('click',()=>{tabText.classList.add('active');tabText.setAttribute('aria-selected','true');tabMic.classList.remove('active');tabMic.setAttribute('aria-selected','false');textArea.classList.add('active');micArea.classList.add('hidden')});
+
+manualInput.addEventListener('input',()=>{const w=manualInput.value.trim().split(/\s+/).filter(w=>w.length>0);$('wordDisplay').textContent=w.length;btnAnalyzeText.disabled=w.length<5});
+btnAnalyzeText.addEventListener('click',()=>{const inp=manualInput.value.trim();if(!inp||inp.split(/\s+/).length<5)return;processManualInput(inp)});
+
+function processText(text){
+  const words=text.split(/\s+/).filter(w=>w.length>0);
+  const pairsDB=getPairsDB();const found=[];const used=new Set();
+  words.forEach(word=>{
+    const cw=word.toLowerCase().replace(/[.,!?;:'"]/g,'');
+    if(pairsDB[cw]&&!used.has(cw)){found.push({word:cw,pair:pairsDB[cw]});used.add(cw)}
+  });
+  return {wordCount:words.length,pairs:found};
+}
+
+function getStopWords(){
+  const l=langSelect.value;
+  if(l==='tr-TR')return new Set(['bir','ve','bu','da','de','için','ile','mi','mu','mı','ne','o','ya','ama','çok','daha','ben','sen','biz','siz','onlar','gibi','kadar','var','yok','olan','olarak','ki','şu','her','en','çünkü','eğer','ise','hem','öyle','böyle']);
+  if(l==='fr-FR')return new Set(['le','la','les','un','une','des','de','du','et','ou','mais','en','dans','sur','pour','avec','par','est','sont','était','a','ai','au','aux','ce','cette','ces','qui','que','ne','pas','plus','très','je','tu','il','elle','nous','vous','ils','elles','se','son','sa','ses','leur','leurs']);
+  return new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','must','shall','can','need','it','its','this','that','these','those','i','you','he','she','we','they','what','which','who','whom','so','as','if','then','than','too','very','just','also']);
+}
+
+function updateWordCloud(){
+  const panel=$('wordcloudPanel'),container=$('wordcloudContainer'),minuteLabel=$('wordcloudMinute');
+  if(!transcript.trim()){container.innerHTML='<span class="wordcloud-empty">Start speaking...</span>';minuteLabel.textContent='0 unique words';return}
+  panel.classList.add('visible');
+  const words=transcript.toLowerCase().replace(/[.,!?;:'"()\[\]{}]/g,'').split(/\s+/).filter(w=>w.length>1);
+  const stopWords=getStopWords();const freq={};
+  words.forEach(w=>{if(!stopWords.has(w))freq[w]=(freq[w]||0)+1});
+  const unique=Object.keys(freq).length;minuteLabel.textContent=unique+' unique words';
+  if(unique===0){container.innerHTML='<span class="wordcloud-empty">Start speaking...</span>';return}
+  const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,60);
+  const maxF=sorted[0][1];const pairsDB=getPairsDB();
+  container.innerHTML=sorted.map(([w,f])=>{
+    const r=f/maxF;let sc=r<0.15?1:r<0.3?2:r<0.45?3:r<0.65?4:r<0.85?5:6;
+    const isPaired=pairsDB[w]!==undefined;const pc=isPaired?' paired-word':'';
+    const title=isPaired?w+' ↔ '+pairsDB[w]+' ('+f+'×)':f+'×';
+    return '<span class="wordcloud-word size-'+sc+pc+'" title="'+escHTML(title)+'">'+escHTML(w)+'</span>';
+  }).join('');
+}
+
+function updateDisplay(){
+  $('timerDisplay').textContent=formatTime(elapsedTime);
+  $('minuteDisplay').textContent=currentMinute+1;
+  $('wordDisplay').textContent=totalWords;
+  $('pairDisplay').textContent=detectedPairs.length;
+  const ratio=(currentMinute>=0?(detectedPairs.length/(currentMinute+1)):0).toFixed(3);
+  $('ratioDisplay').textContent=ratio;
+  $('currentMinuteDisplay').textContent=currentMinutePairs;
+  $('formulaDisplay').textContent=detectedPairs.length+' / '+(currentMinute+1)+' = '+ratio;
+}
+function showDetection(word,pair){
+  const popup=$('detectionPopup');$('detectionWord').textContent='';
+  popup.classList.add('show');setTimeout(()=>popup.classList.remove('show'),2000);
+}
+function updateTranscript(){
+  if(!transcript)return;
+  const panel=$('transcriptPanel');panel.classList.add('visible');
+  const pairsDB=getPairsDB();
+  panel.innerHTML=transcript.split(' ').map(w=>{
+    const cw=w.toLowerCase().replace(/[.,!?;:'"]/g,'');
+    return pairsDB[cw]?'<span class="hw">'+escHTML(w)+'</span>':escHTML(w);
+  }).join(' ');
+}
+
+function initChart(){
+  const ctx=$('liveChart').getContext('2d');
+  if(liveChart)liveChart.destroy();
+  if(chartType==='wave')initWaveChart(ctx);
+  else if(chartType==='delta')initDeltaChart(ctx);
+  else initBarChart(ctx);
+}
+function initWaveChart(ctx){
+  liveChart=new Chart(ctx,{type:'line',data:{labels:['1m'],datasets:[
+    {label:'Wave 1',data:[0],borderColor:'#5ca87c',backgroundColor:'rgba(92,168,124,0.1)',borderWidth:3,pointRadius:6,pointHoverRadius:8,tension:0.4,
+      pointBackgroundColor:function(c){return c.raw>=0?'#5ca87c':'#c45c5c'},
+      fill:{target:'origin',above:'rgba(92,168,124,0.15)',below:'rgba(196,92,92,0.15)'}},
+    {label:'Wave 2',data:[0],borderColor:'#d4943a',backgroundColor:'rgba(212,148,58,0.1)',borderWidth:3,pointRadius:6,pointHoverRadius:8,tension:0.4,
+      pointBackgroundColor:function(c){return c.raw>=0?'#d4943a':'#c45c5c'},
+      fill:{target:'origin',above:'rgba(212,148,58,0.15)',below:'rgba(196,92,92,0.15)'}}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(0,0,0,0.9)',padding:12,cornerRadius:8,callbacks:{label:function(c){return 'Pair count: '+Math.abs(c.raw)}}}},
+    scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9b978f',font:{family:"'JetBrains Mono'"}}},
+      y:{grid:{color:function(c){return c.tick.value===0?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.05)'},lineWidth:function(c){return c.tick.value===0?2:1}},
+        ticks:{color:'#9b978f',callback:function(v){return v===0?'• contact •':Math.abs(v)}},
+        title:{display:true,text:'0 = contact point | Distance = pair count',color:'#5e5b54',font:{size:10}}}}
+  }});
+}
+function initDeltaChart(ctx){
+  liveChart=new Chart(ctx,{type:'bar',data:{labels:['1m'],datasets:[{label:'Delta (Δ)',data:[0],
+    backgroundColor:function(c){return c.raw>=0?'rgba(92,168,124,0.7)':'rgba(196,92,92,0.7)'},
+    borderColor:function(c){return c.raw>=0?'#5ca87c':'#c45c5c'},borderWidth:2,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{backgroundColor:'rgba(0,0,0,0.9)',padding:12,cornerRadius:8,callbacks:{label:function(c){const v=c.raw;return 'Δ = '+v+(v>0?' 📈 Increase':v<0?' 📉 Decrease':' ➡️ Stable')}}}},
+      scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9b978f'}},
+        y:{grid:{color:function(c){return c.tick.value===0?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.05)'},lineWidth:function(c){return c.tick.value===0?2:1}},
+          ticks:{color:'#9b978f',callback:function(v){return v===0?'— 0 —':v>0?'+'+v:v}}}}}
+  });
+}
+function initBarChart(ctx){
+  liveChart=new Chart(ctx,{type:'bar',data:{labels:['1m'],datasets:[
+    {label:'Pair Count',data:[0],backgroundColor:'rgba(212,148,58,0.8)',borderColor:'#d4943a',borderWidth:1,borderRadius:4,yAxisID:'y'},
+    {label:'Ratio (Σ/min)',data:[0],type:'line',borderColor:'#5ca87c',backgroundColor:'rgba(92,168,124,0.1)',borderWidth:3,pointBackgroundColor:'#5ca87c',pointRadius:5,tension:0.3,yAxisID:'y1'}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{labels:{color:'#9b978f',font:{family:"'JetBrains Mono'",size:11},boxWidth:12,boxHeight:12}}},
+    scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9b978f'}},
+      y:{type:'linear',position:'left',grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#d4943a'},beginAtZero:true},
+      y1:{type:'linear',position:'right',grid:{display:false},ticks:{color:'#5ca87c'},beginAtZero:true}}}
+  });
+}
+function updateChart(){
+  if(!liveChart)return;
+  pairCountsPerMinute[currentMinute]=currentMinutePairs;
+  checkAndPlayAlert(currentMinutePairs);updateLevelIndicators(currentMinutePairs);
+  if(chartType==='wave'){
+    const w1=pairCountsPerMinute.map(v=>v),w2=pairCountsPerMinute.map(v=>-v);
+    if(liveChart.data.labels.length<=currentMinute)liveChart.data.labels.push((currentMinute+1)+'m');
+    liveChart.data.datasets[0].data=w1;liveChart.data.datasets[1].data=w2;
+  }else if(chartType==='delta'){
+    const deltas=pairCountsPerMinute.map((v,i)=>i===0?v:v-pairCountsPerMinute[i-1]);
+    if(liveChart.data.labels.length<=currentMinute)liveChart.data.labels.push((currentMinute+1)+'m');
+    liveChart.data.datasets[0].data=deltas;
+  }else{
+    const ratio=currentMinute>=0?(detectedPairs.length/(currentMinute+1)):0;
+    if(liveChart.data.labels.length<=currentMinute){
+      liveChart.data.labels.push((currentMinute+1)+'m');
+      liveChart.data.datasets[0].data.push(currentMinutePairs);
+      liveChart.data.datasets[1].data.push(ratio);
+    }else{
+      liveChart.data.datasets[0].data[currentMinute]=currentMinutePairs;
+      liveChart.data.datasets[1].data[currentMinute]=ratio;
+    }
+  }
+  liveChart.update('none');
+}
+
+function rebuildChartData(){
+  if(!liveChart||pairCountsPerMinute.length===0)return;
+  const labels=pairCountsPerMinute.map((_,i)=>(i+1)+'m');
+  if(chartType==='wave'){
+    liveChart.data.labels=labels;
+    liveChart.data.datasets[0].data=pairCountsPerMinute.map(v=>v);
+    liveChart.data.datasets[1].data=pairCountsPerMinute.map(v=>-v);
+  }else if(chartType==='delta'){
+    liveChart.data.labels=labels;
+    liveChart.data.datasets[0].data=pairCountsPerMinute.map((v,i)=>i===0?0:v-pairCountsPerMinute[i-1]);
+  }else{
+    const ratios=pairCountsPerMinute.map((_,i)=>{const cum=pairCountsPerMinute.slice(0,i+1).reduce((a,b)=>a+b,0);return cum/(i+1)});
+    liveChart.data.labels=labels;
+    liveChart.data.datasets[0].data=pairCountsPerMinute;
+    liveChart.data.datasets[1].data=ratios;
+  }
+  liveChart.update();
+}
+
+function switchChartType(type){
+  chartType=type;
+  document.querySelectorAll('.chart-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));
+  if(liveChart)liveChart.destroy();
+  initChart();
+  rebuildChartData();
+}
+$('ctWave').addEventListener('click',()=>switchChartType('wave'));
+$('ctBar').addEventListener('click',()=>switchChartType('bar'));
+$('ctDelta').addEventListener('click',()=>switchChartType('delta'));
+
+function drawWaveform(){
+  const canvas=waveformCanvas,ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.width=canvas.offsetWidth*dpr,H=canvas.height=canvas.offsetHeight*dpr;
+  ctx.clearRect(0,0,W,H);
+  if(!analyserNode||!isRecording||isPaused){cancelAnimationFrame(animFrameId);return}
+  const buf=analyserNode.frequencyBinCount,data=new Uint8Array(buf);analyserNode.getByteTimeDomainData(data);
+  ctx.lineWidth=2*dpr;ctx.strokeStyle='#d4943a';ctx.beginPath();
+  const sw=W/buf;let x=0;
+  for(let i=0;i<buf;i++){const v=data[i]/128.0,y=(v*H)/2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);x+=sw}
+  ctx.lineTo(W,H/2);ctx.stroke();
+  ctx.globalAlpha=0.15;ctx.lineWidth=6*dpr;ctx.stroke();ctx.globalAlpha=1;
+  animFrameId=requestAnimationFrame(drawWaveform);
+}
+
+function createRecognition(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('This browser does not support speech recognition.');return null}
+  const r=new SR();r.continuous=true;r.interimResults=true;r.lang=langSelect.value;
+  r.onresult=(e)=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal){
+        transcript+=t+' ';
+        const analysis=processText(t);
+        totalWords+=analysis.wordCount;currentMinuteWords.push(t);
+        analysis.pairs.forEach(p=>{detectedPairs.push(p);currentMinutePairs++;showDetection(p.word,p.pair)});
+        updateDisplay();updateChart();updateWordCloud();
+      }else{interim+=t}
+    }
+    updateTranscript();
+  };
+  r.onerror=(e)=>{
+    if(e.error==='not-allowed'||e.error==='service-not-allowed'){console.error('Microphone permission denied');return}
+    if(e.error==='aborted'||e.error==='no-speech')return;
+    console.warn('Speech error:',e.error);
+  };
+  r.onend=()=>{
+    if(!isRecording||isPaused)return;
+    const now=Date.now();const timeSince=now-lastRestartTime;
+    if(timeSince<300){
+      setTimeout(()=>{if(isRecording&&!isPaused){try{r.start();lastRestartTime=Date.now()}catch(ex){}}},300-timeSince);
+      return;
+    }
+    restartAttempts++;
+    if(restartAttempts>50){restartAttempts=0;setTimeout(()=>{if(isRecording&&!isPaused){try{r.start();lastRestartTime=Date.now()}catch(ex){}}},2000);return}
+    try{r.start();lastRestartTime=now}catch(ex){setTimeout(()=>{if(isRecording&&!isPaused){try{r.start()}catch(ex2){}}},500)}
+  };
+  return r;
+}
+
+btnRecord.addEventListener('click',async()=>{if(isRecording&&!isPaused)return;if(isPaused){resumeRecording();return}await startRecording()});
+btnPause.addEventListener('click',()=>{if(!isRecording)return;isPaused?resumeRecording():pauseRecording()});
+btnStop.addEventListener('click',()=>{if(!isRecording)return;stopRecording()});
+
+async function startRecording(){
+  try{micStream=await navigator.mediaDevices.getUserMedia({audio:true})}catch(err){showToast('Microphone access denied.');return}
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  sourceNode=audioCtx.createMediaStreamSource(micStream);analyserNode=audioCtx.createAnalyser();analyserNode.fftSize=2048;sourceNode.connect(analyserNode);
+  isRecording=true;isPaused=false;transcript='';totalWords=0;detectedPairs=[];currentMinute=0;
+  currentMinuteWords=[];currentMinutePairs=0;minuteData=[];pairCountsPerMinute=[0];elapsedTime=0;
+  currentSessionId=generateSessionId();playedAlerts.clear();
+  recognition=createRecognition();if(recognition){try{recognition.start();lastRestartTime=Date.now();restartAttempts=0}catch(ex){}}
+  btnRecord.classList.add('recording');btnPause.disabled=false;btnStop.disabled=false;
+  inputSection.classList.add('recording');statusDot.className='status-dot recording';
+  langSelect.disabled=true;waveformPlaceholder.style.display='none';
+  $('transcriptPanel').classList.remove('visible');$('transcriptPanel').innerHTML='';
+  $('wordcloudPanel').classList.remove('visible');
+  $('soundLevels').classList.remove('hidden');
+  chartSection.classList.add('visible');initChart();
+  timerInterval=setInterval(()=>{
+    elapsedTime++;
+    const newMinute=Math.floor(elapsedTime/60);
+    if(newMinute>currentMinute){
+      minuteData.push({minute:currentMinute+1,pairs:currentMinutePairs,words:currentMinuteWords.join(' ').split(/\s+/).filter(w=>w).length,text:currentMinuteWords.join(' ')});
+      pairCountsPerMinute.push(0);currentMinute=newMinute;currentMinutePairs=0;currentMinuteWords=[];
+      resetMinuteAlerts();updateChart();
+    }
+    updateDisplay();
+    if(elapsedTime>=3600)stopRecording();
+  },1000);
+  drawWaveform();startInterimUpdates();updateDisplay();
+}
+function pauseRecording(){
+  isPaused=true;if(recognition)try{recognition.stop()}catch(ex){}
+  clearInterval(timerInterval);cancelAnimationFrame(animFrameId);
+  btnRecord.classList.remove('recording');btnRecord.classList.add('paused');
+  btnPause.textContent='RESUME';statusDot.className='status-dot';inputSection.classList.remove('recording');
+}
+function resumeRecording(){
+  isPaused=false;if(recognition){try{recognition.start();lastRestartTime=Date.now();restartAttempts=0}catch(ex){}}
+  timerInterval=setInterval(()=>{
+    elapsedTime++;
+    const newMinute=Math.floor(elapsedTime/60);
+    if(newMinute>currentMinute){
+      minuteData.push({minute:currentMinute+1,pairs:currentMinutePairs,words:currentMinuteWords.join(' ').split(/\s+/).filter(w=>w).length,text:currentMinuteWords.join(' ')});
+      pairCountsPerMinute.push(0);currentMinute=newMinute;currentMinutePairs=0;currentMinuteWords=[];
+      resetMinuteAlerts();updateChart();
+    }
+    updateDisplay();
+    if(elapsedTime>=3600)stopRecording();
+  },1000);
+  btnRecord.classList.remove('paused');btnRecord.classList.add('recording');
+  btnPause.textContent='PAUSE';statusDot.className='status-dot recording';inputSection.classList.add('recording');drawWaveform();
+}
+function stopRecording(){
+  isRecording=false;isPaused=false;
+  if(recognition){recognition.stop();recognition=null}
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null}
+  if(audioCtx){audioCtx.close();audioCtx=null}
+  clearInterval(timerInterval);cancelAnimationFrame(animFrameId);
+  if(currentMinuteWords.length>0||currentMinutePairs>0){
+    const mw=currentMinuteWords.join(' ').split(/\s+/).filter(w=>w).length;
+    minuteData.push({minute:currentMinute+1,pairs:currentMinutePairs,words:mw,text:currentMinuteWords.join(' ')});
+  }
+  btnRecord.classList.remove('recording','paused');btnPause.disabled=true;btnPause.textContent='PAUSE';
+  btnStop.disabled=true;inputSection.classList.remove('recording');statusDot.className='status-dot processing';
+  langSelect.disabled=false;$('soundLevels').classList.add('hidden');
+  const ctx=waveformCanvas.getContext('2d');ctx.clearRect(0,0,waveformCanvas.width,waveformCanvas.height);
+  waveformPlaceholder.style.display='block';waveformPlaceholder.textContent='Processing…';
+  stopInterimUpdates();sendToN8n('final');
+}
+
+function processManualInput(input){
+  transcript=input;totalWords=0;detectedPairs=[];currentMinute=0;minuteData=[];pairCountsPerMinute=[];elapsedTime=0;
+  const lines=input.split('\n').filter(l=>l.trim());
+  lines.forEach((line,idx)=>{
+    const analysis=processText(line);totalWords+=analysis.wordCount;
+    analysis.pairs.forEach(p=>detectedPairs.push(p));
+    minuteData.push({minute:idx+1,pairs:analysis.pairs.length,words:analysis.wordCount,text:line});
+    pairCountsPerMinute.push(analysis.pairs.length);
+  });
+  currentMinute=lines.length-1;
+  chartSection.classList.add('visible');initChart();
+  rebuildChartData();
+  updateDisplay();updateTranscript();updateWordCloud();
+  currentSessionId=generateSessionId();sendToN8n('final');
+}
+
+function startInterimUpdates(){interimTimer=setInterval(()=>{if(isRecording&&!isPaused&&transcript.length>50)sendToN8n('interim')},INTERIM_INTERVAL_MS)}
+function stopInterimUpdates(){if(interimTimer){clearInterval(interimTimer);interimTimer=null}}
+
+async function sendToN8n(mode){
+  // Token guard
+  if(!sessionToken){lockInput();showToast('Please enter your invite code first.');return}
+  if(remainingUses<=0){showExhausted();return}
+
+  const segments=[];
+  minuteData.forEach(md=>{segments.push({minute:md.minute,text:md.text||'',words:md.words})});
+  if(currentMinuteWords.length>0)segments.push({minute:(currentMinute||0)+1,text:currentMinuteWords.join(' '),words:currentMinuteWords.join(' ').split(/\s+/).filter(w=>w).length});
+  if(segments.length===0||transcript.trim().length<10)return;
+  const payload={transcript:transcript,language:langSelect.value,duration:elapsedTime,minuteSegments:segments,mode:mode,sessionId:currentSessionId,token:sessionToken};
+  resultsSection.classList.add('visible');$('aiLoading').classList.remove('hidden');
+  $('aiStatsRow').classList.add('hidden');$('aiSummaryPanel').classList.add('hidden');
+  statusDot.className='status-dot processing';
+  $('aiPanelTitle').textContent=mode==='interim'?'⏳ Interim Analysis':'✅ Final Analysis';
+  try{
+    const response=await fetch(ENDPOINTS.analyze,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!response.ok){
+      let errorMsg='HTTP '+response.status;
+      try{const errData=await response.json();if(errData.message)errorMsg=errData.message}catch(e){}
+      if(response.status===401||response.status===403){clearToken();lockInput()}
+      throw new Error(errorMsg);
+    }
+    const result=await response.json();if(result.success)displayAIResults(result,mode);
+    // Decrement locally then sync
+    remainingUses=Math.max(0,remainingUses-1);
+    updateUsageBadge(remainingUses,null);
+    if(remainingUses<=0){showExhausted();return}
+    await refreshUsage();
+  }catch(error){
+    console.error('n8n error:',error);
+    $('aiLoading').innerHTML='<div style="color:var(--negative)">❌ AI connection error: '+escHTML(error.message)+'</div>';
+    showToast('Analysis failed: '+error.message);
+  }
+}
+
+function displayAIResults(result,mode){
+  $('aiLoading').classList.add('hidden');
+  const sr=$('aiStatsRow');sr.classList.remove('hidden');
+  sr.innerHTML='<div class="ai-stat-box"><span class="ai-stat-label">AI Total</span><span class="ai-stat-val">'+result.stats.totalPairs+'</span></div><div class="ai-stat-box"><span class="ai-stat-label">Classic</span><span class="ai-stat-val">'+result.stats.classicPairs+'</span></div><div class="ai-stat-box"><span class="ai-stat-label">Contextual</span><span class="ai-stat-val">'+result.stats.contextualPairs+'</span></div><div class="ai-stat-box"><span class="ai-stat-label">Rate/min</span><span class="ai-stat-val">'+result.stats.pairsPerMinute+'</span></div>';
+  if(result.analysis&&result.analysis.summary){
+    $('aiSummaryPanel').classList.remove('hidden');
+    let h='<p>'+escHTML(result.analysis.summary)+'</p>';
+    if(result.analysis.peakMinute)h+='<p style="margin-top:8px;font-size:0.8rem"><strong>Peak:</strong> Minute '+result.analysis.peakMinute+(result.analysis.dominantTheme?' · <strong>Theme:</strong> '+escHTML(result.analysis.dominantTheme):'')+'</p>';
+    $('aiSummaryText').innerHTML=h;
+  }
+  resultsSection.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+updateDisplay();statusDot.className='status-dot ready';
+})();
+</script>
+</body>
+</html>
