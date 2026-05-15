@@ -341,7 +341,7 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
   </nav>
 </header>
 
-<div class="detection-popup" id="detectionPopup">PAIR DETECTED <span id="detectionWord"></span></div>
+<div class="detection-popup" id="detectionPopup">SIGNAL DETECTED <span id="detectionWord"></span></div>
 
 <main>
   <section class="hero" id="input">
@@ -406,10 +406,10 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
             <button class="btn-secondary sound-on" id="soundToggle">Sound on</button>
           </div>
           <div class="sound-levels hidden" id="soundLevels">
-            <div class="sound-level-indicator" id="level2">2 pairs</div>
-            <div class="sound-level-indicator" id="level3">3 pairs</div>
-            <div class="sound-level-indicator" id="level4">4 pairs</div>
-            <div class="sound-level-indicator" id="level5">5 pairs</div>
+            <div class="sound-level-indicator" id="level2">Level 2</div>
+            <div class="sound-level-indicator" id="level3">Level 3</div>
+            <div class="sound-level-indicator" id="level4">Level 4</div>
+            <div class="sound-level-indicator" id="level5">Level 5</div>
           </div>
         </div>
 
@@ -423,16 +423,16 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
           <div class="counter-card"><div class="counter-label">Duration</div><div class="counter-value" id="timerDisplay">00:00</div></div>
           <div class="counter-card"><div class="counter-label">Minute</div><div class="counter-value" id="minuteDisplay">1</div></div>
           <div class="counter-card"><div class="counter-label">Words</div><div class="counter-value" id="wordDisplay">0</div></div>
-          <div class="counter-card"><div class="counter-label">Pairs</div><div class="counter-value pairs" id="pairDisplay">0</div></div>
+          <div class="counter-card"><div class="counter-label">Structures</div><div class="counter-value pairs" id="pairDisplay">0</div></div>
         </div>
         <div class="counters" style="grid-template-columns:repeat(3,1fr);margin-top:1px">
           <div class="counter-card"><div class="counter-label">Total ratio</div><div class="counter-value" id="ratioDisplay">0.000</div></div>
           <div class="counter-card"><div class="counter-label">This minute</div><div class="counter-value" id="currentMinuteDisplay">0</div></div>
-          <div class="counter-card"><div class="counter-label">Formula</div><div class="counter-value" style="font-size:14px;color:var(--text-secondary);font-family:var(--font-mono);font-weight:400">Σ pairs / min</div></div>
+          <div class="counter-card"><div class="counter-label">Formula</div><div class="counter-value" style="font-size:14px;color:var(--text-secondary);font-family:var(--font-mono);font-weight:400">Σ density / min</div></div>
         </div>
 
         <div class="formula-box">
-          <span>Density</span><code id="formulaDisplay">0 / 1 = 0.000</code>
+          <span>Trace</span><code id="formulaDisplay">0 / 1 = 0.000</code>
         </div>
 
         <div class="transcript-panel" id="transcriptPanel"></div>
@@ -833,7 +833,7 @@ function showSoundAlert(level){
   const config=ALERT_LEVELS[level];
   const alertDiv=document.createElement('div');
   alertDiv.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;background:var(--accent);color:var(--bg-deep);border-radius:30px;font-weight:700;font-size:0.85rem;z-index:300;box-shadow:0 8px 30px var(--accent-glow);animation:alertPop 0.5s ease-out forwards;pointer-events:none;';
-  alertDiv.textContent='🔔 '+config.name+' PAIRS!';
+  alertDiv.textContent='🔔 '+config.name+' STRUCTURES';
   document.body.appendChild(alertDiv);
   setTimeout(()=>alertDiv.remove(),2000);
 }
@@ -940,11 +940,11 @@ function initWaveChart(ctx){
       pointBackgroundColor:function(c){return c.raw>=0?'#d4943a':'#c45c5c'},
       fill:{target:'origin',above:'rgba(212,148,58,0.15)',below:'rgba(196,92,92,0.15)'}}
   ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-    plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(0,0,0,0.9)',padding:12,cornerRadius:8,callbacks:{label:function(c){return 'Pair count: '+Math.abs(c.raw)}}}},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(0,0,0,0.9)',padding:12,cornerRadius:8,callbacks:{label:function(c){return 'Density: '+Math.abs(c.raw)}}}},
     scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9b978f',font:{family:"'JetBrains Mono'"}}},
       y:{grid:{color:function(c){return c.tick.value===0?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.05)'},lineWidth:function(c){return c.tick.value===0?2:1}},
         ticks:{color:'#9b978f',callback:function(v){return v===0?'• contact •':Math.abs(v)}},
-        title:{display:true,text:'0 = contact point | Distance = pair count',color:'#5e5b54',font:{size:10}}}}
+        title:{display:true,text:'0 = contact point | Distance = density',color:'#5e5b54',font:{size:10}}}}
   }});
 }
 function initDeltaChart(ctx){
@@ -960,7 +960,7 @@ function initDeltaChart(ctx){
 }
 function initBarChart(ctx){
   liveChart=new Chart(ctx,{type:'bar',data:{labels:['1m'],datasets:[
-    {label:'Pair Count',data:[0],backgroundColor:'rgba(212,148,58,0.8)',borderColor:'#d4943a',borderWidth:1,borderRadius:4,yAxisID:'y'},
+    {label:'Density',data:[0],backgroundColor:'rgba(212,148,58,0.8)',borderColor:'#d4943a',borderWidth:1,borderRadius:4,yAxisID:'y'},
     {label:'Ratio (Σ/min)',data:[0],type:'line',borderColor:'#5ca87c',backgroundColor:'rgba(92,168,124,0.1)',borderWidth:3,pointBackgroundColor:'#5ca87c',pointRadius:5,tension:0.3,yAxisID:'y1'}
   ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
     plugins:{legend:{labels:{color:'#9b978f',font:{family:"'JetBrains Mono'",size:11},boxWidth:12,boxHeight:12}}},
