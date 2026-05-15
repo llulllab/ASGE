@@ -245,6 +245,54 @@ main{max-width:1400px;margin:0 auto;padding:var(--space-xl) var(--space-lg)}
 .ai-summary-text p{margin-bottom:var(--space-sm)}
 .loading-spinner{width:28px;height:28px;border:2px solid var(--border-bright);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
 
+/* LANDING BLOCKS (pre/post-login marketing content) */
+.landing-block{padding:var(--space-3xl) 0;border-top:1px solid var(--border)}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--space-md)}
+.lb-h2{font-family:var(--font-display);font-weight:400;font-size:clamp(28px,3.6vw,46px);line-height:1.1;letter-spacing:-0.01em;max-width:780px;margin-bottom:var(--space-md)}
+.lb-p{font-size:16px;color:var(--text-secondary);max-width:720px;line-height:1.65;margin-bottom:var(--space-md)}
+.lb-p strong{color:var(--text-primary);font-weight:500}
+.pipe-line{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);margin-top:var(--space-xl)}
+@media(min-width:840px){.pipe-line{grid-template-columns:repeat(3,1fr)}}
+.pipe-cell{background:var(--bg-surface);padding:var(--space-xl)}
+.pipe-cell .pn{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.1em;margin-bottom:var(--space-md)}
+.pipe-cell h3{font-family:var(--font-display);font-weight:500;font-size:20px;letter-spacing:-0.01em;line-height:1.3}
+.uc-grid{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);margin-top:var(--space-xl)}
+@media(min-width:740px){.uc-grid{grid-template-columns:1fr 1fr}}
+.uc{background:var(--bg-surface);padding:var(--space-xl)}
+.uc.primary{background:linear-gradient(180deg,var(--bg-surface) 0%,#15171e 100%);border-left:2px solid var(--accent)}
+.uc-tag{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);margin-bottom:var(--space-sm)}
+.uc.primary .uc-tag{color:var(--accent)}
+.uc h3{font-family:var(--font-display);font-weight:500;font-size:22px;margin-bottom:var(--space-sm)}
+.uc p{font-size:14.5px;color:var(--text-secondary);line-height:1.65;margin-bottom:var(--space-md)}
+.uc-buyers{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.06em;line-height:1.9;border-top:1px dashed var(--border);padding-top:var(--space-sm);margin-top:var(--space-sm)}
+.uc-buyers strong{color:var(--text-secondary);font-weight:500}
+.lang-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:var(--space-lg)}
+.lang-chip{font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;padding:10px 16px;border:1px solid var(--border-bright);color:var(--text-secondary);background:var(--bg-surface)}
+.lang-chip strong{color:var(--text-primary);margin-right:6px}
+.limits-block{background:var(--bg-surface);border:1px solid var(--border);padding:var(--space-xl);margin-top:var(--space-lg);max-width:880px}
+.limits-block p{font-size:15px;color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-sm)}
+.limits-block p:last-child{margin-bottom:0}
+.limits-block p strong{color:var(--text-primary);font-weight:500}
+.limits-block p.muted-p{color:var(--text-muted);font-size:13.5px;margin-top:var(--space-md)}
+.price-grid{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);margin-top:var(--space-xl)}
+@media(min-width:880px){.price-grid{grid-template-columns:repeat(5,1fr)}}
+.tier{background:var(--bg-surface);padding:var(--space-lg) var(--space-md);display:flex;flex-direction:column;gap:var(--space-sm);min-height:300px}
+.tier.featured{background:linear-gradient(180deg,#15171e 0%,var(--bg-surface) 100%);border-top:2px solid var(--accent)}
+.tier-name{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted)}
+.tier.featured .tier-name{color:var(--accent)}
+.tier-price{font-family:var(--font-display);font-weight:400;font-size:34px;letter-spacing:-0.02em}
+.tier-price small{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);font-weight:400;letter-spacing:0.04em}
+.tier-meta{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.04em}
+.tier-feat{list-style:none;font-size:12.5px;color:var(--text-secondary);margin-top:auto;border-top:1px dashed var(--border);padding-top:var(--space-sm);line-height:1.75}
+.tier-feat li{padding:2px 0}
+.cta-block{padding:var(--space-3xl) var(--space-2xl);background:var(--bg-surface);border:1px solid var(--border);position:relative;overflow:hidden}
+.cta-block::before{content:"";position:absolute;top:0;right:0;width:240px;height:240px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);pointer-events:none}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:var(--space-lg);position:relative;z-index:2}
+.btn-cta{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;padding:14px 22px;border:1px solid var(--border-bright);background:transparent;color:var(--text-primary);transition:all var(--transition-fast)}
+.btn-cta:hover{border-color:var(--accent);color:var(--accent)}
+.btn-cta.primary{background:var(--text-primary);color:var(--bg-deep);border-color:var(--text-primary)}
+.btn-cta.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--text-primary)}
+
 /* FOOTER */
 footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--border);margin-top:var(--space-3xl)}
 .footer-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
@@ -435,6 +483,103 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
         <span class="ai-panel-title" id="aiPanelTitle">Semantic conflict summary</span>
       </div>
       <div class="ai-summary-text" id="aiSummaryText"><p>Analytical output will appear here after the run completes.</p></div>
+    </div>
+  </section>
+
+  <section class="landing-block" id="pipeline">
+    <div class="eyebrow">Architecture</div>
+    <h2 class="lb-h2">A three-stage computational pipeline.</h2>
+    <p class="lb-p">Three stages. Speed, time, depth. The internal mechanics are not the product. The outputs are.</p>
+    <div class="pipe-line">
+      <div class="pipe-cell"><div class="pn">01 — In-stream</div><h3>Real-time signal capture during live discourse.</h3></div>
+      <div class="pipe-cell"><div class="pn">02 — Temporal</div><h3>Minute-by-minute density mapping across wave, bar, and delta projections.</h3></div>
+      <div class="pipe-cell"><div class="pn">03 — Deep</div><h3>Structured analytical synthesis. Peak concentration moments and dominant themes.</h3></div>
+    </div>
+  </section>
+
+  <section class="landing-block" id="use">
+    <div class="eyebrow">Use</div>
+    <h2 class="lb-h2">Built for analysts who read what others discard.</h2>
+    <p class="lb-p">Sustained ambivalence structures act as early indicators of <strong>neurotic crisis at the individual level, offensive escalation at the collective level, and criminal action across both</strong>, before they stabilise into observable behaviour. ASGE adds a layer existing OSINT and risk toolchains do not provide.</p>
+    <div class="uc-grid">
+      <div class="uc primary">
+        <div class="uc-tag">Primary · Intelligence &amp; security</div>
+        <h3>Geopolitical signal and OSINT</h3>
+        <p>Pre-crisis temporal markers across source populations, elite discourse, and state communication tracks. Operates as a complementary analytical layer alongside existing threat-intelligence and OSINT toolchains.</p>
+        <div class="uc-buyers"><strong>Typical buyers</strong><br>Security and intelligence research institutes · Geopolitical risk firms · Dual-use defence research labs · Policy and security think tanks · Commercial OSINT vendors</div>
+      </div>
+      <div class="uc">
+        <div class="uc-tag">Secondary · NLP &amp; content systems</div>
+        <h3>Depth in machine text systems</h3>
+        <p>Standard sentiment classifiers flatten meaning to a single axis. ASGE provides infrastructure for modelling the multi-axial structure of meaning, useful in content moderation, translation evaluation, and creative-content quality assurance.</p>
+        <div class="uc-buyers"><strong>Typical integration partners</strong><br>Translation and creative tooling platforms · Content moderation infrastructure · Computational linguistics research groups · Adjacent OSINT-text vendors</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-block" id="languages">
+    <div class="eyebrow">Coverage</div>
+    <h2 class="lb-h2">Eight languages, end to end.</h2>
+    <p class="lb-p">Each language carries the full three-stage pipeline. Switchable per request on the integration tier and above.</p>
+    <div class="lang-row">
+      <div class="lang-chip"><strong>EN</strong> English</div>
+      <div class="lang-chip"><strong>DE</strong> Deutsch</div>
+      <div class="lang-chip"><strong>FR</strong> Français</div>
+      <div class="lang-chip"><strong>ES</strong> Español</div>
+      <div class="lang-chip"><strong>TR</strong> Türkçe</div>
+      <div class="lang-chip"><strong>JA</strong> 日本語</div>
+      <div class="lang-chip"><strong>HE</strong> עברית</div>
+      <div class="lang-chip"><strong>FA</strong> فارسی</div>
+    </div>
+  </section>
+
+  <section class="landing-block" id="posture">
+    <div class="eyebrow">Posture</div>
+    <h2 class="lb-h2">How we work, briefly.</h2>
+    <div class="limits-block">
+      <p>ASGE is built for <strong>analyst augmentation and early-warning</strong>. Customers keep humans in the loop and operate within EU and partner-state frameworks. We work openly with academic, policy, and commercial research customers, and selectively with security and defence-adjacent buyers.</p>
+      <p>We do not support surveillance, profiling, or targeting of named individuals. We do not integrate into autonomous lethal or kinetic decision systems. We do not deploy in or export to jurisdictions under active EU human-rights sanctions. Use cases that conflict with that posture are declined.</p>
+      <p class="muted-p">EU data residency. GDPR-aligned. Customer transcripts are not retained by ASGE; only session metadata required for usage accounting.</p>
+    </div>
+  </section>
+
+  <section class="landing-block" id="pricing">
+    <div class="eyebrow">Pricing</div>
+    <h2 class="lb-h2">Five tiers. Annual brings approximately two months free.</h2>
+    <p class="lb-p">All tiers run the same three-stage computational pipeline. Volume, language switchability, integration depth, and SLA differ.</p>
+    <div class="price-grid">
+      <div class="tier">
+        <div><div class="tier-name">Sandbox</div><div class="tier-price">Free</div><div class="tier-meta">Invite-only · non-renewable</div></div>
+        <ul class="tier-feat"><li>3 analyses · 30-day window</li><li>Single language</li><li>Full three-stage pipeline</li></ul>
+      </div>
+      <div class="tier">
+        <div><div class="tier-name">Explorer</div><div class="tier-price">€5 <small>/ mo</small></div><div class="tier-meta">+€0.30 overage · max 50 / mo</div></div>
+        <ul class="tier-feat"><li>30 analyses / month</li><li>Single language, locked</li><li>Web interface</li><li>Email support</li></ul>
+      </div>
+      <div class="tier featured">
+        <div><div class="tier-name">Professional</div><div class="tier-price">€25 <small>/ mo</small></div><div class="tier-meta">+€0.25 overage · max 150 / mo</div></div>
+        <ul class="tier-feat"><li>100 analyses / month</li><li>All 8 languages, switchable</li><li>Interim analytical feedback</li><li>Basic API</li><li>Priority support</li></ul>
+      </div>
+      <div class="tier">
+        <div><div class="tier-name">API / Integration</div><div class="tier-price">€69 <small>/ mo</small></div><div class="tier-meta">+€0.15 overage</div></div>
+        <ul class="tier-feat"><li>500 analyses / month</li><li>Full API and webhook</li><li>All 8 languages per request</li><li>SLA 99.5%</li><li>Dedicated integration support</li></ul>
+      </div>
+      <div class="tier">
+        <div><div class="tier-name">Enterprise</div><div class="tier-price">Custom</div><div class="tier-meta">€10K–50K+ / yr typical</div></div>
+        <ul class="tier-feat"><li>White-label deployment</li><li>On-premise or private cloud</li><li>Defence, intelligence, large-scale</li><li>NET 30 invoicing</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-block" id="access">
+    <div class="cta-block">
+      <div class="eyebrow">Sandbox access</div>
+      <h2 class="lb-h2">Sandbox access available on request.</h2>
+      <p class="lb-p">Every request is reviewed individually. Accepted requests receive a sandbox code, a 30-day window, and three analyses to evaluate the system on real material.</p>
+      <div class="cta-row">
+        <a class="btn-cta primary" href="#input">Open workspace →</a>
+        <a class="btn-cta" href="mailto:growth.business@llulllab.com?subject=ASGE%20sandbox%20request">growth.business@llulllab.com</a>
+      </div>
     </div>
   </section>
 </main>
