@@ -1134,7 +1134,7 @@ async function sendToN8n(mode){
     if(remainingUses<=0){showExhausted();return}
     await refreshUsage();
   }catch(error){
-    console.error('n8n error:',error);
+    console.error('analysis error:',error);
     $('aiLoading').innerHTML='<div style="color:var(--negative)">❌ AI connection error: '+escHTML(error.message)+'</div>';
     showToast('Analysis failed: '+error.message);
   }
