@@ -37,7 +37,7 @@
 <section>
   <div class="sec-label">01 · Overview</div>
   <h1 class="sec-title">One endpoint. A complete analysis.</h1>
-  <p>ASGE exposes one operation: submit a passage, receive the full three-stage analysis of ambivalence structures across the timeline of the text. The response is a single JSON object that carries lexical-density timeline, peak concentration moments, the dominant semantic-conflict theme, a structured analytical summary, and a graduated alert layer.</p>
+  <p>ASGE exposes one operation: submit a passage, receive the full three-stage computational analysis of ambivalence structures across the timeline of the text. The response is a single JSON object that carries lexical-density timeline, peak concentration moments, the dominant semantic-conflict theme, a structured analytical summary, and a graduated alert layer.</p>
   <p>There is no SDK to install, no message queue to provision, no callback URL to register. A single HTTPS request returns the full analysis in seconds.</p>
 </section>
 
@@ -119,7 +119,7 @@ curl -X POST https://api.llulllab.com/asge/v1/analyse \
   <table class="fields">
     <thead><tr><th style="width:26%">Field</th><th style="width:14%">Type</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td class="fname">success</td><td class="ftype">boolean</td><td class="fdesc">True when the three-stage pipeline completed.</td></tr>
+      <tr><td class="fname">success</td><td class="ftype">boolean</td><td class="fdesc">True when the three-stage computational pipeline completed.</td></tr>
       <tr><td class="fname">analysis.pairs</td><td class="ftype">array</td><td class="fdesc">Each entry: minute, type (<code>classic</code> or <code>contextual</code>), and a short context fragment.</td></tr>
       <tr><td class="fname">analysis.trend</td><td class="ftype">array</td><td class="fdesc">Minute-by-minute density with level and a one-line analytical note.</td></tr>
       <tr><td class="fname">analysis.peak_minute</td><td class="ftype">integer</td><td class="fdesc">The minute index where ambivalence density is highest.</td></tr>

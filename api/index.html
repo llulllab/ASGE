@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ASGE API — Integration reference for ambivalence-structure analysis</title>
-<meta name="description" content="ASGE API. A single endpoint returns the full three-stage analysis of ambivalence structures in natural language. Pricing, schema, integration reference.">
+<meta name="description" content="ASGE API. A single endpoint returns the full three-stage computational analysis of ambivalence structures in natural language. Pricing, schema, integration reference.">
 <link rel="canonical" href="https://llulllab.com/ASGE/api/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://llulllab.com/ASGE/api/">
@@ -159,7 +159,7 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
   <section class="hero">
     <div class="hero-tag">API · v1</div>
     <h1>Integrate <span class="highlight">ambivalence-structure analysis</span> into your toolchain.</h1>
-    <p class="lede">A single endpoint returns the full three-stage analysis: lexical-density timeline, peak concentration moments, dominant semantic-conflict themes, structured analytical summary, and the graduated alert layer. <strong>Supported languages:</strong> English, German, French, Spanish, Turkish, Japanese, Hebrew, and Persian.</p>
+    <p class="lede">A single endpoint returns the full three-stage computational analysis: lexical-density timeline, peak concentration moments, dominant semantic-conflict themes, structured analytical summary, and the graduated alert layer. <strong>Supported languages:</strong> English, German, French, Spanish, Turkish, Japanese, Hebrew, and Persian.</p>
   </section>
 
   <section class="section">
@@ -209,7 +209,7 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
       </div>
     </div>
 
-    <p class="tier-note">Sandbox access is available on request and runs the full three-stage pipeline on a single language for evaluation. Sandbox does not expose the API.</p>
+    <p class="tier-note">Sandbox access is available on request and runs the full three-stage computational pipeline on a single language for evaluation. Sandbox does not expose the API.</p>
   </section>
 
   <section class="section">
@@ -274,7 +274,7 @@ curl -X POST https://api.llulllab.com/asge/v1/analyse \
       <table class="fields">
         <thead><tr><th style="width:24%">Field</th><th style="width:14%">Type</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td class="fname">success</td><td class="ftype">boolean</td><td class="fdesc">True when the three-stage pipeline completed.</td></tr>
+          <tr><td class="fname">success</td><td class="ftype">boolean</td><td class="fdesc">True when the three-stage computational pipeline completed.</td></tr>
           <tr><td class="fname">analysis.pairs</td><td class="ftype">array</td><td class="fdesc">Each entry: minute, type (<code>classic</code> or <code>contextual</code>), and a short context fragment.</td></tr>
           <tr><td class="fname">analysis.trend</td><td class="ftype">array</td><td class="fdesc">Minute-by-minute density with level (<code>low</code>, <code>medium</code>, <code>high</code>) and a one-line analytical note.</td></tr>
           <tr><td class="fname">analysis.peak_minute</td><td class="ftype">integer</td><td class="fdesc">The minute index where ambivalence density is highest.</td></tr>
