@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ASGE · Methodology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#ffffff;--paper-2:#f2f6fb;
+  --ink:#1a2535;--ink-2:#3a5068;--ink-3:#6a8099;
+  --rule:#c0cfdf;--rule-2:#dfe7f1;
+  --accent:#1c7abf;--accent-soft:#e6f0f9;
+  --warn:#8a6225;
+  --serif:'Source Serif 4',Georgia,serif;
+  --mono:'JetBrains Mono','Courier New',monospace;
+}
+@page{size:A4;margin:22mm 20mm 22mm 20mm}
+html{font-size:15px}
+body{font-family:var(--mono);color:var(--ink);background:var(--paper);line-height:1.65;-webkit-font-smoothing:antialiased}
+.page{max-width:760px;margin:0 auto;padding:40px 50px 60px}
+
+.cover{page-break-after:always;min-height:calc(297mm - 44mm);display:flex;flex-direction:column;position:relative}
+.cover-strip{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--ink);font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-2)}
+.cover-strip strong{color:var(--ink);font-weight:600}
+.cover-body{flex:1;padding-top:80px}
+.cover-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:24px}
+.cover-title{font-family:var(--serif);font-size:56px;font-weight:600;letter-spacing:-0.015em;line-height:1.05;color:var(--ink);margin-bottom:18px}
+.cover-subtitle{font-family:var(--serif);font-size:22px;font-weight:400;font-style:italic;color:var(--ink-2);line-height:1.4;max-width:46ch;margin-bottom:60px}
+.cover-meta{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);padding-top:22px;margin-top:auto}
+.cover-meta > div{padding-right:24px}
+.cover-meta dt{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.cover-meta dd{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink)}
+.cover-footer{margin-top:24px;padding-top:18px;border-top:1px solid var(--ink);display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:0.06em;color:var(--ink-3)}
+
+.body section{padding:36px 0;border-bottom:1px solid var(--rule-2)}
+.body section:last-child{border-bottom:none}
+.body section.no-break{page-break-inside:avoid}
+.sec-num{font-family:var(--mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px}
+h1.sec-title{font-family:var(--serif);font-size:32px;font-weight:600;letter-spacing:-0.01em;line-height:1.15;margin-bottom:14px}
+h2{font-family:var(--serif);font-size:20px;font-weight:600;margin-top:26px;margin-bottom:10px}
+h3{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-3);margin-top:20px;margin-bottom:8px}
+p{font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:11px;max-width:64ch}
+p strong{color:var(--ink);font-weight:600}
+ul,ol{margin:8px 0 14px 22px}
+li{font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:5px;max-width:62ch}
+code{font-family:var(--mono);font-size:11.5px;background:var(--paper-2);padding:1px 5px;border-radius:3px;border:1px solid var(--rule-2);color:var(--ink)}
+
+.callout{display:flex;gap:14px;padding:14px 16px;margin:14px 0;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 4px 4px 0;page-break-inside:avoid}
+.callout .label{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);font-weight:600;flex-shrink:0;padding-top:2px;min-width:70px}
+.callout p{font-size:12.5px;color:var(--ink);margin:0;line-height:1.6;max-width:none}
+
+ol.stages{list-style:none;margin-left:0;counter-reset:stage}
+ol.stages > li{counter-increment:stage;padding:18px 0 18px 64px;border-bottom:1px solid var(--rule-2);position:relative;page-break-inside:avoid}
+ol.stages > li:last-child{border-bottom:none}
+ol.stages > li::before{content:counter(stage,decimal-leading-zero);position:absolute;left:0;top:18px;font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:600;letter-spacing:0.08em}
+ol.stages .stage-title{display:block;font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink);margin-bottom:6px}
+
+.colophon{margin-top:48px;padding-top:20px;border-top:1px solid var(--ink);font-family:var(--mono);font-size:9.5px;letter-spacing:0.04em;color:var(--ink-3);line-height:1.6}
+.colophon strong{color:var(--ink);font-weight:600}
+@media print{body{background:#fff}.page{padding:0;max-width:none}.callout{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<section class="cover">
+  <div class="cover-strip">
+    <span><strong>LLULL LAB</strong> · STUDIO LLULL · PARIS</span>
+    <span>Document 02 · v1.0</span>
+  </div>
+  <div class="cover-body">
+    <div class="cover-eyebrow">ASGE · Ambivalence-Centred Semantic Geometry Engine</div>
+    <h1 class="cover-title">Methodology</h1>
+    <p class="cover-subtitle">How ASGE arrives at an analysis. Written to be read by a research or oversight committee and to survive their scrutiny.</p>
+    <dl class="cover-meta">
+      <div><dt>Audience</dt><dd>Research &amp; Oversight</dd></div>
+      <div><dt>Version</dt><dd>1.0</dd></div>
+      <div><dt>Issued</dt><dd>May 2026</dd></div>
+    </dl>
+  </div>
+  <div class="cover-footer">
+    <span>llulllab.com / ASGE</span>
+    <span>growth.business@llulllab.com</span>
+  </div>
+</section>
+
+<div class="body">
+
+<section>
+  <div class="sec-num">01 · Premise</div>
+  <h1 class="sec-title">Why ambivalence, not sentiment.</h1>
+  <p>ASGE detects, maps, and analyses <strong>ambivalence structures</strong> in natural language: the sustained co-presence of opposing orientations toward the same object. The concept is developed in anthropology and political science. Sustained ambivalence structures act as early indicators of neurotic crisis at the individual level, offensive escalation at the collective level, and criminal action across both &mdash; before these stabilise into observable behaviour.</p>
+  <p>Standard sentiment classifiers flatten ambiguity into positive, negative, or neutral. The signal that actually precedes escalation or crisis sits in the gap those models discard. ASGE adds a layer that existing OSINT, risk, and intelligence toolchains do not provide: a structural reading of sustained co-presence of opposing orientations, mapped against time, with a written summary and a graduated alert.</p>
+</section>
+
+<section>
+  <div class="sec-num">02 · The three-stage pipeline</div>
+  <h1 class="sec-title">Three stages from passage to analysis.</h1>
+  <p>Each analysis passes through a <strong>three-stage computational pipeline</strong>. Every stage's output is part of the public contract and is returned in the response. The infrastructure underneath is proprietary.</p>
+
+  <ol class="stages">
+    <li>
+      <span class="stage-title">Real-time lexical detection</span>
+      <p>Proprietary multilingual lexical databases identify opposing orientations as they emerge across the passage. Detections are emitted with their position in the text and their context fragment. The lexical layer is the signal-capture mechanism that grounds the later stages and supports the graduated alert layer in real-time use.</p>
+    </li>
+    <li>
+      <span class="stage-title">Temporal density mapping</span>
+      <p>The system constructs a minute-by-minute density map of detected ambivalence across the passage. Three complementary visualisations are available: wave (continuous flow), bar (discrete per-minute counts), and delta (rate of change). The minute where ambivalence concentration is highest is surfaced explicitly as the peak minute.</p>
+    </li>
+    <li>
+      <span class="stage-title">Deep contextual analysis</span>
+      <p>A deep contextual analysis layer goes beyond dictionary-level pairs to identify <strong>contextual ambivalence</strong>: opposing orientations that the surface vocabulary does not name. The stage produces the dominant theme (an opposition the passage is organised around), the structured analytical summary (two to three sentences naming the sustained tensions), and the graduated alert level.</p>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-num">03 · The eight languages</div>
+  <h1 class="sec-title">English, German, French, Spanish, Turkish, Japanese, Hebrew, and Persian.</h1>
+  <p>ASGE supports analysis in eight languages. The three-stage pipeline operates on each. Two language-specific notes are worth flagging for an analyst.</p>
+
+  <h3>Japanese</h3>
+  <p>Japanese lacks whitespace-based word boundaries, which limits the lexical detection layer compared with the other seven languages. The deep contextual analysis layer is unaffected and operates with full fidelity.</p>
+
+  <h3>Hebrew and Persian</h3>
+  <p>Hebrew and Persian dictionaries operate in full. The on-page rendering is currently left-to-right; right-to-left display polish is on the roadmap and does not affect the analytical output.</p>
+</section>
+
+<section class="no-break">
+  <div class="sec-num">04 · What the output gives an analyst</div>
+  <h1 class="sec-title">The audit profile of an analysis.</h1>
+  <p>Every completed analysis carries the following on record. This is the material a committee, a co-author, or a regulator may consult; it is also the material on which ASGE asks to be evaluated.</p>
+  <ul>
+    <li><strong>Temporal density map</strong> &mdash; minute-by-minute ambivalence density across the passage.</li>
+    <li><strong>Peak concentration moment</strong> &mdash; where to look first.</li>
+    <li><strong>Dominant semantic-conflict theme</strong> &mdash; the opposition the passage is organised around.</li>
+    <li><strong>Structured analytical summary</strong> &mdash; two to three sentences naming the sustained tensions.</li>
+    <li><strong>Graduated alert layer</strong> &mdash; level 1 to 4, calibrated against density and pattern.</li>
+    <li><strong>Pairs list</strong> &mdash; classic and contextual detections with minute and context fragment.</li>
+    <li><strong>Statistics</strong> &mdash; word count, pair counts, pairs per minute, classic and contextual splits.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-num">05 · How quality and coverage change over time</div>
+  <h1 class="sec-title">Lexical databases evolve; deep analysis improves.</h1>
+  <p>ASGE does not pretend to be static. The lexical databases are versioned and grow with field use; the contextual analysis layer is refined against accumulated case material. Two consequences follow.</p>
+  <ul>
+    <li>Coverage on under-represented domains improves with use. Organisations submitting passages from a specific domain (intelligence, ethnographic interviews, narrative monitoring) see tighter readings over time.</li>
+    <li>The lexical layer evolves under version control. Analyses are reproducible from the case record; vocabulary shifts are auditable.</li>
+  </ul>
+  <p>Enterprise customers may operate against a private deployment so that their corpus does not contribute to or draw from the shared lexical layer.</p>
+</section>
+
+<section class="no-break">
+  <div class="sec-num">06 · What ASGE is not</div>
+  <h1 class="sec-title">Boundaries of the claim.</h1>
+  <ul>
+    <li><strong>Not a substitute for analytical judgement.</strong> ASGE produces a structured reading; the interpretation and the action that follows remain the responsibility of the deploying analyst or institution.</li>
+    <li><strong>Not a sentiment classifier.</strong> ASGE does not assign positive, negative, or neutral labels. The unit of analysis is the ambivalence structure, not the polarity.</li>
+    <li><strong>Not a predictor of individual behaviour.</strong> Sustained ambivalence structures are pre-crisis indicators at the levels named in the premise. They are not behavioural predictions about a named person.</li>
+    <li><strong>Not deterministic.</strong> The contextual analysis layer is probabilistic. Submitting the same passage twice produces two analyses that agree on the major findings; minor wording in the analytical summary may differ.</li>
+  </ul>
+</section>
+
+<div class="colophon">
+  <p><strong>ASGE · Methodology · v1.0</strong> &nbsp; · &nbsp; Llull Lab &middot; Studio Llull &middot; Paris &nbsp; · &nbsp; growth.business@llulllab.com &nbsp; · &nbsp; llulllab.com/ASGE</p>
+  <p>This document describes ASGE's externally observable methodology. The internal implementation is proprietary. &copy; 2026 Llull Lab.</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

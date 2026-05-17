@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASGE API — Integration reference for ambivalence-structure analysis</title>
+<meta name="description" content="ASGE API: a single endpoint returns the full three-stage analysis of ambivalence structures in natural language. Pricing, schema, and integration reference.">
+<link rel="canonical" href="https://llulllab.com/ASGE/api/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://llulllab.com/ASGE/api/">
+<meta property="og:title" content="ASGE API — Integration reference">
+<meta property="og:description" content="Integrate ASGE's three-stage ambivalence-structure analysis into your toolchain. Single endpoint, structured output.">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#0e0f13;--bg-surface:#16171d;--bg-elevated:#1e2028;--bg-card:#252730;
+  --text-primary:#e8e4df;--text-secondary:#9b978f;--text-muted:#5e5b54;
+  --accent:#d4943a;--accent-glow:#d4943a44;--accent-bright:#f0b255;--accent-dim:#8b6225;
+  --negative:#c45c5c;--positive:#5ca87c;
+  --border:#2a2c35;
+  --code-bg:#0a0b0e;
+  --radius:12px;--radius-sm:8px;--radius-lg:20px;
+  --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:40px;--space-2xl:64px;
+  --font-display:'Source Serif 4',Georgia,serif;
+  --font-mono:'JetBrains Mono','Courier New',monospace;
+  --transition-fast:150ms cubic-bezier(.4,0,.2,1);
+}
+@media(prefers-color-scheme:light){
+  :root{
+    --bg-deep:#e8eef5;--bg-surface:#dce5ee;--bg-elevated:#cfd9e4;--bg-card:#c2cdd9;
+    --text-primary:#1a2535;--text-secondary:#3a5068;--text-muted:#6a8099;
+    --accent:#1c7abf;--accent-glow:#1c7abf33;--accent-bright:#42a5c8;--accent-dim:#0d5a99;
+    --border:#b0c2d4;--code-bg:#0e0f13;
+  }
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font-mono);background:var(--bg-deep);color:var(--text-primary);line-height:1.65;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none;transition:color var(--transition-fast)}
+a:hover{color:var(--accent-bright)}
+::selection{background:var(--accent-glow);color:var(--text-primary)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--radius-sm)}
+
+header{position:sticky;top:0;z-index:100;background:var(--bg-deep);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:var(--space-md) var(--space-lg);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md)}
+.logo{font-family:var(--font-display);font-weight:700;font-size:1.5rem;letter-spacing:-0.03em;color:var(--accent);display:flex;align-items:center;gap:var(--space-sm)}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
+.logo-sub{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-left:var(--space-xs)}
+.nav-links{display:flex;align-items:center;gap:var(--space-lg)}
+.nav-links a{font-size:0.8rem;letter-spacing:0.04em;color:var(--text-secondary);font-weight:500}
+.nav-links a:hover{color:var(--text-primary)}
+.nav-links a.active{color:var(--accent)}
+
+main{max-width:1180px;margin:0 auto;padding:var(--space-2xl) var(--space-lg)}
+
+.hero{padding:var(--space-xl) 0 var(--space-2xl);border-bottom:1px solid var(--border);margin-bottom:var(--space-2xl)}
+.eyebrow{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:var(--space-md)}
+h1.title{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3rem);font-weight:600;line-height:1.1;letter-spacing:-0.02em;margin-bottom:var(--space-md);max-width:22ch}
+.lede{font-size:1rem;line-height:1.7;color:var(--text-secondary);max-width:62ch}
+
+h2{font-family:var(--font-display);font-size:1.6rem;font-weight:600;letter-spacing:-0.01em;margin:var(--space-2xl) 0 var(--space-md);line-height:1.2}
+h3{font-family:var(--font-mono);font-size:0.78rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin:var(--space-xl) 0 var(--space-sm)}
+p{font-size:0.92rem;line-height:1.75;color:var(--text-secondary);margin-bottom:var(--space-sm);max-width:65ch}
+p strong{color:var(--text-primary);font-weight:600}
+ul{margin:var(--space-sm) 0 var(--space-md) var(--space-lg)}
+li{font-size:0.92rem;line-height:1.7;color:var(--text-secondary);margin-bottom:var(--space-xs)}
+code{font-family:var(--font-mono);font-size:0.82rem;background:var(--bg-elevated);padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--text-primary)}
+
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);margin-top:var(--space-xl)}
+.tier{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-lg);display:flex;flex-direction:column;transition:border-color var(--transition-fast)}
+.tier:hover{border-color:var(--accent-dim)}
+.tier.featured{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-glow)}
+.tier h4{font-family:var(--font-display);font-size:1.4rem;font-weight:600;letter-spacing:-0.01em;margin-bottom:var(--space-xs)}
+.tier .tier-price{font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--text-primary);margin-top:var(--space-md);line-height:1}
+.tier .tier-price small{font-family:var(--font-mono);font-size:0.85rem;font-weight:500;color:var(--text-muted);margin-left:4px}
+.tier .tier-per{font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);margin-top:var(--space-xs);margin-bottom:var(--space-md);letter-spacing:0.04em}
+.tier ul{list-style:none;flex:1;margin:0 0 var(--space-md)}
+.tier li{font-size:0.82rem;color:var(--text-secondary);padding:var(--space-xs) 0;border-top:1px solid var(--border);display:flex;gap:var(--space-sm);line-height:1.5}
+.tier li:first-child{border-top:none}
+.tier li::before{content:"·";color:var(--accent);font-weight:700;flex-shrink:0}
+.tier-cta{display:block;text-align:center;padding:10px;font-size:0.82rem;font-weight:600;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-elevated);color:var(--text-primary);transition:all var(--transition-fast)}
+.tier-cta:hover{border-color:var(--accent);color:var(--accent)}
+.tier.featured .tier-cta{background:var(--accent);color:var(--bg-deep);border-color:var(--accent)}
+.tier.featured .tier-cta:hover{background:var(--accent-bright);color:var(--bg-deep)}
+
+.endpoint-block{margin-top:var(--space-xl);padding:var(--space-lg);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius)}
+.endpoint-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-elevated);margin-top:var(--space-sm)}
+.endpoint-meta > div{padding:var(--space-md);border-right:1px solid var(--border)}
+.endpoint-meta > div:last-child{border-right:none}
+.endpoint-meta dt{font-size:0.65rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+.endpoint-meta dd{font-family:var(--font-mono);font-size:0.85rem;color:var(--text-primary)}
+
+pre.code{background:var(--code-bg);color:#e8e6df;font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;padding:var(--space-md) var(--space-lg);border-radius:var(--radius-sm);overflow-x:auto;white-space:pre;margin:var(--space-md) 0;border:1px solid var(--border)}
+pre.code .k{color:#a8c6e0}
+pre.code .s{color:#9bcf9b}
+pre.code .c{color:#6b7280;font-style:italic}
+
+table.fields{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:var(--space-md);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+table.fields th,table.fields td{text-align:left;padding:var(--space-sm) var(--space-md);border-bottom:1px solid var(--border);vertical-align:top}
+table.fields tr:last-child td{border-bottom:none}
+table.fields th{font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);font-weight:600;background:var(--bg-elevated)}
+table.fields td.fname{font-family:var(--font-mono);font-size:0.78rem;color:var(--text-primary);white-space:nowrap}
+table.fields td.ftype{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);white-space:nowrap}
+table.fields td.fdesc{color:var(--text-secondary);line-height:1.55}
+
+.status-row{display:flex;flex-wrap:wrap;gap:var(--space-sm);margin-top:var(--space-md)}
+.chip{display:inline-flex;align-items:center;gap:var(--space-sm);font-family:var(--font-mono);font-size:0.72rem;color:var(--text-secondary);padding:6px 12px;border:1px solid var(--border);border-radius:99px;background:var(--bg-surface)}
+.chip .dot{width:7px;height:7px;border-radius:50%}
+.chip .dot.ok{background:var(--positive)}
+.chip .dot.warn{background:var(--accent)}
+.chip .dot.bad{background:var(--negative)}
+
+.quota-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:var(--space-md);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-surface);overflow:hidden}
+.quota-strip > div{padding:var(--space-md);border-right:1px solid var(--border)}
+.quota-strip > div:last-child{border-right:none}
+.quota-strip dt{font-size:0.65rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+.quota-strip dd{font-family:var(--font-mono);font-size:0.82rem;color:var(--text-primary);line-height:1.4}
+
+footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--border);margin-top:var(--space-2xl)}
+.footer-inner{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:6px}
+.footer-text{font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);letter-spacing:0.02em}
+.footer-text a{color:var(--text-muted)}
+.footer-text a:hover{color:var(--text-primary)}
+
+@media(max-width:900px){
+  .tiers{grid-template-columns:1fr}
+  .endpoint-meta{grid-template-columns:1fr}
+  .endpoint-meta > div{border-right:none;border-bottom:1px solid var(--border)}
+  .endpoint-meta > div:last-child{border-bottom:none}
+  .quota-strip{grid-template-columns:repeat(2,1fr)}
+  .quota-strip > div:nth-child(2){border-right:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-inner" role="navigation" aria-label="Main navigation">
+    <a href="../" class="logo" aria-label="ASGE — back to product page">
+      <span class="logo-dot"></span>
+      ASGE
+      <span class="logo-sub">API</span>
+    </a>
+    <div class="nav-links">
+      <a href="../">Product</a>
+      <a href="../api/" class="active">API</a>
+      <a href="../docs/">Docs</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">API · v1</div>
+    <h1 class="title">Integrate ambivalence-structure analysis into your toolchain.</h1>
+    <p class="lede">A single endpoint returns the full three-stage analysis: lexical pair density across the timeline, peak concentration moments, dominant semantic-conflict themes, structured analytical summary, and the graduated alert layer. Supported languages: English, German, French, Spanish, Turkish, Japanese, Hebrew, and Persian.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">01 · Tiers</div>
+    <h2>Three tiers expose the API. Sandbox is web-only.</h2>
+
+    <div class="tiers">
+      <div class="tier">
+        <h4>Professional</h4>
+        <div class="tier-price">&euro;25<small>/ month</small></div>
+        <div class="tier-per">100 analyses included</div>
+        <ul>
+          <li>Overage &euro;0.25 per analysis</li>
+          <li>All eight languages, switchable per request</li>
+          <li>Basic API access</li>
+          <li>Interim analysis during live recording</li>
+          <li>Priority support</li>
+        </ul>
+        <a class="tier-cta" href="mailto:growth.business@llulllab.com?subject=ASGE%20Professional">Request access</a>
+      </div>
+
+      <div class="tier featured">
+        <h4>API / Integration</h4>
+        <div class="tier-price">&euro;69<small>/ month</small></div>
+        <div class="tier-per">500 analyses included</div>
+        <ul>
+          <li>Overage &euro;0.15 per analysis</li>
+          <li>Full API surface, all eight languages</li>
+          <li>Interim analysis, dedicated integration support</li>
+          <li>SLA 99.5 percent</li>
+          <li>Yearly plan at approximately two months free</li>
+        </ul>
+        <a class="tier-cta" href="mailto:growth.business@llulllab.com?subject=ASGE%20API%20Integration">Request access</a>
+      </div>
+
+      <div class="tier">
+        <h4>Enterprise</h4>
+        <div class="tier-price">Custom</div>
+        <div class="tier-per">Negotiated annual volume</div>
+        <ul>
+          <li>White-label and custom deployment</li>
+          <li>On-premise or private-cloud option</li>
+          <li>Defence, intelligence, and large-scale fit</li>
+          <li>Named support and SLA</li>
+        </ul>
+        <a class="tier-cta" href="mailto:growth.business@llulllab.com?subject=ASGE%20Enterprise">Speak to the team</a>
+      </div>
+    </div>
+
+    <p style="margin-top:var(--space-md);font-size:0.8rem;color:var(--text-muted)">Sandbox access is available on request and runs the full three-stage pipeline on a single language for evaluation. Sandbox does not expose the API.</p>
+  </section>
+
+  <section class="endpoint-block">
+    <div class="eyebrow">02 · Endpoint</div>
+    <h2 style="margin-top:0">Submit a passage for analysis.</h2>
+
+    <div class="endpoint-meta">
+      <div><dt>Method</dt><dd>POST</dd></div>
+      <div><dt>Auth</dt><dd>X-Session-Token</dd></div>
+      <div><dt>Encoding</dt><dd>application/json</dd></div>
+    </div>
+
+<pre class="code"><span class="c"># Submit a passage for ambivalence-structure analysis</span>
+curl -X POST https://api.llulllab.com/asge/v1/analyse \
+  -H <span class="s">"X-Session-Token: $ASGE_TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "text":     "The text to analyse. Paste a transcript, an interview, a speech, or any natural-language passage.",
+    "language": "en",
+    "mode":     "text"
+  }'</span></pre>
+
+    <h3>Request fields</h3>
+    <table class="fields">
+      <thead><tr><th style="width:18%">Field</th><th style="width:18%">Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="fname">text</td><td class="ftype">string &middot; required</td><td class="fdesc">The passage to analyse. Up to 10,000 words per submission. Line breaks segment temporal units.</td></tr>
+        <tr><td class="fname">language</td><td class="ftype">enum &middot; required</td><td class="fdesc">One of <code>en</code>, <code>de</code>, <code>fr</code>, <code>es</code>, <code>tr</code>, <code>ja</code>, <code>he</code>, <code>fa</code>.</td></tr>
+        <tr><td class="fname">mode</td><td class="ftype">enum &middot; optional</td><td class="fdesc"><code>text</code> (default) or <code>microphone</code>. The latter is reserved for sessions originating from a live recording context.</td></tr>
+        <tr><td class="fname">context</td><td class="ftype">object &middot; optional</td><td class="fdesc">Optional metadata kept alongside the case record (source, author, date, location). Up to 4 KB.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Response shape</h3>
+<pre class="code">{
+  <span class="k">"success"</span>: <span class="k">true</span>,
+  <span class="k">"analysis"</span>: {
+    <span class="k">"pairs"</span>: [
+      { <span class="k">"minute"</span>: 3, <span class="k">"type"</span>: <span class="s">"classic"</span>,    <span class="k">"context"</span>: <span class="s">"..."</span> },
+      { <span class="k">"minute"</span>: 7, <span class="k">"type"</span>: <span class="s">"contextual"</span>, <span class="k">"context"</span>: <span class="s">"..."</span> }
+    ],
+    <span class="k">"trend"</span>: [
+      { <span class="k">"minute"</span>: 1, <span class="k">"level"</span>: <span class="s">"low"</span>,    <span class="k">"note"</span>: <span class="s">"..."</span> },
+      <span class="c">// minute-by-minute</span>
+    ],
+    <span class="k">"peak_minute"</span>:      4,
+    <span class="k">"dominant_theme"</span>:   <span class="s">"freedom &harr; constraint"</span>,
+    <span class="k">"conflict_summary"</span>: <span class="s">"Two to three sentences naming the sustained tensions."</span>,
+    <span class="k">"alert_level"</span>:      3
+  },
+  <span class="k">"stats"</span>: {
+    <span class="k">"word_count"</span>:    1820,
+    <span class="k">"pair_count"</span>:    24,
+    <span class="k">"classic_count"</span>: 17,
+    <span class="k">"context_count"</span>: 7,
+    <span class="k">"pairs_per_min"</span>: 2.4
+  }
+}</pre>
+
+    <h3>Response fields</h3>
+    <table class="fields">
+      <thead><tr><th style="width:24%">Field</th><th style="width:14%">Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="fname">success</td><td class="ftype">boolean</td><td class="fdesc">True when the three-stage pipeline completed.</td></tr>
+        <tr><td class="fname">analysis.pairs</td><td class="ftype">array</td><td class="fdesc">Each entry: minute, type (<code>classic</code> or <code>contextual</code>), and a short context fragment.</td></tr>
+        <tr><td class="fname">analysis.trend</td><td class="ftype">array</td><td class="fdesc">Minute-by-minute density with level (<code>low</code>, <code>medium</code>, <code>high</code>) and a one-line analytical note.</td></tr>
+        <tr><td class="fname">analysis.peak_minute</td><td class="ftype">integer</td><td class="fdesc">The minute index where ambivalence density is highest.</td></tr>
+        <tr><td class="fname">analysis.dominant_theme</td><td class="ftype">string</td><td class="fdesc">The dominant semantic-conflict theme, expressed as an opposition.</td></tr>
+        <tr><td class="fname">analysis.conflict_summary</td><td class="ftype">string</td><td class="fdesc">Two to three sentences naming the sustained tensions across the passage.</td></tr>
+        <tr><td class="fname">analysis.alert_level</td><td class="ftype">integer</td><td class="fdesc">Graduated alert from 1 to 4. Higher values correspond to denser concentrations.</td></tr>
+        <tr><td class="fname">stats</td><td class="ftype">object</td><td class="fdesc">Counts and densities: words, pairs, classic and contextual splits, pairs per minute.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="eyebrow">03 · Status codes</div>
+    <h2>Six outcomes worth handling.</h2>
+
+    <div class="status-row">
+      <span class="chip"><span class="dot ok"></span>200 &middot; success</span>
+      <span class="chip"><span class="dot warn"></span>400 &middot; validation</span>
+      <span class="chip"><span class="dot bad"></span>401 &middot; unauthenticated</span>
+      <span class="chip"><span class="dot warn"></span>413 &middot; payload_too_large</span>
+      <span class="chip"><span class="dot warn"></span>429 &middot; quota_exceeded</span>
+      <span class="chip"><span class="dot bad"></span>503 &middot; transient_failure</span>
+    </div>
+    <p style="margin-top:var(--space-md)">Validation rejections, unauthenticated rejections, payload-size rejections, and rate-limit rejections do not consume quota. Transient failures auto-retry once and are not billed.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">04 · Quota</div>
+    <h2 style="margin-top:0">Quota behaviour.</h2>
+    <div class="quota-strip">
+      <div><dt>Window</dt><dd>Tier-defined</dd></div>
+      <div><dt>Halts</dt><dd>Not billed</dd></div>
+      <div><dt>Failures</dt><dd>Not billed</dd></div>
+      <div><dt>Retries</dt><dd>Safe to retry</dd></div>
+    </div>
+    <p style="margin-top:var(--space-md);font-size:0.8rem;color:var(--text-muted)">Quota window, rate limits, and overage handling are set per tier at access provisioning. The yearly plan applies a multi-month discount.</p>
+  </section>
+
+  <section style="margin-top:var(--space-2xl);padding-top:var(--space-xl);border-top:1px solid var(--border)">
+    <h2 style="margin-top:0">Reference documentation</h2>
+    <p>The <a href="../docs/">documentation page</a> bundles the Integration Guide, the Methodology, and an Applications &amp; Use Cases reference, all available as PDFs alongside the on-page reading.</p>
+    <p>For integration enquiries, sandbox access requests, or contract negotiations, contact <a href="mailto:growth.business@llulllab.com">growth.business@llulllab.com</a>.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">&copy; 2026 <a href="https://llulllab.com" target="_blank" rel="noopener">Llull Lab</a></span>
+    <span class="footer-text">Con&ccedil;u et d&eacute;velopp&eacute; en France</span>
+    <span class="footer-text"><a href="https://llulllab.com/privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> &middot; <a href="https://llulllab.com/mentions-legales.html" target="_blank" rel="noopener">Mentions L&eacute;gales</a></span>
+    <span class="footer-text"><a href="https://feix.app" target="_blank" rel="noopener">Created by Feix</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
