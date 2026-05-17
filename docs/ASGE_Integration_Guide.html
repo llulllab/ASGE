@@ -5,85 +5,8 @@
 <title>ASGE · Integration Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --paper:#ffffff;--paper-2:#f2f6fb;
-  --ink:#1a2535;--ink-2:#3a5068;--ink-3:#6a8099;--ink-4:#9aaecd;
-  --rule:#c0cfdf;--rule-2:#dfe7f1;
-  --accent:#1c7abf;--accent-soft:#e6f0f9;
-  --warn:#8a6225;
-  --serif:'Source Serif 4',Georgia,serif;
-  --sans:'JetBrains Mono','Courier New',monospace;
-  --mono:'JetBrains Mono','Courier New',monospace;
-}
-@page{size:A4;margin:22mm 20mm 22mm 20mm}
-html{font-size:15px}
-body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.65;-webkit-font-smoothing:antialiased}
-.page{max-width:760px;margin:0 auto;padding:40px 50px 60px}
-
-.cover{page-break-after:always;min-height:calc(297mm - 44mm);display:flex;flex-direction:column;position:relative}
-.cover-strip{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--ink);font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-2)}
-.cover-strip strong{color:var(--ink);font-weight:600}
-.cover-body{flex:1;padding-top:80px}
-.cover-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:24px}
-.cover-title{font-family:var(--serif);font-size:56px;font-weight:600;letter-spacing:-0.015em;line-height:1.05;color:var(--ink);margin-bottom:18px}
-.cover-subtitle{font-family:var(--serif);font-size:22px;font-weight:400;font-style:italic;color:var(--ink-2);line-height:1.4;max-width:46ch;margin-bottom:60px}
-.cover-meta{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);padding-top:22px;margin-top:auto}
-.cover-meta > div{padding-right:24px}
-.cover-meta dt{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
-.cover-meta dd{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink)}
-.cover-footer{margin-top:24px;padding-top:18px;border-top:1px solid var(--ink);display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:0.06em;color:var(--ink-3)}
-
-.body section{padding:36px 0;border-bottom:1px solid var(--rule-2)}
-.body section:last-child{border-bottom:none}
-.body section.no-break{page-break-inside:avoid}
-.sec-num{font-family:var(--mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px}
-h1.sec-title{font-family:var(--serif);font-size:32px;font-weight:600;letter-spacing:-0.01em;line-height:1.15;margin-bottom:14px}
-h2{font-family:var(--serif);font-size:20px;font-weight:600;margin-top:26px;margin-bottom:10px}
-h3{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-3);margin-top:20px;margin-bottom:8px}
-p{font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:11px;max-width:64ch}
-p strong{color:var(--ink);font-weight:600}
-ul,ol{margin:8px 0 14px 22px}
-li{font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:5px;max-width:62ch}
-code{font-family:var(--mono);font-size:11.5px;background:var(--paper-2);padding:1px 5px;border-radius:3px;border:1px solid var(--rule-2);color:var(--ink)}
-
-pre.code{background:#0a0b0e;color:#e8e6df;font-family:var(--mono);font-size:11px;line-height:1.6;padding:18px 20px;border-radius:4px;overflow-x:auto;white-space:pre;margin:12px 0;page-break-inside:avoid}
-pre.code .k{color:#a8c6e0}
-pre.code .s{color:#9bcf9b}
-pre.code .c{color:#6b7280;font-style:italic}
-
-.callout{display:flex;gap:14px;padding:14px 16px;margin:14px 0;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 4px 4px 0;page-break-inside:avoid}
-.callout .label{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);font-weight:600;flex-shrink:0;padding-top:2px;min-width:70px}
-.callout p{font-size:12.5px;color:var(--ink);margin:0;line-height:1.6;max-width:none}
-.callout.warn{border-left-color:var(--warn);background:rgba(138,98,37,0.08)}
-.callout.warn .label{color:var(--warn)}
-
-table.fields{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0;border:1px solid var(--rule);page-break-inside:avoid}
-table.fields th,table.fields td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule-2);vertical-align:top}
-table.fields tr:last-child td{border-bottom:none}
-table.fields th{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;background:var(--paper-2)}
-table.fields td.fname{font-family:var(--mono);font-size:11px;color:var(--ink);white-space:nowrap}
-table.fields td.ftype{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);white-space:nowrap}
-table.fields td.fdesc{color:var(--ink-2);line-height:1.55}
-
-.status-row{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
-.chip{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;color:var(--ink-2);padding:5px 10px;border:1px solid var(--rule);border-radius:99px}
-.chip .dot{width:6px;height:6px;border-radius:50%}
-.chip .dot.ok{background:#2f6b3d}
-.chip .dot.warn{background:#9c6b00}
-.chip .dot.bad{background:#9b2a2a}
-
-.colophon{margin-top:48px;padding-top:20px;border-top:1px solid var(--ink);font-family:var(--mono);font-size:9.5px;letter-spacing:0.04em;color:var(--ink-3);line-height:1.6}
-.colophon strong{color:var(--ink);font-weight:600}
-
-@media print{
-  body{background:#fff}
-  .page{padding:0;max-width:none}
-  pre.code,.callout,table.fields th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_print_styles.css">
 </head>
 <body>
 <div class="page">
@@ -94,8 +17,8 @@ table.fields td.fdesc{color:var(--ink-2);line-height:1.55}
     <span>Document 01 · v1.0</span>
   </div>
   <div class="cover-body">
-    <div class="cover-eyebrow">ASGE · Ambivalence-Centred Semantic Geometry Engine</div>
-    <h1 class="cover-title">Integration Guide</h1>
+    <div class="cover-tag">ASGE · Document 01</div>
+    <h1 class="cover-title">Integration <span class="h">Guide.</span></h1>
     <p class="cover-subtitle">Quickstart, schema, error handling, and operational notes for engineers integrating ASGE into an analytical pipeline.</p>
     <dl class="cover-meta">
       <div><dt>Audience</dt><dd>Engineering</dd></div>
@@ -112,25 +35,25 @@ table.fields td.fdesc{color:var(--ink-2);line-height:1.55}
 <div class="body">
 
 <section>
-  <div class="sec-num">01 · Overview</div>
+  <div class="sec-label">01 · Overview</div>
   <h1 class="sec-title">One endpoint. A complete analysis.</h1>
-  <p>ASGE exposes one operation: submit a passage, receive the full three-stage analysis of ambivalence structures across the timeline of the text. The response is a single JSON object that carries lexical pair density, peak concentration moments, the dominant semantic-conflict theme, a structured analytical summary, and a graduated alert layer.</p>
+  <p>ASGE exposes one operation: submit a passage, receive the full three-stage analysis of ambivalence structures across the timeline of the text. The response is a single JSON object that carries lexical-density timeline, peak concentration moments, the dominant semantic-conflict theme, a structured analytical summary, and a graduated alert layer.</p>
   <p>There is no SDK to install, no message queue to provision, no callback URL to register. A single HTTPS request returns the full analysis in seconds.</p>
 </section>
 
 <section class="no-break">
-  <div class="sec-num">02 · Authentication</div>
+  <div class="sec-label">02 · Authentication</div>
   <h1 class="sec-title">Session tokens.</h1>
   <p>API access is provisioned per organisation against a tier (Professional, API / Integration, Enterprise). Sandbox access is issued separately on request for evaluation. Write to <code>growth.business@llulllab.com</code> with the tier you intend, the contracting entity, and the expected use case. A session token is issued by return.</p>
   <p>The session token is passed in the <code>X-Session-Token</code> header on every request. Tokens are scoped to a single organisation and may be rotated on request. Token lifecycle, including expiry and rotation policy, is set at access provisioning.</p>
-  <div class="callout warn">
+  <div class="callout">
     <div class="label">Custody</div>
     <p>Treat the session token as a production secret. Storage in a managed secret vault is recommended. Rotation on personnel change is recommended. Compromise should be reported to <code>growth.business@llulllab.com</code> for immediate revocation.</p>
   </div>
 </section>
 
 <section>
-  <div class="sec-num">03 · The request</div>
+  <div class="sec-label">03 · The request</div>
   <h1 class="sec-title">Submit a passage for analysis.</h1>
   <p>The endpoint is <code>POST https://api.llulllab.com/asge/v1/analyse</code>. Content type is <code>application/json</code>. The minimum viable request carries the text, a language code, and the session token.</p>
 
@@ -163,7 +86,7 @@ curl -X POST https://api.llulllab.com/asge/v1/analyse \
 </section>
 
 <section>
-  <div class="sec-num">04 · The response</div>
+  <div class="sec-label">04 · The response</div>
   <h1 class="sec-title">A structured analysis, returned in one call.</h1>
   <p>A successful response carries the full analysis as a single JSON object. The most useful fields, in order of how analysts typically consume them: the peak minute, the dominant theme, the conflict summary, the alert level, the trend timeline.</p>
 
@@ -175,7 +98,7 @@ curl -X POST https://api.llulllab.com/asge/v1/analyse \
       { <span class="k">"minute"</span>: 7, <span class="k">"type"</span>: <span class="s">"contextual"</span>, <span class="k">"context"</span>: <span class="s">"..."</span> }
     ],
     <span class="k">"trend"</span>: [
-      { <span class="k">"minute"</span>: 1, <span class="k">"level"</span>: <span class="s">"low"</span>,    <span class="k">"note"</span>: <span class="s">"..."</span> },
+      { <span class="k">"minute"</span>: 1, <span class="k">"level"</span>: <span class="s">"low"</span>, <span class="k">"note"</span>: <span class="s">"..."</span> }
       <span class="c">// minute-by-minute</span>
     ],
     <span class="k">"peak_minute"</span>:      4,
@@ -209,7 +132,7 @@ curl -X POST https://api.llulllab.com/asge/v1/analyse \
 </section>
 
 <section class="no-break">
-  <div class="sec-num">05 · Status codes</div>
+  <div class="sec-label">05 · Status codes</div>
   <h1 class="sec-title">Six outcomes worth handling.</h1>
 
   <div class="status-row">
@@ -238,7 +161,7 @@ curl -X POST https://api.llulllab.com/asge/v1/analyse \
 </section>
 
 <section>
-  <div class="sec-num">06 · Operational notes</div>
+  <div class="sec-label">06 · Operational notes</div>
   <h1 class="sec-title">What you can rely on.</h1>
 
   <h3>Transport</h3>
@@ -248,7 +171,7 @@ curl -X POST https://api.llulllab.com/asge/v1/analyse \
   <p>Typical end-to-end latency for a completed analysis depends on text length. Short passages (under 1,000 words) typically complete in under 20 seconds; longer passages scale with the number of temporal segments produced. The analysis is not designed for synchronous user-facing flows.</p>
 
   <h3>Audit trail</h3>
-  <p>Every analysis is persisted with full lineage: input payload, detected pairs, temporal trend, theme, summary, and alert level. Retention and retrieval terms are set per tier at access provisioning.</p>
+  <p>Every analysis is persisted with full lineage: input payload, detected structures, temporal trend, theme, summary, and alert level. Retention and retrieval terms are set per tier at access provisioning.</p>
 
   <h3>Data residency</h3>
   <p>Production infrastructure is hosted in the European Union. Deployment options for the Enterprise tier are discussed at contracting.</p>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASGE Documentation — Methodology, integration, and applications</title>
-<meta name="description" content="ASGE documentation: quickstart, the three-stage computational pipeline, applications across research and intelligence, and downloadable PDFs.">
+<title>ASGE Documentation — Methodology, integration, applications</title>
+<meta name="description" content="ASGE documentation. Quickstart, the three-stage computational pipeline, applications across research and intelligence, and downloadable PDFs.">
 <link rel="canonical" href="https://llulllab.com/ASGE/docs/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://llulllab.com/ASGE/docs/">
@@ -13,112 +13,114 @@
 <meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-deep:#0e0f13;--bg-surface:#16171d;--bg-elevated:#1e2028;--bg-card:#252730;
-  --text-primary:#e8e4df;--text-secondary:#9b978f;--text-muted:#5e5b54;
-  --accent:#d4943a;--accent-glow:#d4943a44;--accent-bright:#f0b255;--accent-dim:#8b6225;
-  --negative:#c45c5c;--positive:#5ca87c;
-  --border:#2a2c35;--code-bg:#0a0b0e;
-  --radius:12px;--radius-sm:8px;
-  --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:40px;--space-2xl:64px;
-  --font-display:'Source Serif 4',Georgia,serif;
-  --font-mono:'JetBrains Mono','Courier New',monospace;
-  --transition-fast:150ms cubic-bezier(.4,0,.2,1);
+  --bg-deep:#0a0c10;--bg-surface:#0f1218;--bg-elevated:#161a22;--bg-2:#1a1e26;
+  --border:#22262e;--border-bright:#2d3340;
+  --text-primary:#e6e8ec;--text-secondary:#9ca3af;--text-muted:#6b7280;
+  --accent:#ff3b30;--accent-bright:#ff5e55;--accent-dim:#7a1c17;--accent-glow:rgba(255,59,48,0.18);
+  --positive:#34d399;--warn:#fbbf24;
+  --space-xs:6px;--space-sm:10px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--space-3xl:64px;
+  --radius-sm:2px;--radius:4px;
+  --transition-fast:120ms cubic-bezier(.4,0,.2,1);
+  --font-mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,monospace;
+  --font-display:"Source Serif 4",Georgia,serif;
+  --font-sans:"Inter","Helvetica Neue",system-ui,sans-serif;
 }
-@media(prefers-color-scheme:light){
-  :root{
-    --bg-deep:#e8eef5;--bg-surface:#dce5ee;--bg-elevated:#cfd9e4;--bg-card:#c2cdd9;
-    --text-primary:#1a2535;--text-secondary:#3a5068;--text-muted:#6a8099;
-    --accent:#1c7abf;--accent-glow:#1c7abf33;--accent-bright:#42a5c8;--accent-dim:#0d5a99;
-    --border:#b0c2d4;--code-bg:#0e0f13;
-  }
-}
-html{font-size:16px;scroll-behavior:smooth}
-body{font-family:var(--font-mono);background:var(--bg-deep);color:var(--text-primary);line-height:1.65;min-height:100vh;-webkit-font-smoothing:antialiased}
-a{color:var(--accent);text-decoration:none;transition:color var(--transition-fast)}
-a:hover{color:var(--accent-bright)}
-::selection{background:var(--accent-glow);color:var(--text-primary)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--radius-sm)}
+html,body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-sans);line-height:1.55;-webkit-font-smoothing:antialiased;font-size:15px;min-height:100vh}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:var(--bg-deep)}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg-deep)}::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-header{position:sticky;top:0;z-index:100;background:var(--bg-deep);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.nav-inner{max-width:1180px;margin:0 auto;padding:var(--space-md) var(--space-lg);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md)}
-.logo{font-family:var(--font-display);font-weight:700;font-size:1.5rem;letter-spacing:-0.03em;color:var(--accent);display:flex;align-items:center;gap:var(--space-sm)}
-.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
-.logo-sub{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-left:var(--space-xs)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.55}}
+
+header{position:sticky;top:0;z-index:40;background:rgba(10,12,16,0.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1400px;margin:0 auto;padding:var(--space-md) var(--space-lg);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md);height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-primary)}
+.logo-dot{width:8px;height:8px;background:var(--accent);box-shadow:0 0 14px var(--accent-glow);animation:pulse 2.4s ease-in-out infinite;flex-shrink:0}
+.logo-sub{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-left:8px}
 .nav-links{display:flex;align-items:center;gap:var(--space-lg)}
-.nav-links a{font-size:0.8rem;letter-spacing:0.04em;color:var(--text-secondary);font-weight:500}
+.nav-links a{color:var(--text-secondary);font-family:var(--font-mono);font-size:13px;letter-spacing:0.04em;transition:color var(--transition-fast)}
 .nav-links a:hover{color:var(--text-primary)}
 .nav-links a.active{color:var(--accent)}
 
-main{max-width:1180px;margin:0 auto;padding:var(--space-2xl) var(--space-lg)}
+main{max-width:1200px;margin:0 auto;padding:var(--space-3xl) var(--space-lg) var(--space-2xl)}
 
-.hero{padding:var(--space-xl) 0 var(--space-2xl);border-bottom:1px solid var(--border);margin-bottom:var(--space-xl)}
-.eyebrow{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:var(--space-md)}
-h1.title{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3rem);font-weight:600;line-height:1.1;letter-spacing:-0.02em;margin-bottom:var(--space-md);max-width:24ch}
-.lede{font-size:1rem;line-height:1.7;color:var(--text-secondary);max-width:62ch}
+.hero{padding:var(--space-2xl) 0 var(--space-2xl);border-bottom:1px solid var(--border);margin-bottom:var(--space-xl)}
+.hero-tag{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--space-md);padding:6px 12px;border:1px solid var(--accent-dim);background:var(--accent-glow)}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--accent)}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(34px,4.6vw,56px);line-height:1.05;letter-spacing:-0.02em;margin-bottom:var(--space-md);max-width:28ch}
+h1 .highlight{color:var(--accent)}
+.lede{font-size:16px;color:var(--text-secondary);line-height:1.65;max-width:620px}
+.lede strong{color:var(--text-primary);font-weight:500}
 
-.docs-layout{display:grid;grid-template-columns:220px 1fr;gap:var(--space-2xl);align-items:start}
+.docs-layout{display:grid;grid-template-columns:200px 1fr;gap:var(--space-2xl);align-items:start;margin-top:var(--space-xl)}
 .docs-toc{position:sticky;top:88px;padding:var(--space-md) 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.docs-toc .toc-label{font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:var(--space-md)}
+.docs-toc .toc-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:var(--space-md)}
 .docs-toc ol{list-style:none;counter-reset:tocnum}
 .docs-toc li{counter-increment:tocnum;padding:5px 0}
-.docs-toc a{font-size:0.78rem;color:var(--text-secondary);display:block;padding:2px 0;padding-left:10px;margin-left:-12px;border-left:2px solid transparent;transition:color var(--transition-fast),border-color var(--transition-fast)}
-.docs-toc a:hover{color:var(--text-primary);border-left-color:var(--border)}
-.docs-toc li a::before{content:counter(tocnum,decimal-leading-zero) " · ";color:var(--text-muted);font-family:var(--font-mono);font-size:0.7rem}
+.docs-toc a{font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;color:var(--text-secondary);display:block;padding:3px 0;padding-left:12px;margin-left:-14px;border-left:2px solid transparent;transition:color var(--transition-fast),border-color var(--transition-fast);text-transform:uppercase}
+.docs-toc a:hover{color:var(--text-primary);border-left-color:var(--border-bright)}
+.docs-toc li a::before{content:counter(tocnum,decimal-leading-zero) " · ";color:var(--text-muted)}
 
 .docs-body{min-width:0}
 .doc-section{padding-bottom:var(--space-2xl);margin-bottom:var(--space-2xl);border-bottom:1px solid var(--border)}
 .doc-section:last-child{border-bottom:none}
-.doc-section h2{font-family:var(--font-display);font-size:2rem;font-weight:600;letter-spacing:-0.01em;line-height:1.15;margin:var(--space-sm) 0 var(--space-md);max-width:24ch}
-.doc-section h3{font-family:var(--font-mono);font-size:0.78rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-top:var(--space-lg);margin-bottom:var(--space-sm)}
-.doc-section p{font-size:0.92rem;line-height:1.75;color:var(--text-secondary);margin-bottom:var(--space-sm);max-width:65ch}
-.doc-section p strong{color:var(--text-primary);font-weight:600}
-.doc-section ul,.doc-section ol{margin:var(--space-sm) 0 var(--space-md) var(--space-lg)}
-.doc-section li{font-size:0.92rem;line-height:1.7;color:var(--text-secondary);margin-bottom:var(--space-xs);max-width:62ch}
-code{font-family:var(--font-mono);font-size:0.82rem;background:var(--bg-elevated);padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--text-primary)}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--space-md)}
+.section-label::before{content:'';width:6px;height:6px;background:var(--accent)}
+.doc-section h2{font-family:var(--font-display);font-weight:400;font-size:clamp(26px,3.2vw,38px);letter-spacing:-0.015em;line-height:1.1;margin-bottom:var(--space-lg);max-width:32ch}
+.doc-section h3{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:var(--space-xl);margin-bottom:var(--space-sm)}
+.doc-section p{font-size:15px;color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-sm);max-width:65ch}
+.doc-section p strong{color:var(--text-primary);font-weight:500}
+.doc-section ul{margin:var(--space-sm) 0 var(--space-md) 0;list-style:none}
+.doc-section ul li{font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-xs);position:relative;padding-left:18px;max-width:62ch}
+.doc-section ul li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:1px;background:var(--accent)}
+code{font-family:var(--font-mono);font-size:12.5px;background:var(--bg-elevated);padding:2px 6px;border:1px solid var(--border);color:var(--text-primary)}
 
-pre.code{background:var(--code-bg);color:#e8e6df;font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;padding:var(--space-md) var(--space-lg);border-radius:var(--radius-sm);overflow-x:auto;white-space:pre;margin:var(--space-md) 0;border:1px solid var(--border)}
-pre.code .k{color:#a8c6e0}
-pre.code .s{color:#9bcf9b}
-pre.code .c{color:#6b7280;font-style:italic}
+pre.code{background:var(--bg-surface);color:#e6e8ec;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;padding:var(--space-lg);border:1px solid var(--border);overflow-x:auto;white-space:pre;margin:var(--space-md) 0}
+pre.code .k{color:#88b4d8}
+pre.code .s{color:#7eb47c}
+pre.code .c{color:var(--text-muted);font-style:italic}
 
-.callout{display:flex;gap:var(--space-md);padding:var(--space-md) var(--space-lg);margin:var(--space-md) 0;border-left:3px solid var(--accent);background:var(--bg-surface);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
-.callout .label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:600;flex-shrink:0;padding-top:2px;min-width:78px}
-.callout p{font-size:0.85rem;color:var(--text-primary);margin:0;line-height:1.65;max-width:none}
+.callout{display:flex;gap:var(--space-md);padding:var(--space-md) var(--space-lg);margin:var(--space-md) 0;border-left:2px solid var(--accent);background:var(--bg-surface)}
+.callout .label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:500;flex-shrink:0;padding-top:3px;min-width:60px}
+.callout p{font-size:13px;color:var(--text-primary);margin:0;line-height:1.65;max-width:none}
 
-.doc-section ol.stage-list{counter-reset:stage;list-style:none;margin-left:0;padding-left:0}
-.doc-section ol.stage-list li{counter-increment:stage;padding:var(--space-md) 0 var(--space-md) 56px;border-bottom:1px solid var(--border);position:relative;max-width:none}
+.doc-section ol.stage-list{counter-reset:stage;list-style:none;margin:var(--space-md) 0;padding:0}
+.doc-section ol.stage-list li{counter-increment:stage;padding:var(--space-md) 0 var(--space-md) 64px;border-bottom:1px solid var(--border);position:relative;max-width:none}
 .doc-section ol.stage-list li:last-child{border-bottom:none}
-.doc-section ol.stage-list li::before{content:counter(stage,decimal-leading-zero);position:absolute;left:0;top:var(--space-md);font-family:var(--font-mono);font-size:0.85rem;color:var(--accent);font-weight:600;letter-spacing:0.06em}
-.stage-title{display:block;font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--text-primary);margin-bottom:4px}
+.doc-section ol.stage-list li::before{content:counter(stage,decimal-leading-zero);position:absolute;left:0;top:var(--space-md);font-family:var(--font-mono);font-size:14px;color:var(--accent);font-weight:500;letter-spacing:0.06em}
+.stage-title{display:block;font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--text-primary);margin-bottom:var(--space-xs);letter-spacing:-0.01em}
+.doc-section ol.stage-list li p{margin:0;max-width:62ch}
 
 .appgrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-top:var(--space-md)}
-.appcard{padding:var(--space-md) var(--space-lg);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-surface)}
-.appcard .aname{font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--text-primary);margin-bottom:6px}
-.appcard p{font-size:0.82rem;line-height:1.55;color:var(--text-secondary);margin:0;max-width:none}
+.appcard{padding:var(--space-lg);border:1px solid var(--border);background:var(--bg-surface)}
+.appcard:hover{border-color:var(--border-bright)}
+.appcard .aname{font-family:var(--font-display);font-size:18px;font-weight:400;color:var(--text-primary);margin-bottom:var(--space-xs);letter-spacing:-0.01em}
+.appcard p{font-size:13px;line-height:1.65;color:var(--text-secondary);margin:0;max-width:none}
 
 .downloads-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);margin-top:var(--space-md)}
-.dl-card{display:flex;flex-direction:column;gap:8px;padding:var(--space-lg);border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-surface);transition:border-color var(--transition-fast),transform var(--transition-fast)}
+.dl-card{display:flex;flex-direction:column;gap:var(--space-sm);padding:var(--space-lg);border:1px solid var(--border);background:var(--bg-surface);transition:border-color var(--transition-fast),transform var(--transition-fast)}
 .dl-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.dl-card .dl-tag{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted)}
-.dl-card .dl-title{font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--text-primary);line-height:1.25}
-.dl-card .dl-desc{font-size:0.78rem;color:var(--text-secondary);line-height:1.55;flex:1}
-.dl-card .dl-cta{display:inline-flex;align-items:center;gap:8px;font-size:0.78rem;font-weight:600;color:var(--accent);margin-top:6px}
-.dl-card .dl-cta::after{content:"↓";font-family:var(--font-mono);font-size:0.85rem}
-.dl-card .dl-meta{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);margin-top:2px;letter-spacing:0.04em}
+.dl-card .dl-tag{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted)}
+.dl-card .dl-title{font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--text-primary);line-height:1.2;letter-spacing:-0.01em}
+.dl-card .dl-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;flex:1}
+.dl-card .dl-cta{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-top:var(--space-sm)}
+.dl-card .dl-cta::after{content:"↓";font-family:var(--font-mono);font-size:13px}
+.dl-card .dl-meta{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:0.06em}
 
-.contact{margin-top:var(--space-md);padding:var(--space-lg);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);display:grid;grid-template-columns:1fr auto;gap:var(--space-lg);align-items:center}
-.contact h3{font-family:var(--font-display);font-size:1.3rem;font-weight:600;margin-bottom:4px;color:var(--text-primary);text-transform:none;letter-spacing:normal}
-.contact p{font-size:0.85rem;color:var(--text-secondary);margin:0;max-width:55ch;line-height:1.55}
-.contact-cta{font-size:0.85rem;font-weight:600;padding:10px 18px;background:var(--accent);color:var(--bg-deep);border-radius:var(--radius-sm);white-space:nowrap}
-.contact-cta:hover{background:var(--accent-bright);color:var(--bg-deep)}
+.contact{margin-top:var(--space-md);padding:var(--space-xl);background:var(--bg-surface);border:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:var(--space-lg);align-items:center}
+.contact .contact-h{font-family:var(--font-display);font-size:22px;font-weight:400;color:var(--text-primary);margin-bottom:6px;letter-spacing:-0.01em}
+.contact p{font-size:13px;color:var(--text-secondary);margin:0;max-width:55ch;line-height:1.6}
+.contact-cta{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:13px 22px;background:var(--accent);color:var(--text-primary);white-space:nowrap;transition:background var(--transition-fast)}
+.contact-cta:hover{background:var(--accent-bright)}
 
-footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--border);margin-top:var(--space-2xl)}
-.footer-inner{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:6px}
-.footer-text{font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);letter-spacing:0.02em}
+footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--border);margin-top:var(--space-3xl)}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:6px}
+.footer-text{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.04em}
 .footer-text a{color:var(--text-muted)}
 .footer-text a:hover{color:var(--text-primary)}
 
@@ -136,7 +138,7 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
 <header>
   <nav class="nav-inner" role="navigation" aria-label="Main navigation">
     <a href="../" class="logo" aria-label="ASGE — back to product page">
-      <span class="logo-dot"></span>
+      <span class="logo-dot" aria-hidden="true"></span>
       ASGE
       <span class="logo-sub">DOCS</span>
     </a>
@@ -151,8 +153,8 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
 <main>
 
   <section class="hero">
-    <div class="eyebrow">Documentation</div>
-    <h1 class="title">A short, useful body of documentation.</h1>
+    <div class="hero-tag">Documentation</div>
+    <h1>A short, useful body of <span class="highlight">documentation.</span></h1>
     <p class="lede">Three documents cover everything required to integrate ASGE, defend its output to a research committee or an intelligence reviewer, and map its capabilities onto concrete applications. They are intentionally short.</p>
   </section>
 
@@ -172,15 +174,15 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
     <div class="docs-body">
 
       <section class="doc-section" id="doc-quickstart">
-        <div class="eyebrow">01 · Quickstart</div>
+        <div class="section-label">01 · Quickstart</div>
         <h2>Submit your first passage in under five minutes.</h2>
-        <p>Each session token is provisioned against a tier. Once issued, a single POST request returns a complete analysis: lexical pair density across the timeline, peak concentration moments, the dominant semantic-conflict theme, a structured analytical summary, and the graduated alert layer.</p>
+        <p>Each session token is provisioned against a tier. Once issued, a single POST request returns a complete analysis: lexical-density timeline, peak concentration moments, the dominant semantic-conflict theme, a structured analytical summary, and the graduated alert layer.</p>
 
         <h3>1. Obtain a session token</h3>
-        <p>API access is provisioned per organisation. Sandbox access is available on request and runs the full three-stage pipeline on a single language for evaluation. Write to <a href="mailto:growth.business@llulllab.com">growth.business@llulllab.com</a> with the tier you intend, the contracting entity, and the expected use case.</p>
+        <p>API access is provisioned per organisation. Sandbox access is available on request and runs the full three-stage pipeline on a single language for evaluation. Write to <a href="mailto:growth.business@llulllab.com" style="color:var(--accent)">growth.business@llulllab.com</a> with the tier you intend, the contracting entity, and the expected use case.</p>
 
         <h3>2. Submit a passage</h3>
-        <p>The endpoint is <code>POST https://api.llulllab.com/asge/v1/analyse</code>. The full schema is on the <a href="../api/">API page</a>. The minimum request carries the text, a language code, and a session token.</p>
+        <p>The endpoint is <code>POST https://api.llulllab.com/asge/v1/analyse</code>. The full schema is on the <a href="../api/" style="color:var(--accent)">API page</a>. The minimum request carries the text, a language code, and a session token.</p>
 
         <div class="callout">
           <div class="label">Tip</div>
@@ -199,7 +201,7 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
       </section>
 
       <section class="doc-section" id="doc-methodology">
-        <div class="eyebrow">02 · Methodology</div>
+        <div class="section-label">02 · Methodology</div>
         <h2>How ASGE actually arrives at an analysis.</h2>
         <p>ASGE detects, maps, and analyses <strong>ambivalence structures</strong> in natural language: the sustained co-presence of opposing orientations toward the same object. The concept is developed in anthropology and political science. Sustained ambivalence structures act as early indicators of neurotic crisis at the individual level, offensive escalation at the collective level, and criminal action across both &mdash; before these stabilise into observable behaviour.</p>
 
@@ -208,7 +210,7 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
         <ol class="stage-list">
           <li>
             <span class="stage-title">Real-time lexical detection</span>
-            <p>Proprietary multilingual lexical databases identify opposing orientations as they emerge across the passage. Each detection feeds the temporal map and contributes to the graduated alert layer. The lexical layer is the signal-capture mechanism that grounds the later stages.</p>
+            <p>Proprietary multilingual lexical databases identify opposing orientations as they emerge across the passage. Each detection feeds the temporal map and contributes to the graduated alert layer.</p>
           </li>
           <li>
             <span class="stage-title">Temporal density mapping</span>
@@ -228,18 +230,18 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
       </section>
 
       <section class="doc-section" id="doc-applications">
-        <div class="eyebrow">03 · Applications</div>
+        <div class="section-label">03 · Applications</div>
         <h2>Where ASGE adds a layer that existing toolchains do not provide.</h2>
         <p>Three buyer profiles deploy ASGE in production. Each uses the same API surface; the difference is the timeline and the source material.</p>
 
         <div class="appgrid">
           <div class="appcard">
             <div class="aname">Academic research</div>
-            <p>Anthropology, political science, and computational social science. Comparative analysis of speeches, interviews, and ethnographic transcripts where the ambivalence structure is the unit of analysis. Outputs feed published work and supervisorial review.</p>
+            <p>Anthropology, political science, and computational social science. Comparative analysis of speeches, interviews, and ethnographic transcripts where the ambivalence structure is the unit of analysis.</p>
           </div>
           <div class="appcard">
             <div class="aname">OSINT &amp; risk intelligence</div>
-            <p>Open-source intelligence units, threat-assessment teams, and risk analysts. Sustained ambivalence structures act as early indicators of escalation. ASGE adds a structural reading layer alongside existing sentiment, network, and event-based pipelines.</p>
+            <p>Open-source intelligence units, threat-assessment teams, and risk analysts. Sustained ambivalence structures act as early indicators of escalation. ASGE adds a structural reading alongside existing sentiment, network, and event-based pipelines.</p>
           </div>
           <div class="appcard">
             <div class="aname">Narrative &amp; media monitoring</div>
@@ -253,7 +255,7 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
       </section>
 
       <section class="doc-section" id="doc-downloads">
-        <div class="eyebrow">04 · Downloads</div>
+        <div class="section-label">04 · Downloads</div>
         <h2>The same material, in printable form.</h2>
         <p>Each section above is also available as a standalone PDF, formatted for circulation inside an organisation.</p>
 
@@ -285,13 +287,13 @@ footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--borde
       </section>
 
       <section class="doc-section" id="doc-contact" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
-        <div class="eyebrow">05 · Contact</div>
-        <h2>Sandbox access available on request.</h2>
+        <div class="section-label">05 · Contact</div>
+        <h2>Sandbox access <span class="highlight">available on request.</span></h2>
         <p>Integration enquiries, sandbox access, contract negotiations, on-premise discussions, or anything that requires more than a documentation page.</p>
 
         <div class="contact">
           <div>
-            <h3>Llull Lab &middot; Studio Llull</h3>
+            <div class="contact-h">Llull Lab &middot; Studio Llull</div>
             <p>Paris-based research laboratory. Written enquiries are answered within two business days.</p>
           </div>
           <a class="contact-cta" href="mailto:growth.business@llulllab.com?subject=ASGE%20sandbox%20access">growth.business@llulllab.com</a>
