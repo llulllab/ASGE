@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ASGE · Integration Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_print_styles.css">
+</head>
+<body>
+<div class="page">
+
+<section class="cover">
+  <div class="cover-strip">
+    <span><strong>LLULL LAB</strong> · STUDIO LLULL · PARIS</span>
+    <span>Document 01 · v1.0</span>
+  </div>
+  <div class="cover-body">
+    <div class="cover-tag">ASGE · Document 01</div>
+    <h1 class="cover-title">Integration <span class="h">Guide.</span></h1>
+    <p class="cover-subtitle">Quickstart, schema, error handling, and operational notes for engineers integrating ASGE into an analytical pipeline.</p>
+    <dl class="cover-meta">
+      <div><dt>Audience</dt><dd>Engineering</dd></div>
+      <div><dt>Version</dt><dd>1.0</dd></div>
+      <div><dt>Issued</dt><dd>May 2026</dd></div>
+    </dl>
+  </div>
+  <div class="cover-footer">
+    <span>llulllab.com / ASGE</span>
+    <span>growth.business@llulllab.com</span>
+  </div>
+</section>
+
+<div class="body">
+
+<section>
+  <div class="sec-label">01 · Overview</div>
+  <h1 class="sec-title">One endpoint. A complete analysis.</h1>
+  <p>ASGE exposes one operation: submit a passage, receive the full three-stage computational analysis of ambivalence structures across the timeline of the text. The response is a single JSON object that carries lexical-density timeline, peak concentration moments, the dominant semantic-conflict theme, a structured analytical summary, and a graduated alert layer.</p>
+  <p>There is no SDK to install, no message queue to provision, no callback URL to register. A single HTTPS request returns the full analysis in seconds.</p>
+</section>
+
+<section class="no-break">
+  <div class="sec-label">02 · Authentication</div>
+  <h1 class="sec-title">Session tokens.</h1>
+  <p>API access is provisioned per organisation against a tier (Professional, API / Integration, Enterprise). Sandbox access is issued separately on request for evaluation. Write to <code>growth.business@llulllab.com</code> with the tier you intend, the contracting entity, and the expected use case. A session token is issued by return.</p>
+  <p>The session token is passed in the <code>X-Session-Token</code> header on every request. Tokens are scoped to a single organisation and may be rotated on request. Token lifecycle, including expiry and rotation policy, is set at access provisioning.</p>
+  <div class="callout">
+    <div class="label">Custody</div>
+    <p>Treat the session token as a production secret. Storage in a managed secret vault is recommended. Rotation on personnel change is recommended. Compromise should be reported to <code>growth.business@llulllab.com</code> for immediate revocation.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">03 · The request</div>
+  <h1 class="sec-title">Submit a passage for analysis.</h1>
+  <p>The endpoint is <code>POST https://api.llulllab.com/asge/v1/analyse</code>. Content type is <code>application/json</code>. The minimum viable request carries the text, a language code, and the session token.</p>
+
+<pre class="code"><span class="c"># Submit a passage for ambivalence-structure analysis</span>
+curl -X POST https://api.llulllab.com/asge/v1/analyse \
+  -H <span class="s">"X-Session-Token: $ASGE_TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "text":     "The text to analyse. Paste a transcript, an interview, a speech, or any natural-language passage.",
+    "language": "en",
+    "mode":     "text",
+    "context":  {"source": "interview-2026-04-12"}
+  }'</span></pre>
+
+  <h3>Request fields</h3>
+  <table class="fields">
+    <thead><tr><th style="width:18%">Field</th><th style="width:20%">Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="fname">text</td><td class="ftype">string · required</td><td class="fdesc">The passage to analyse. Up to 10,000 words per submission. Line breaks segment temporal units.</td></tr>
+      <tr><td class="fname">language</td><td class="ftype">enum · required</td><td class="fdesc">One of <code>en</code>, <code>de</code>, <code>fr</code>, <code>es</code>, <code>tr</code>, <code>ja</code>, <code>he</code>, <code>fa</code>.</td></tr>
+      <tr><td class="fname">mode</td><td class="ftype">enum · optional</td><td class="fdesc"><code>text</code> (default) or <code>microphone</code>. The latter is reserved for sessions originating from a live recording context.</td></tr>
+      <tr><td class="fname">context</td><td class="ftype">object · optional</td><td class="fdesc">Optional metadata kept alongside the case record (source, author, date, location). Up to 4 KB.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="label">Tip</div>
+    <p>Line breaks segment temporal units. For passages that lack natural minute structure (essays, articles), break the text into paragraphs roughly equivalent to one minute of speech and the temporal density map will read naturally.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">04 · The response</div>
+  <h1 class="sec-title">A structured analysis, returned in one call.</h1>
+  <p>A successful response carries the full analysis as a single JSON object. The most useful fields, in order of how analysts typically consume them: the peak minute, the dominant theme, the conflict summary, the alert level, the trend timeline.</p>
+
+<pre class="code">{
+  <span class="k">"success"</span>: <span class="k">true</span>,
+  <span class="k">"analysis"</span>: {
+    <span class="k">"pairs"</span>: [
+      { <span class="k">"minute"</span>: 3, <span class="k">"type"</span>: <span class="s">"classic"</span>,    <span class="k">"context"</span>: <span class="s">"..."</span> },
+      { <span class="k">"minute"</span>: 7, <span class="k">"type"</span>: <span class="s">"contextual"</span>, <span class="k">"context"</span>: <span class="s">"..."</span> }
+    ],
+    <span class="k">"trend"</span>: [
+      { <span class="k">"minute"</span>: 1, <span class="k">"level"</span>: <span class="s">"low"</span>, <span class="k">"note"</span>: <span class="s">"..."</span> }
+      <span class="c">// minute-by-minute</span>
+    ],
+    <span class="k">"peak_minute"</span>:      4,
+    <span class="k">"dominant_theme"</span>:   <span class="s">"freedom &harr; constraint"</span>,
+    <span class="k">"conflict_summary"</span>: <span class="s">"Two to three sentences naming the sustained tensions."</span>,
+    <span class="k">"alert_level"</span>:      3
+  },
+  <span class="k">"stats"</span>: {
+    <span class="k">"word_count"</span>:    1820,
+    <span class="k">"pair_count"</span>:    24,
+    <span class="k">"classic_count"</span>: 17,
+    <span class="k">"context_count"</span>: 7,
+    <span class="k">"pairs_per_min"</span>: 2.4
+  }
+}</pre>
+
+  <h3>Response fields</h3>
+  <table class="fields">
+    <thead><tr><th style="width:26%">Field</th><th style="width:14%">Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="fname">success</td><td class="ftype">boolean</td><td class="fdesc">True when the three-stage computational pipeline completed.</td></tr>
+      <tr><td class="fname">analysis.pairs</td><td class="ftype">array</td><td class="fdesc">Each entry: minute, type (<code>classic</code> or <code>contextual</code>), and a short context fragment.</td></tr>
+      <tr><td class="fname">analysis.trend</td><td class="ftype">array</td><td class="fdesc">Minute-by-minute density with level and a one-line analytical note.</td></tr>
+      <tr><td class="fname">analysis.peak_minute</td><td class="ftype">integer</td><td class="fdesc">The minute index where ambivalence density is highest.</td></tr>
+      <tr><td class="fname">analysis.dominant_theme</td><td class="ftype">string</td><td class="fdesc">The dominant semantic-conflict theme, expressed as an opposition.</td></tr>
+      <tr><td class="fname">analysis.conflict_summary</td><td class="ftype">string</td><td class="fdesc">Two to three sentences naming the sustained tensions.</td></tr>
+      <tr><td class="fname">analysis.alert_level</td><td class="ftype">integer</td><td class="fdesc">Graduated alert from 1 to 4. Higher values correspond to denser concentrations.</td></tr>
+      <tr><td class="fname">stats</td><td class="ftype">object</td><td class="fdesc">Counts and densities: words, pairs, classic and contextual splits, pairs per minute.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="no-break">
+  <div class="sec-label">05 · Status codes</div>
+  <h1 class="sec-title">Six outcomes worth handling.</h1>
+
+  <div class="status-row">
+    <span class="chip"><span class="dot ok"></span>200 · success</span>
+    <span class="chip"><span class="dot warn"></span>400 · validation</span>
+    <span class="chip"><span class="dot bad"></span>401 · unauthenticated</span>
+    <span class="chip"><span class="dot warn"></span>413 · payload_too_large</span>
+    <span class="chip"><span class="dot warn"></span>429 · quota_exceeded</span>
+    <span class="chip"><span class="dot bad"></span>503 · transient_failure</span>
+  </div>
+
+  <h3>Validation (400)</h3>
+  <p>The request was rejected before analysis. Common causes: text below the minimum length, invalid language enum, malformed JSON. Not billed.</p>
+
+  <h3>Unauthenticated (401)</h3>
+  <p>The session token is missing, malformed, or revoked. Verify the <code>X-Session-Token</code> header. Not billed.</p>
+
+  <h3>Payload too large (413)</h3>
+  <p>The text exceeds 10,000 words. Split the passage and submit in batches; consider whether segmenting changes the analytical question.</p>
+
+  <h3>Quota exceeded (429)</h3>
+  <p>The tier's monthly included allowance, or a short-window rate limit, was exhausted. Overage pricing applies on tiers that permit it. Not billed when rejected.</p>
+
+  <h3>Transient failure (503)</h3>
+  <p>An upstream component briefly degraded. Safe to retry once after a short backoff. Auto-retry is performed internally; what reaches the client is a definitive verdict. Not billed.</p>
+</section>
+
+<section>
+  <div class="sec-label">06 · Operational notes</div>
+  <h1 class="sec-title">What you can rely on.</h1>
+
+  <h3>Transport</h3>
+  <p>HTTPS only, encrypted in transit. Connection keep-alive is honoured.</p>
+
+  <h3>Latency</h3>
+  <p>Typical end-to-end latency for a completed analysis depends on text length. Short passages (under 1,000 words) typically complete in under 20 seconds; longer passages scale with the number of temporal segments produced. The analysis is not designed for synchronous user-facing flows.</p>
+
+  <h3>Audit trail</h3>
+  <p>Every analysis is persisted with full lineage: input payload, detected structures, temporal trend, theme, summary, and alert level. Retention and retrieval terms are set per tier at access provisioning.</p>
+
+  <h3>Data residency</h3>
+  <p>Production infrastructure is hosted in the European Union. Deployment options for the Enterprise tier are discussed at contracting.</p>
+</section>
+
+<div class="colophon">
+  <p><strong>ASGE · Integration Guide · v1.0</strong> &nbsp; · &nbsp; Llull Lab &middot; Studio Llull &middot; Paris &nbsp; · &nbsp; growth.business@llulllab.com &nbsp; · &nbsp; llulllab.com/ASGE</p>
+  <p>This document is published as supporting material for the ASGE service. The infrastructure underneath is proprietary and is not part of the public contract. &copy; 2026 Llull Lab.</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

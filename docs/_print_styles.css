@@ -1,0 +1,106 @@
+/* Shared print stylesheet for ASGE PDF docs — signal-red aesthetic on white paper. */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#ffffff;
+  --paper-2:#f5f6f8;
+  --ink:#0a0c10;
+  --ink-2:#1a1e26;
+  --ink-3:#4b5563;
+  --ink-4:#9ca3af;
+  --rule:#d8dce3;
+  --rule-2:#e8ebef;
+  --accent:#ff3b30;
+  --accent-dim:#c92a22;
+  --accent-soft:#ffe9e7;
+  --code-bg:#0a0c10;
+  --font-display:'Source Serif 4',Georgia,serif;
+  --font-sans:'Inter','Helvetica Neue',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono',Consolas,monospace;
+}
+@page{size:A4;margin:22mm 20mm 22mm 20mm}
+html{font-size:15px}
+body{font-family:var(--font-sans);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{max-width:760px;margin:0 auto;padding:40px 50px 60px}
+
+.cover{page-break-after:always;min-height:calc(297mm - 44mm);display:flex;flex-direction:column;position:relative}
+.cover-strip{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--ink);font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-2)}
+.cover-strip strong{color:var(--ink);font-weight:600}
+.cover-body{flex:1;padding-top:80px}
+.cover-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:24px;padding:6px 12px;border:1px solid var(--accent);background:var(--accent-soft)}
+.cover-tag::before{content:'';width:6px;height:6px;background:var(--accent)}
+.cover-title{font-family:var(--font-display);font-size:62px;font-weight:400;letter-spacing:-0.02em;line-height:1.02;color:var(--ink);margin-bottom:20px;max-width:18ch}
+.cover-title .h{color:var(--accent)}
+.cover-subtitle{font-family:var(--font-display);font-size:22px;font-weight:400;font-style:italic;color:var(--ink-2);line-height:1.4;max-width:46ch;margin-bottom:60px}
+.cover-meta{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);padding-top:22px;margin-top:auto}
+.cover-meta > div{padding-right:24px}
+.cover-meta dt{font-family:var(--font-mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.cover-meta dd{font-family:var(--font-display);font-size:16px;font-weight:500;color:var(--ink)}
+.cover-footer{margin-top:24px;padding-top:18px;border-top:1px solid var(--ink);display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;color:var(--ink-3)}
+
+.body section{padding:36px 0;border-bottom:1px solid var(--rule-2)}
+.body section:last-child{border-bottom:none}
+.body section.no-break{page-break-inside:avoid}
+.sec-label{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:10px}
+.sec-label::before{content:'';width:6px;height:6px;background:var(--accent)}
+h1.sec-title{font-family:var(--font-display);font-size:34px;font-weight:400;letter-spacing:-0.015em;line-height:1.1;margin-bottom:14px;max-width:32ch}
+h1.sec-title .h{color:var(--accent)}
+h2{font-family:var(--font-display);font-size:22px;font-weight:400;letter-spacing:-0.01em;margin-top:26px;margin-bottom:10px}
+h3{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);margin-top:22px;margin-bottom:10px}
+p{font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:11px;max-width:64ch}
+p strong{color:var(--ink);font-weight:600}
+ul,ol{margin:8px 0 14px 0;list-style:none}
+li{font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:5px;max-width:62ch;position:relative;padding-left:18px}
+li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:1px;background:var(--accent)}
+code{font-family:var(--font-mono);font-size:11.5px;background:var(--paper-2);padding:1px 5px;border:1px solid var(--rule-2);color:var(--ink)}
+
+pre.code{background:var(--code-bg);color:#e8e6df;font-family:var(--font-mono);font-size:11px;line-height:1.6;padding:18px 20px;overflow-x:auto;white-space:pre;margin:12px 0;page-break-inside:avoid;border:1px solid var(--ink)}
+pre.code .k{color:#88b4d8}
+pre.code .s{color:#7eb47c}
+pre.code .c{color:#6b7280;font-style:italic}
+
+.callout{display:flex;gap:14px;padding:14px 16px;margin:14px 0;border-left:2px solid var(--accent);background:var(--accent-soft);page-break-inside:avoid}
+.callout .label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);font-weight:600;flex-shrink:0;padding-top:2px;min-width:60px}
+.callout p{font-size:12.5px;color:var(--ink);margin:0;line-height:1.6;max-width:none}
+
+table.fields{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0;border:1px solid var(--rule);page-break-inside:avoid}
+table.fields th,table.fields td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+table.fields tr:last-child td{border-bottom:none}
+table.fields th{font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;background:var(--paper-2)}
+table.fields td.fname{font-family:var(--font-mono);font-size:11px;color:var(--ink);white-space:nowrap}
+table.fields td.ftype{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3);white-space:nowrap}
+table.fields td.fdesc{color:var(--ink-2);line-height:1.55}
+
+.status-row{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.chip{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10px;color:var(--ink-2);padding:5px 10px;border:1px solid var(--rule);letter-spacing:0.04em}
+.chip .dot{width:6px;height:6px}
+.chip .dot.ok{background:#16a34a}
+.chip .dot.warn{background:#d97706}
+.chip .dot.bad{background:var(--accent)}
+
+ol.stages{counter-reset:stage;margin:14px 0;padding:0}
+ol.stages > li{counter-increment:stage;padding:18px 0 18px 64px;border-bottom:1px solid var(--rule-2);position:relative;page-break-inside:avoid;max-width:none}
+ol.stages > li:last-child{border-bottom:none}
+ol.stages > li::before{content:counter(stage,decimal-leading-zero);position:absolute;left:0;top:18px;width:auto;height:auto;background:transparent;font-family:var(--font-mono);font-size:14px;color:var(--accent);font-weight:500;letter-spacing:0.06em}
+ol.stages .stage-title{display:block;font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--ink);margin-bottom:6px;letter-spacing:-0.01em}
+
+.case{margin:18px 0;padding:18px 22px;background:var(--paper-2);border-left:2px solid var(--accent);page-break-inside:avoid}
+.case .case-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:6px}
+.case h2{font-family:var(--font-display);font-size:20px;font-weight:400;margin:0 0 6px;color:var(--ink);max-width:none;letter-spacing:-0.01em}
+.case p{font-size:13px;margin:0 0 8px;max-width:none}
+.case p:last-child{margin-bottom:0}
+
+table.gloss{width:100%;border-collapse:collapse;font-size:12.5px;margin:14px 0;border:1px solid var(--rule);page-break-inside:avoid}
+table.gloss th,table.gloss td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+table.gloss tr:last-child td{border-bottom:none}
+table.gloss th{font-family:var(--font-mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;background:var(--paper-2)}
+table.gloss td.term{font-family:var(--font-display);font-weight:500;color:var(--ink);white-space:nowrap;font-size:13px}
+table.gloss td.def{color:var(--ink-2);line-height:1.6}
+
+.colophon{margin-top:48px;padding-top:20px;border-top:1px solid var(--ink);font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.04em;color:var(--ink-3);line-height:1.6}
+.colophon strong{color:var(--ink);font-weight:600}
+
+@media print{
+  body{background:#fff}
+  .page{padding:0;max-width:none}
+  pre.code,.callout,.case,table.fields th,table.gloss th,.cover-tag{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

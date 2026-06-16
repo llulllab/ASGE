@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ASGE · Methodology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_print_styles.css">
+</head>
+<body>
+<div class="page">
+
+<section class="cover">
+  <div class="cover-strip">
+    <span><strong>LLULL LAB</strong> · STUDIO LLULL · PARIS</span>
+    <span>Document 02 · v1.0</span>
+  </div>
+  <div class="cover-body">
+    <div class="cover-tag">ASGE · Document 02</div>
+    <h1 class="cover-title"><span class="h">Methodology.</span></h1>
+    <p class="cover-subtitle">How ASGE arrives at an analysis. Written to be read by a research or oversight committee and to survive their scrutiny.</p>
+    <dl class="cover-meta">
+      <div><dt>Audience</dt><dd>Research &amp; Oversight</dd></div>
+      <div><dt>Version</dt><dd>1.0</dd></div>
+      <div><dt>Issued</dt><dd>May 2026</dd></div>
+    </dl>
+  </div>
+  <div class="cover-footer">
+    <span>llulllab.com / ASGE</span>
+    <span>growth.business@llulllab.com</span>
+  </div>
+</section>
+
+<div class="body">
+
+<section>
+  <div class="sec-label">01 · Premise</div>
+  <h1 class="sec-title">Why ambivalence, not sentiment.</h1>
+  <p>ASGE detects, maps, and analyses <strong>ambivalence structures</strong> in natural language: the sustained co-presence of opposing orientations toward the same object. The concept is developed in anthropology and political science. Sustained ambivalence structures act as early indicators of neurotic crisis at the individual level, offensive escalation at the collective level, and criminal action across both &mdash; before these stabilise into observable behaviour.</p>
+  <p>Standard sentiment classifiers flatten ambiguity into positive, negative, or neutral. The signal that actually precedes escalation or crisis sits in the gap those models discard. ASGE adds a layer that existing OSINT, risk, and intelligence toolchains do not provide: a structural reading of sustained co-presence of opposing orientations, mapped against time, with a written summary and a graduated alert.</p>
+</section>
+
+<section>
+  <div class="sec-label">02 · The three-stage pipeline</div>
+  <h1 class="sec-title">Three stages from passage to analysis.</h1>
+  <p>Each analysis passes through a <strong>three-stage computational pipeline</strong>. Every stage's output is part of the public contract and is returned in the response. The infrastructure underneath is proprietary.</p>
+
+  <ol class="stages">
+    <li>
+      <span class="stage-title">Real-time lexical detection</span>
+      <p>Proprietary multilingual lexical databases identify opposing orientations as they emerge across the passage. Detections are emitted with their position in the text and their context fragment. The lexical layer is the signal-capture mechanism that grounds the later stages and supports the graduated alert layer in real-time use.</p>
+    </li>
+    <li>
+      <span class="stage-title">Temporal density mapping</span>
+      <p>The system constructs a minute-by-minute density map of detected ambivalence across the passage. Three complementary visualisations are available: wave (continuous flow), bar (discrete per-minute counts), and delta (rate of change). The minute where ambivalence concentration is highest is surfaced explicitly as the peak minute.</p>
+    </li>
+    <li>
+      <span class="stage-title">Deep contextual analysis</span>
+      <p>A deep contextual analysis layer goes beyond dictionary-level pairs to identify <strong>contextual ambivalence</strong>: opposing orientations that the surface vocabulary does not name. The stage produces the dominant theme (an opposition the passage is organised around), the structured analytical summary (two to three sentences naming the sustained tensions), and the graduated alert level.</p>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-label">03 · The eight languages</div>
+  <h1 class="sec-title">English, German, French, Spanish, Turkish, Japanese, Hebrew, and Persian.</h1>
+  <p>ASGE supports analysis in eight languages. The three-stage pipeline operates on each. Two language-specific notes are worth flagging for an analyst.</p>
+
+  <h3>Japanese</h3>
+  <p>Japanese lacks whitespace-based word boundaries, which limits the lexical detection layer compared with the other seven languages. The deep contextual analysis layer is unaffected and operates with full fidelity.</p>
+
+  <h3>Hebrew and Persian</h3>
+  <p>Hebrew and Persian dictionaries operate in full. The on-page rendering is currently left-to-right; right-to-left display polish is on the roadmap and does not affect the analytical output.</p>
+</section>
+
+<section class="no-break">
+  <div class="sec-label">04 · What the output gives an analyst</div>
+  <h1 class="sec-title">The audit profile of an analysis.</h1>
+  <p>Every completed analysis carries the following on record. This is the material a committee, a co-author, or a regulator may consult; it is also the material on which ASGE asks to be evaluated.</p>
+  <ul>
+    <li><strong>Temporal density map</strong> &mdash; minute-by-minute ambivalence density across the passage.</li>
+    <li><strong>Peak concentration moment</strong> &mdash; where to look first.</li>
+    <li><strong>Dominant semantic-conflict theme</strong> &mdash; the opposition the passage is organised around.</li>
+    <li><strong>Structured analytical summary</strong> &mdash; two to three sentences naming the sustained tensions.</li>
+    <li><strong>Graduated alert layer</strong> &mdash; level 1 to 4, calibrated against density and pattern.</li>
+    <li><strong>Detected structures list</strong> &mdash; classic and contextual detections with minute and context fragment.</li>
+    <li><strong>Statistics</strong> &mdash; word count, structure counts, structures per minute, classic and contextual splits.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-label">05 · How quality and coverage change over time</div>
+  <h1 class="sec-title">Lexical databases evolve; deep analysis improves.</h1>
+  <p>ASGE does not pretend to be static. The lexical databases are versioned and grow with field use; the contextual analysis layer is refined against accumulated case material. Two consequences follow.</p>
+  <ul>
+    <li>Coverage on under-represented domains improves with use. Organisations submitting passages from a specific domain (intelligence, ethnographic interviews, narrative monitoring) see tighter readings over time.</li>
+    <li>The lexical layer evolves under version control. Analyses are reproducible from the case record; vocabulary shifts are auditable.</li>
+  </ul>
+  <p>Enterprise customers may operate against a private deployment so that their corpus does not contribute to or draw from the shared lexical layer.</p>
+</section>
+
+<section class="no-break">
+  <div class="sec-label">06 · What ASGE is not</div>
+  <h1 class="sec-title">Boundaries of the claim.</h1>
+  <ul>
+    <li><strong>Not a substitute for analytical judgement.</strong> ASGE produces a structured reading; the interpretation and the action that follows remain the responsibility of the deploying analyst or institution.</li>
+    <li><strong>Not a sentiment classifier.</strong> ASGE does not assign positive, negative, or neutral labels. The unit of analysis is the ambivalence structure, not the polarity.</li>
+    <li><strong>Not a predictor of individual behaviour.</strong> Sustained ambivalence structures are pre-crisis indicators at the levels named in the premise. They are not behavioural predictions about a named person.</li>
+    <li><strong>Not deterministic.</strong> The contextual analysis layer is probabilistic. Submitting the same passage twice produces two analyses that agree on the major findings; minor wording in the analytical summary may differ.</li>
+  </ul>
+</section>
+
+<div class="colophon">
+  <p><strong>ASGE · Methodology · v1.0</strong> &nbsp; · &nbsp; Llull Lab &middot; Studio Llull &middot; Paris &nbsp; · &nbsp; growth.business@llulllab.com &nbsp; · &nbsp; llulllab.com/ASGE</p>
+  <p>This document describes ASGE's externally observable methodology. The internal implementation is proprietary. &copy; 2026 Llull Lab.</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

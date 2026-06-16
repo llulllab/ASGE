@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ASGE · Applications &amp; Use Cases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_print_styles.css">
+</head>
+<body>
+<div class="page">
+
+<section class="cover">
+  <div class="cover-strip">
+    <span><strong>LLULL LAB</strong> · STUDIO LLULL · PARIS</span>
+    <span>Document 03 · v1.0</span>
+  </div>
+  <div class="cover-body">
+    <div class="cover-tag">ASGE · Document 03</div>
+    <h1 class="cover-title">Applications &amp; <span class="h">Use Cases.</span></h1>
+    <p class="cover-subtitle">Three buyer profiles deploy ASGE in production. This document sketches how each uses the same API surface and where ASGE adds a layer that existing toolchains do not provide.</p>
+    <dl class="cover-meta">
+      <div><dt>Audience</dt><dd>Practitioners &amp; Buyers</dd></div>
+      <div><dt>Version</dt><dd>1.0</dd></div>
+      <div><dt>Issued</dt><dd>May 2026</dd></div>
+    </dl>
+  </div>
+  <div class="cover-footer">
+    <span>llulllab.com / ASGE</span>
+    <span>growth.business@llulllab.com</span>
+  </div>
+</section>
+
+<div class="body">
+
+<section>
+  <div class="sec-label">01 · Scope</div>
+  <h1 class="sec-title">What this document is, and is not.</h1>
+  <p>This document sketches three applied profiles &mdash; academic research, OSINT and risk intelligence, and narrative or media monitoring &mdash; with a short case in each. The cases are composite illustrations: the analytical pattern is real; the institutions named are not.</p>
+  <p>A reference glossary at the end fixes the meaning of the metrics ASGE returns. Use it to verify that what you are reading from the output is what you intend it to mean.</p>
+</section>
+
+<section>
+  <div class="sec-label">02 · Academic research</div>
+  <h1 class="sec-title">When the ambivalence structure is the unit of analysis.</h1>
+  <p>In anthropology, political science, and computational social science, the analytical move is often to characterise the structural ambivalence in a corpus of speeches, interviews, or ethnographic transcripts. Standard sentiment tools answer the wrong question: they classify polarity. The question that matters is how an interlocutor (or a community, or a leader) sustains opposing orientations toward the same object across time.</p>
+
+  <div class="case">
+    <div class="case-label">Composite case</div>
+    <h2>Coding a corpus of leadership speeches.</h2>
+    <p>A political science research group compares two leaders' rhetoric across a six-month policy crisis. The conventional reading classifies each speech as confrontational, conciliatory, or mixed. ASGE returns, for each speech: peak concentration moment, dominant theme (the opposition the speech is organised around), structured analytical summary, alert level, and minute-by-minute trend.</p>
+    <p>The comparative finding emerges in the temporal map. Leader A's ambivalence density is concentrated in the opening minutes (framing-stage ambivalence, resolved as the speech proceeds). Leader B's density rises through the speech and peaks at the close (sustained, unresolved ambivalence). The conventional reading flattens both as "mixed". ASGE separates them.</p>
+  </div>
+
+  <h3>Typical workflow</h3>
+  <ul>
+    <li>Pre-segment passages by speaker or by source.</li>
+    <li>Submit each passage via the API with the appropriate <code>language</code> code.</li>
+    <li>Persist <code>case_id</code> and timestamp; cross-reference with the deployer's own corpus identifier.</li>
+    <li>Build comparative figures from <code>analysis.trend</code> across cases.</li>
+    <li>Cite the dominant theme and the conflict summary in the eventual write-up.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-label">03 · OSINT &amp; risk intelligence</div>
+  <h1 class="sec-title">When sustained ambivalence is a pre-crisis indicator.</h1>
+  <p>Open-source intelligence units, threat-assessment teams, and risk analysts already operate sentiment, network, and event-based pipelines. Sustained ambivalence structures act as <strong>early indicators of escalation</strong>: at the individual level, of neurotic crisis; at the collective level, of offensive escalation; across both, of criminal action. They appear before the behaviour they precede stabilises into observable form.</p>
+  <p>ASGE adds a structural reading layer alongside the existing toolchain. It does not replace the sentiment classifier; it answers a question the sentiment classifier cannot answer.</p>
+
+  <div class="case">
+    <div class="case-label">Composite case</div>
+    <h2>A risk-monitoring team's reading rhythm.</h2>
+    <p>A risk-intelligence team watches a stream of public statements from an actor of interest. The existing pipeline flags an above-threshold spike in negative sentiment in three of the last fourteen items. ASGE flags two of the same items at alert level 3 or higher, but it also flags a fourth item that the sentiment pipeline classified as neutral.</p>
+    <p>On review, the fourth item carries a sustained co-presence of opposing orientations toward the same target (commitment and divestment, fluency and rupture). The reading rhythm shifts: the team treats the fourth item as a stronger signal than the three above-threshold negatives, because its structural reading carries pre-crisis weight that polarity does not.</p>
+  </div>
+
+  <h3>Where ASGE sits in the toolchain</h3>
+  <ul>
+    <li>After ingest and language detection, before triage.</li>
+    <li>Output joins the case record alongside sentiment, named-entity recognition, and event extraction.</li>
+    <li>The <code>analysis.alert_level</code> feeds the triage rule; the <code>analysis.conflict_summary</code> feeds the analyst review.</li>
+    <li>Peak minute and dominant theme cross-reference with the timeline of the underlying file.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-label">04 · Narrative &amp; media monitoring</div>
+  <h1 class="sec-title">When the audience's orientation moves faster than polarity.</h1>
+  <p>Strategic communications, public-affairs analytics, and media-research teams track how an audience's orientation toward an object shifts across a media cycle. The binary positive-or-negative reading flattens the relevant signal: when an audience is moving from sustained acceptance to sustained ambivalence, the polarity has not yet shifted, but the ground has.</p>
+
+  <div class="case">
+    <div class="case-label">Composite case</div>
+    <h2>A communications team reading a cycle.</h2>
+    <p>A communications team tracks the orientation of a public conversation around a programme rollout. Across a four-week cycle, the sentiment trend is flat: net favourability does not move. ASGE's trend across the same passages rises week on week: ambivalence density doubles between weeks one and four, and the dominant theme shifts from a single-axis opposition (benefit and cost) to a double-axis opposition (benefit and cost, trust and discretion).</p>
+    <p>The communications response is reframed not because polarity moved but because the structural reading did. The team treats the cycle as ambivalence-accumulating rather than sentiment-stable.</p>
+  </div>
+
+  <h3>Recurring uses</h3>
+  <ul>
+    <li>Comparing ambivalence trajectories across audience segments.</li>
+    <li>Cross-referencing peak minute with the media event timeline.</li>
+    <li>Tracking dominant theme drift across a multi-week cycle.</li>
+    <li>Triggering qualitative review when alert level crosses a tier-defined threshold.</li>
+  </ul>
+</section>
+
+<section class="no-break">
+  <div class="sec-label">05 · Reference glossary</div>
+  <h1 class="sec-title">What each metric means.</h1>
+  <p>The terms below appear in every ASGE response and across the documentation. Use this table to verify that what you are reading is what you intend it to mean.</p>
+
+  <table class="gloss">
+    <thead><tr><th style="width:30%">Term</th><th>Definition</th></tr></thead>
+    <tbody>
+      <tr><td class="term">Ambivalence structure</td><td class="def">The sustained co-presence of opposing orientations toward the same object. The unit of analysis ASGE returns.</td></tr>
+      <tr><td class="term">Classic detection</td><td class="def">A detection drawn from the lexical layer. The opposing orientations are named explicitly by the vocabulary of the passage.</td></tr>
+      <tr><td class="term">Contextual detection</td><td class="def">A detection drawn from the deep contextual analysis layer. The opposing orientations are present structurally but not named by the surface vocabulary.</td></tr>
+      <tr><td class="term">Temporal density map</td><td class="def">Minute-by-minute ambivalence density across the passage. Available as wave, bar, or delta visualisation.</td></tr>
+      <tr><td class="term">Peak minute</td><td class="def">The minute index where ambivalence concentration is highest in the passage. Returned as an integer.</td></tr>
+      <tr><td class="term">Dominant theme</td><td class="def">The opposition the passage is organised around. Returned as a short string in the form of a paired tension.</td></tr>
+      <tr><td class="term">Structured analytical summary</td><td class="def">Two to three sentences naming the sustained tensions across the passage. Returned as <code>conflict_summary</code>.</td></tr>
+      <tr><td class="term">Graduated alert layer</td><td class="def">Level 1 to 4 calibrated against ambivalence density and pattern. Higher values warrant closer attention.</td></tr>
+      <tr><td class="term">Structures per minute</td><td class="def">The structure count divided by the minute count. A density rate that allows comparison across passages of different length.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="colophon">
+  <p><strong>ASGE · Applications &amp; Use Cases · v1.0</strong> &nbsp; · &nbsp; Llull Lab &middot; Studio Llull &middot; Paris &nbsp; · &nbsp; growth.business@llulllab.com &nbsp; · &nbsp; llulllab.com/ASGE</p>
+  <p>This document is informational. Cases are composite illustrations. The underlying analytical pattern is real; the institutions named are not. &copy; 2026 Llull Lab.</p>
+</div>
+
+</div>
+</div>
+</body>
+</html>

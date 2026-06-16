@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASGE Documentation — Methodology, integration, applications</title>
+<meta name="description" content="ASGE documentation. Quickstart, the three-stage computational pipeline, applications across research and intelligence, and downloadable PDFs.">
+<link rel="canonical" href="https://llulllab.com/ASGE/docs/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://llulllab.com/ASGE/docs/">
+<meta property="og:title" content="ASGE Documentation">
+<meta property="og:description" content="Methodology, integration, and applications for ASGE — the ambivalence-structure analysis engine.">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#0a0c10;--bg-surface:#0f1218;--bg-elevated:#161a22;--bg-2:#1a1e26;
+  --border:#22262e;--border-bright:#2d3340;
+  --text-primary:#e6e8ec;--text-secondary:#9ca3af;--text-muted:#6b7280;
+  --accent:#ff3b30;--accent-bright:#ff5e55;--accent-dim:#7a1c17;--accent-glow:rgba(255,59,48,0.18);
+  --positive:#34d399;--warn:#fbbf24;
+  --space-xs:6px;--space-sm:10px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--space-3xl:64px;
+  --radius-sm:2px;--radius:4px;
+  --transition-fast:120ms cubic-bezier(.4,0,.2,1);
+  --font-mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,monospace;
+  --font-display:"Source Serif 4",Georgia,serif;
+  --font-sans:"Inter","Helvetica Neue",system-ui,sans-serif;
+}
+html,body{background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-sans);line-height:1.55;-webkit-font-smoothing:antialiased;font-size:15px;min-height:100vh}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:var(--bg-deep)}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg-deep)}::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.55}}
+
+header{position:sticky;top:0;z-index:40;background:rgba(10,12,16,0.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1400px;margin:0 auto;padding:var(--space-md) var(--space-lg);display:flex;align-items:center;justify-content:space-between;gap:var(--space-md);height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-primary)}
+.logo-dot{width:8px;height:8px;background:var(--accent);box-shadow:0 0 14px var(--accent-glow);animation:pulse 2.4s ease-in-out infinite;flex-shrink:0}
+.logo-sub{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-left:8px}
+.nav-links{display:flex;align-items:center;gap:var(--space-lg)}
+.nav-links a{color:var(--text-secondary);font-family:var(--font-mono);font-size:13px;letter-spacing:0.04em;transition:color var(--transition-fast)}
+.nav-links a:hover{color:var(--text-primary)}
+.nav-links a.active{color:var(--accent)}
+
+main{max-width:1200px;margin:0 auto;padding:var(--space-3xl) var(--space-lg) var(--space-2xl)}
+
+.hero{padding:var(--space-2xl) 0 var(--space-2xl);border-bottom:1px solid var(--border);margin-bottom:var(--space-xl)}
+.hero-tag{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--space-md);padding:6px 12px;border:1px solid var(--accent-dim);background:var(--accent-glow)}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--accent)}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(34px,4.6vw,56px);line-height:1.05;letter-spacing:-0.02em;margin-bottom:var(--space-md);max-width:28ch}
+h1 .highlight{color:var(--accent)}
+.lede{font-size:16px;color:var(--text-secondary);line-height:1.65;max-width:620px}
+.lede strong{color:var(--text-primary);font-weight:500}
+
+.docs-layout{display:grid;grid-template-columns:200px 1fr;gap:var(--space-2xl);align-items:start;margin-top:var(--space-xl)}
+.docs-toc{position:sticky;top:88px;padding:var(--space-md) 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.docs-toc .toc-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:var(--space-md)}
+.docs-toc ol{list-style:none;counter-reset:tocnum}
+.docs-toc li{counter-increment:tocnum;padding:5px 0}
+.docs-toc a{font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;color:var(--text-secondary);display:block;padding:3px 0;padding-left:12px;margin-left:-14px;border-left:2px solid transparent;transition:color var(--transition-fast),border-color var(--transition-fast);text-transform:uppercase}
+.docs-toc a:hover{color:var(--text-primary);border-left-color:var(--border-bright)}
+.docs-toc li a::before{content:counter(tocnum,decimal-leading-zero) " · ";color:var(--text-muted)}
+
+.docs-body{min-width:0}
+.doc-section{padding-bottom:var(--space-2xl);margin-bottom:var(--space-2xl);border-bottom:1px solid var(--border)}
+.doc-section:last-child{border-bottom:none}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--space-md)}
+.section-label::before{content:'';width:6px;height:6px;background:var(--accent)}
+.doc-section h2{font-family:var(--font-display);font-weight:400;font-size:clamp(26px,3.2vw,38px);letter-spacing:-0.015em;line-height:1.1;margin-bottom:var(--space-lg);max-width:32ch}
+.doc-section h3{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:var(--space-xl);margin-bottom:var(--space-sm)}
+.doc-section p{font-size:15px;color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-sm);max-width:65ch}
+.doc-section p strong{color:var(--text-primary);font-weight:500}
+.doc-section ul{margin:var(--space-sm) 0 var(--space-md) 0;list-style:none}
+.doc-section ul li{font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-xs);position:relative;padding-left:18px;max-width:62ch}
+.doc-section ul li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:1px;background:var(--accent)}
+code{font-family:var(--font-mono);font-size:12.5px;background:var(--bg-elevated);padding:2px 6px;border:1px solid var(--border);color:var(--text-primary)}
+
+pre.code{background:var(--bg-surface);color:#e6e8ec;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;padding:var(--space-lg);border:1px solid var(--border);overflow-x:auto;white-space:pre;margin:var(--space-md) 0}
+pre.code .k{color:#88b4d8}
+pre.code .s{color:#7eb47c}
+pre.code .c{color:var(--text-muted);font-style:italic}
+
+.callout{display:flex;gap:var(--space-md);padding:var(--space-md) var(--space-lg);margin:var(--space-md) 0;border-left:2px solid var(--accent);background:var(--bg-surface)}
+.callout .label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:500;flex-shrink:0;padding-top:3px;min-width:60px}
+.callout p{font-size:13px;color:var(--text-primary);margin:0;line-height:1.65;max-width:none}
+
+.doc-section ol.stage-list{counter-reset:stage;list-style:none;margin:var(--space-md) 0;padding:0}
+.doc-section ol.stage-list li{counter-increment:stage;padding:var(--space-md) 0 var(--space-md) 64px;border-bottom:1px solid var(--border);position:relative;max-width:none}
+.doc-section ol.stage-list li:last-child{border-bottom:none}
+.doc-section ol.stage-list li::before{content:counter(stage,decimal-leading-zero);position:absolute;left:0;top:var(--space-md);font-family:var(--font-mono);font-size:14px;color:var(--accent);font-weight:500;letter-spacing:0.06em}
+.stage-title{display:block;font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--text-primary);margin-bottom:var(--space-xs);letter-spacing:-0.01em}
+.doc-section ol.stage-list li p{margin:0;max-width:62ch}
+
+.appgrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-top:var(--space-md)}
+.appcard{padding:var(--space-lg);border:1px solid var(--border);background:var(--bg-surface)}
+.appcard:hover{border-color:var(--border-bright)}
+.appcard .aname{font-family:var(--font-display);font-size:18px;font-weight:400;color:var(--text-primary);margin-bottom:var(--space-xs);letter-spacing:-0.01em}
+.appcard p{font-size:13px;line-height:1.65;color:var(--text-secondary);margin:0;max-width:none}
+
+.downloads-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);margin-top:var(--space-md)}
+.dl-card{display:flex;flex-direction:column;gap:var(--space-sm);padding:var(--space-lg);border:1px solid var(--border);background:var(--bg-surface);transition:border-color var(--transition-fast),transform var(--transition-fast)}
+.dl-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.dl-card .dl-tag{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted)}
+.dl-card .dl-title{font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--text-primary);line-height:1.2;letter-spacing:-0.01em}
+.dl-card .dl-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;flex:1}
+.dl-card .dl-cta{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-top:var(--space-sm)}
+.dl-card .dl-cta::after{content:"↓";font-family:var(--font-mono);font-size:13px}
+.dl-card .dl-meta{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:0.06em}
+
+.contact{margin-top:var(--space-md);padding:var(--space-xl);background:var(--bg-surface);border:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:var(--space-lg);align-items:center}
+.contact .contact-h{font-family:var(--font-display);font-size:22px;font-weight:400;color:var(--text-primary);margin-bottom:6px;letter-spacing:-0.01em}
+.contact p{font-size:13px;color:var(--text-secondary);margin:0;max-width:55ch;line-height:1.6}
+.contact-cta{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:13px 22px;background:var(--accent);color:var(--text-primary);white-space:nowrap;transition:background var(--transition-fast)}
+.contact-cta:hover{background:var(--accent-bright)}
+
+footer{padding:var(--space-2xl) var(--space-lg);border-top:1px solid var(--border);margin-top:var(--space-3xl)}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:6px}
+.footer-text{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:0.04em}
+.footer-text a{color:var(--text-muted)}
+.footer-text a:hover{color:var(--text-primary)}
+
+@media(max-width:900px){
+  .docs-layout{grid-template-columns:1fr;gap:var(--space-lg)}
+  .docs-toc{position:static}
+  .downloads-grid{grid-template-columns:1fr}
+  .appgrid{grid-template-columns:1fr}
+  .contact{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-inner" role="navigation" aria-label="Main navigation">
+    <a href="../" class="logo" aria-label="ASGE — back to product page">
+      <span class="logo-dot" aria-hidden="true"></span>
+      ASGE
+      <span class="logo-sub">DOCS</span>
+    </a>
+    <div class="nav-links">
+      <a href="../">Product</a>
+      <a href="../api/">API</a>
+      <a href="../docs/" class="active">Docs</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="hero-tag">Documentation</div>
+    <h1>A short, useful body of <span class="highlight">documentation.</span></h1>
+    <p class="lede">Three documents cover everything required to integrate ASGE, defend its output to a research committee or an intelligence reviewer, and map its capabilities onto concrete applications. They are intentionally short.</p>
+  </section>
+
+  <div class="docs-layout">
+
+    <aside class="docs-toc" aria-label="Documentation sections">
+      <div class="toc-label">Contents</div>
+      <ol>
+        <li><a href="#doc-quickstart">Quickstart</a></li>
+        <li><a href="#doc-methodology">Methodology</a></li>
+        <li><a href="#doc-applications">Applications</a></li>
+        <li><a href="#doc-downloads">Downloads</a></li>
+        <li><a href="#doc-contact">Contact</a></li>
+      </ol>
+    </aside>
+
+    <div class="docs-body">
+
+      <section class="doc-section" id="doc-quickstart">
+        <div class="section-label">01 · Quickstart</div>
+        <h2>Submit your first passage in under five minutes.</h2>
+        <p>Each session token is provisioned against a tier. Once issued, a single POST request returns a complete analysis: lexical-density timeline, peak concentration moments, the dominant semantic-conflict theme, a structured analytical summary, and the graduated alert layer.</p>
+
+        <h3>1. Obtain a session token</h3>
+        <p>API access is provisioned per organisation. Sandbox access is available on request and runs the full three-stage pipeline on a single language for evaluation. Write to <a href="mailto:growth.business@llulllab.com" style="color:var(--accent)">growth.business@llulllab.com</a> with the tier you intend, the contracting entity, and the expected use case.</p>
+
+        <h3>2. Submit a passage</h3>
+        <p>The endpoint is <code>POST https://api.llulllab.com/asge/v1/analyse</code>. The full schema is on the <a href="../api/" style="color:var(--accent)">API page</a>. The minimum request carries the text, a language code, and a session token.</p>
+
+        <div class="callout">
+          <div class="label">Tip</div>
+          <p>Line breaks segment temporal units. For passages that lack natural minute structure (essays, articles), break the text into paragraphs roughly equivalent to one minute of speech and the temporal density map will read naturally.</p>
+        </div>
+
+        <h3>3. Read the response</h3>
+        <p>The response is a single JSON object. The most useful fields, in order of how analysts typically consume them:</p>
+        <ul>
+          <li><strong>analysis.peak_minute</strong> &mdash; where to look first.</li>
+          <li><strong>analysis.dominant_theme</strong> &mdash; the opposition the passage is organised around.</li>
+          <li><strong>analysis.conflict_summary</strong> &mdash; two to three sentences naming the sustained tensions.</li>
+          <li><strong>analysis.alert_level</strong> &mdash; graduated 1 to 4. Higher values warrant closer attention.</li>
+          <li><strong>analysis.trend</strong> &mdash; minute-by-minute density to overlay with other timelines.</li>
+        </ul>
+      </section>
+
+      <section class="doc-section" id="doc-methodology">
+        <div class="section-label">02 · Methodology</div>
+        <h2>How ASGE actually arrives at an analysis.</h2>
+        <p>ASGE detects, maps, and analyses <strong>ambivalence structures</strong> in natural language: the sustained co-presence of opposing orientations toward the same object. The concept is developed in anthropology and political science. Sustained ambivalence structures act as early indicators of neurotic crisis at the individual level, offensive escalation at the collective level, and criminal action across both &mdash; before these stabilise into observable behaviour.</p>
+
+        <p>Each passage is processed through a <strong>three-stage computational pipeline</strong>. Every stage's output is part of the public contract and is returned in the response.</p>
+
+        <ol class="stage-list">
+          <li>
+            <span class="stage-title">Real-time lexical detection</span>
+            <p>Proprietary multilingual lexical databases identify opposing orientations as they emerge across the passage. Each detection feeds the temporal map and contributes to the graduated alert layer.</p>
+          </li>
+          <li>
+            <span class="stage-title">Temporal density mapping</span>
+            <p>The system constructs a minute-by-minute density map of detected ambivalence. Three visualisations are available: wave (continuous flow), bar (discrete per-minute counts), and delta (rate of change). Peak concentration moments are surfaced explicitly.</p>
+          </li>
+          <li>
+            <span class="stage-title">Deep contextual analysis</span>
+            <p>A deep contextual analysis layer goes beyond dictionary-level pairs to identify <strong>contextual ambivalence</strong>: opposing orientations that the surface vocabulary does not name. The stage produces the dominant theme, the structured analytical summary, and the alert level.</p>
+          </li>
+        </ol>
+
+        <h3>What the output gives an analyst</h3>
+        <p>Standard sentiment classifiers flatten ambiguity into positive, negative, or neutral. The signal that actually precedes escalation or crisis sits in the gap those models discard. ASGE adds a layer that existing OSINT, risk, and intelligence toolchains do not provide: a structural reading of <strong>sustained co-presence of opposing orientations</strong>, mapped against time, with a written summary and a graduated alert.</p>
+
+        <h3>What is not on record</h3>
+        <p>The infrastructure underneath the deliberation is proprietary and is not part of the public contract. The output is the contract: temporal density maps, peak concentration moments, dominant semantic-conflict themes, structured analytical summary, and the graduated alert layer.</p>
+      </section>
+
+      <section class="doc-section" id="doc-applications">
+        <div class="section-label">03 · Applications</div>
+        <h2>Where ASGE adds a layer that existing toolchains do not provide.</h2>
+        <p>Three buyer profiles deploy ASGE in production. Each uses the same API surface; the difference is the timeline and the source material.</p>
+
+        <div class="appgrid">
+          <div class="appcard">
+            <div class="aname">Academic research</div>
+            <p>Anthropology, political science, and computational social science. Comparative analysis of speeches, interviews, and ethnographic transcripts where the ambivalence structure is the unit of analysis.</p>
+          </div>
+          <div class="appcard">
+            <div class="aname">OSINT &amp; risk intelligence</div>
+            <p>Open-source intelligence units, threat-assessment teams, and risk analysts. Sustained ambivalence structures act as early indicators of escalation. ASGE adds a structural reading alongside existing sentiment, network, and event-based pipelines.</p>
+          </div>
+          <div class="appcard">
+            <div class="aname">Narrative &amp; media monitoring</div>
+            <p>Strategic communications, public-affairs analytics, and media-research teams. Tracking how an audience's orientation toward an object shifts across a media cycle, where the binary positive-or-negative reading flattens the relevant signal.</p>
+          </div>
+          <div class="appcard">
+            <div class="aname">Reference glossary</div>
+            <p><strong>Peak minute</strong>: highest-density timestamp. <strong>Dominant theme</strong>: opposition the passage is organised around. <strong>Alert level</strong>: 1 to 4. <strong>Classic vs contextual</strong>: dictionary detection vs deep contextual reading.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="doc-downloads">
+        <div class="section-label">04 · Downloads</div>
+        <h2>The same material, in printable form.</h2>
+        <p>Each section above is also available as a standalone PDF, formatted for circulation inside an organisation.</p>
+
+        <div class="downloads-grid">
+          <a class="dl-card" href="ASGE_Integration_Guide.pdf" target="_blank" rel="noopener">
+            <div class="dl-tag">PDF &middot; 01</div>
+            <div class="dl-title">Integration Guide</div>
+            <div class="dl-desc">Quickstart, request and response schema, error handling, retry semantics. Written for an engineer integrating ASGE in an afternoon.</div>
+            <div class="dl-meta">A4 &middot; English</div>
+            <div class="dl-cta">Download</div>
+          </a>
+
+          <a class="dl-card" href="ASGE_Methodology.pdf" target="_blank" rel="noopener">
+            <div class="dl-tag">PDF &middot; 02</div>
+            <div class="dl-title">Methodology</div>
+            <div class="dl-desc">The three-stage computational pipeline, the anthropological and political-science anchor, and the relationship of sustained ambivalence to pre-crisis dynamics. Written for a research or oversight committee.</div>
+            <div class="dl-meta">A4 &middot; English</div>
+            <div class="dl-cta">Download</div>
+          </a>
+
+          <a class="dl-card" href="ASGE_Applications.pdf" target="_blank" rel="noopener">
+            <div class="dl-tag">PDF &middot; 03</div>
+            <div class="dl-title">Applications &amp; Use Cases</div>
+            <div class="dl-desc">Three applied case sketches across academic research, OSINT and risk intelligence, and narrative monitoring. Plus a metric reference.</div>
+            <div class="dl-meta">A4 &middot; English</div>
+            <div class="dl-cta">Download</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="doc-section" id="doc-contact" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
+        <div class="section-label">05 · Contact</div>
+        <h2>Sandbox access <span class="highlight">available on request.</span></h2>
+        <p>Integration enquiries, sandbox access, contract negotiations, on-premise discussions, or anything that requires more than a documentation page.</p>
+
+        <div class="contact">
+          <div>
+            <div class="contact-h">Llull Lab &middot; Studio Llull</div>
+            <p>Paris-based research laboratory. Written enquiries are answered within two business days.</p>
+          </div>
+          <a class="contact-cta" href="mailto:growth.business@llulllab.com?subject=ASGE%20sandbox%20access">growth.business@llulllab.com</a>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">&copy; 2026 <a href="https://llulllab.com" target="_blank" rel="noopener">Llull Lab</a></span>
+    <span class="footer-text">Con&ccedil;u et d&eacute;velopp&eacute; en France</span>
+    <span class="footer-text"><a href="https://llulllab.com/privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> &middot; <a href="https://llulllab.com/mentions-legales.html" target="_blank" rel="noopener">Mentions L&eacute;gales</a></span>
+    <span class="footer-text"><a href="https://feix.app" target="_blank" rel="noopener">Created by Feix</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
